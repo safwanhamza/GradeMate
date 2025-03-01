@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Exam Papers</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Arial", sans-serif;
+        }
+
+        /* Fullscreen Layout */
+        body {
+            background-color: #f7f9fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            padding: 20px;
+        }
+
+        .upload-container {
+            background: white;
+            width: 85%;
+            /* Increased width */
+            max-width: 1100px;
+            /* More screen coverage */
+            padding: 60px;
+            /* More padding for a bigger feel */
+            border-radius: 16px;
+            /* Slightly rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 26px;
+            font-weight: bold;
+            color: #222;
+            margin-bottom: 30px;
+        }
+
+        .drop-area {
+            border: 3px dashed #aaa;
+            padding: 50px;
+            background-color: #f1f5ff;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            font-size: 18px;
+        }
+
+        .drop-area:hover {
+            border-color: #0056b3;
+            background: #dde8ff;
+        }
+
+        .drop-area p {
+            color: #444;
+            font-size: 18px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-list {
+            margin-top: 20px;
+            text-align: left;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            /* More space between buttons */
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 16px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-settings {
+            background: black;
+            color: white;
+        }
+
+        .btn-settings:hover {
+            background: #333;
+        }
+
+        .btn-proceed {
+            background: blue;
+            color: white;
+        }
+
+        .btn-proceed:hover {
+            background: darkblue;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="upload-container">
+        <h2>📄 Upload Exam Papers</h2>
+        <div class="drop-area" id="drop-area">
+            <p>Click or Drag to Upload</p>
+            <input type="file" id="file-input" multiple>
+        </div>
+        <div class="file-list" id="file-list"></div>
+
+        <div class="btn-group">
+            <a href="{% url 'grad_settings' %}"><button class="btn btn-settings">⚙️ Grading Settings</button></a>
+            <a href="{% url 'ocr_extracted' %}"><button class="btn btn-proceed">➡️ Proceed</button></a>
+        </div>
+    </div>
+
+    <script>
+        const dropArea = document.getElementById("drop-area");
+        const fileInput = document.getElementById("file-input");
+        const fileList = document.getElementById("file-list");
+
+        dropArea.addEventListener("click", () => fileInput.click());
+
+        fileInput.addEventListener("change", (e) => {
+            fileList.innerHTML = "";
+            for (let file of e.target.files) {
+                let listItem = document.createElement("div");
+                listItem.textContent = `📂 ${file.name}`;
+                fileList.appendChild(listItem);
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GradeMate - Automated Exam Grading</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body,
+        h1,
+        h2,
+        h3,
+        p,
+        ul,
+        li {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .navbar {
+            background-color: #fff;
+            color: #333;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-logo {
+            font-weight: bold;
+            font-size: 24px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .navbar-btn {
+            padding: 10px 20px;
+            color: white;
+            font-size: 20px;
+            background-color: green;
+            border: 1px solid green;
+            border-radius: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .navbar-btn:hover {
+            background-color: white;
+            color: green;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 150px 20px;
+            background: linear-gradient(to right, #4A90E2, #0056b3);
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 50px;
+        }
+
+        .hero p {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+
+        .hero-btn {
+            background-color: white;
+            color: #4A90E2;
+            padding: 12px 24px;
+            border: none;
+            font-size: 1.1em;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .hero-btn:hover {
+            background-color: #e6e6e6;
+        }
+
+        .features {
+            text-align: center;
+            padding: 50px 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .feature {
+            background-color: #FBFBE4;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 30%;
+            margin: 10px;
+        }
+
+        .footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <a href="#" class="navbar-logo">GradeMate</a>
+        <a href="#features"><button class="navbar-btn">Get Started →</button></a>
+    </div>
+    <div class="hero">
+        <h1>Welcome to GradeMate</h1>
+        <p>Automate exam grading with AI-driven precision.</p>
+        <a href="{% url 'login_signup' %}"><button class="hero-btn">Explore →</button></a>
+
+    </div>
+    <div class="features" id="features">
+        <div class="feature">
+            <h3>Automated Grading</h3>
+            <p>AI-powered grading for instant results.</p>
+        </div>
+        <div class="feature">
+            <h3>High Accuracy</h3>
+            <p>Advanced NLP ensures precise evaluations.</p>
+        </div>
+        <div class="feature">
+            <h3>Seamless Integration</h3>
+            <p>Works with multiple LMS platforms.</p>
+        </div>
+    </div>
+    <div class="footer">
+        <p>© 2025 GradeMate. All rights reserved.</p>
+    </div>
+</body>
+
+</html>

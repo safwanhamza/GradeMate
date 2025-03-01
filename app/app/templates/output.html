@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Grade Output</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f7f9fc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+            width: 100vw;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            width: 90%;
+            max-width: 1200px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .grade-summary {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 200px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .btn-generate {
+            background: blue;
+            color: white;
+        }
+
+        .btn-download {
+            background: green;
+            color: white;
+            display: none;
+        }
+
+        .btn-startover {
+            background: black;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>📊 Final Grade Report</h2>
+        <br>
+        <div class="grade-summary">
+            <div class="card">Total Questions: <span id="total-questions">10</span></div>
+            <div class="card">Total Score: <span id="total-score">85/100</span></div>
+        </div>
+        <div class="grade-summary" id="questions-container">
+            <!-- Question Score Cards Will Be Generated Here -->
+        </div>
+        <div class="buttons">
+            <button class="btn btn-generate" onclick="generateReport()">Generate Report</button>
+            <button class="btn btn-download" id="downloadBtn">Download Report</button>
+            <a href="{% url 'dashboard' %}"><button class="btn btn-startover" onclick="startOver()">Start
+                    Over</button></a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const questionsContainer = document.getElementById("questions-container");
+            const totalQuestions = 10;
+
+            for (let i = 1; i <= totalQuestions; i++) {
+                let card = document.createElement("div");
+                let obtainedMarks = Math.floor(Math.random() * 10) + 1;
+                card.classList.add("card");
+                card.innerHTML = `Q${i}: ${obtainedMarks}/10`;
+                questionsContainer.appendChild(card);
+            }
+        });
+
+        function generateReport() {
+            let btn = document.querySelector('.btn-generate');
+            btn.innerHTML = "Generating...";
+            setTimeout(() => {
+                btn.style.display = "none";
+                document.getElementById("downloadBtn").style.display = "inline-block";
+            }, 2000);
+        }
+
+        function startOver() {
+            window.location.reload();
+        }
+    </script>
+</body>
+
+</html>

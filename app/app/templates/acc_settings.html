@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f7f9fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+            width: 100vw;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .settings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .setting-option {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        .setting-option:hover {
+            background: #dde8ff;
+        }
+
+        .form-container {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .btn {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .btn-save {
+            background: green;
+            color: white;
+        }
+
+        .btn-delete {
+            background: red;
+            color: white;
+        }
+
+        .message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>⚙️ Account Settings</h2>
+        <div class="settings-list">
+            <div class="setting-option" onclick="showForm('name')">Change Name</div>
+            <div class="setting-option" onclick="showForm('email')">Change Email</div>
+            <div class="setting-option" onclick="showForm('password')">Change Password</div>
+            <div class="setting-option" onclick="showForm('delete')">Delete Account</div>
+        </div>
+        <div class="form-container" id="form-container">
+            <h3 id="form-title"></h3>
+            <input type="text" id="input-field" placeholder="Enter new value">
+            <button class="btn btn-save" onclick="saveChanges()">Save Changes</button>
+            <button class="btn btn-delete" onclick="deleteAccount()" style="display: none;">Delete Account</button>
+            <div class="message" id="message"></div>
+        </div>
+    </div>
+
+    <script>
+        function showForm(type) {
+            const formContainer = document.getElementById("form-container");
+            const formTitle = document.getElementById("form-title");
+            const inputField = document.getElementById("input-field");
+            const saveBtn = document.querySelector(".btn-save");
+            const deleteBtn = document.querySelector(".btn-delete");
+            const message = document.getElementById("message");
+
+            formContainer.style.display = "flex";
+            inputField.style.display = "block";
+            saveBtn.style.display = "block";
+            deleteBtn.style.display = "none";
+            message.style.display = "none";
+            inputField.value = "";
+
+            if (type === "name") {
+                formTitle.textContent = "Change Name";
+                inputField.placeholder = "Enter new name";
+            } else if (type === "email") {
+                formTitle.textContent = "Change Email";
+                inputField.placeholder = "Enter new email";
+            } else if (type === "password") {
+                formTitle.textContent = "Change Password";
+                inputField.placeholder = "Enter new password";
+                inputField.type = "password";
+            } else if (type === "delete") {
+                formTitle.textContent = "Delete Account";
+                inputField.style.display = "none";
+                saveBtn.style.display = "none";
+                deleteBtn.style.display = "block";
+            }
+        }
+
+        function saveChanges() {
+            const message = document.getElementById("message");
+            message.textContent = "Changes saved successfully!";
+            message.className = "message success";
+            message.style.display = "block";
+        }
+
+        function deleteAccount() {
+            const message = document.getElementById("message");
+            message.textContent = "Account deleted successfully!";
+            message.className = "message error";
+            message.style.display = "block";
+
+            setTimeout(() => {
+                window.location.href = "{% url 'login_signup' %}";
+            }, 3000);
+        }
+
+    </script>
+</body>
+
+</html>

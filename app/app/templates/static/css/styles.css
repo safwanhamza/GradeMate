@@ -1,0 +1,95 @@
+/* Import Poppins Font */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+/* Header Styling */
+header {
+    background-color: #4A90E2;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* Hero Section */
+#hero {
+    text-align: center;
+    padding: 60px 20px;
+    background: linear-gradient(to right, #4A90E2, #0056b3);
+    color: white;
+}
+
+#hero h2 {
+    font-size: 2.5em;
+    font-weight: 600;
+}
+
+#hero p {
+    font-size: 1.2em;
+    margin: 15px 0;
+}
+
+#hero button {
+    background-color: white;
+    color: #4A90E2;
+    padding: 12px 24px;
+    border: none;
+    font-size: 1.1em;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: 600;
+}
+
+#hero button:hover {
+    background-color: #e6e6e6;
+}
+
+/* Features Section */
+#features {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+#features h2 {
+    font-size: 2em;
+}
+
+#features ul {
+    list-style: none;
+    padding: 0;
+}
+
+#features li {
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+/* Footer */
+footer {
+    background-color: #222;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+}
