@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,7 +36,6 @@
                 opacity: 0;
                 transform: translateY(-20px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -90,23 +88,34 @@
         .toggle-btn:hover {
             color: #0056b3;
         }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+            font-weight: bold;
+        }
     </style>
 </head>
-
 <body>
     <div class="container" id="container">
         <h2 id="form-title">Login</h2>
-        <div class="input-box">
-            <input type="email" placeholder="Email" required>
-        </div>
-        <div class="input-box">
-            <input type="password" placeholder="Password" required>
-        </div>
-        <a href="{% url 'dashboard' %}"><button class="btn" id="auth-btn">Login</button></a>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="input-box">
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+            <div class="input-box">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+            <button type="submit" name="login" class="btn" id="auth-btn">Login</button>
+        </form>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
         <p class="toggle-btn" id="toggle-form">Don't have an account? Sign up</p>
     </div>
+
     <script>
-        const container = document.getElementById("container");
         const formTitle = document.getElementById("form-title");
         const authBtn = document.getElementById("auth-btn");
         const toggleForm = document.getElementById("toggle-form");
@@ -115,14 +124,15 @@
             if (formTitle.textContent === "Login") {
                 formTitle.textContent = "Sign Up";
                 authBtn.textContent = "Sign Up";
+                authBtn.name = "signup";
                 toggleForm.textContent = "Already have an account? Login";
             } else {
                 formTitle.textContent = "Login";
                 authBtn.textContent = "Login";
+                authBtn.name = "login";
                 toggleForm.textContent = "Don't have an account? Sign up";
             }
         });
     </script>
 </body>
-
 </html>

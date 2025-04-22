@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Exam Papers</title>
     <style>
-        /* General Reset */
         * {
             margin: 0;
             padding: 0;
@@ -14,7 +13,6 @@
             font-family: "Arial", sans-serif;
         }
 
-        /* Fullscreen Layout */
         body {
             background-color: #f7f9fc;
             display: flex;
@@ -28,13 +26,9 @@
         .upload-container {
             background: white;
             width: 85%;
-            /* Increased width */
             max-width: 1100px;
-            /* More screen coverage */
             padding: 60px;
-            /* More padding for a bigger feel */
             border-radius: 16px;
-            /* Slightly rounded corners */
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             text-align: center;
         }
@@ -82,7 +76,6 @@
             display: flex;
             justify-content: center;
             gap: 30px;
-            /* More space between buttons */
             margin-top: 30px;
         }
 
@@ -120,16 +113,22 @@
 
     <div class="upload-container">
         <h2>📄 Upload Exam Papers</h2>
-        <div class="drop-area" id="drop-area">
-            <p>Click or Drag to Upload</p>
-            <input type="file" id="file-input" multiple>
-        </div>
-        <div class="file-list" id="file-list"></div>
 
-        <div class="btn-group">
-            <a href="{% url 'grad_settings' %}"><button class="btn btn-settings">⚙️ Grading Settings</button></a>
-            <a href="{% url 'ocr_extracted' %}"><button class="btn btn-proceed">➡️ Proceed</button></a>
-        </div>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="drop-area" id="drop-area">
+                <p>Click or Drag to Upload</p>
+                <input type="file" id="file-input" name="files" multiple required>
+            </div>
+            <div class="file-list" id="file-list"></div>
+
+            <div class="btn-group">
+                <a href="{% url 'grad_settings' %}">
+                    <button type="button" class="btn btn-settings">⚙️ Grading Settings</button>
+                </a>
+                <button type="submit" class="btn btn-proceed">➡️ Proceed</button>
+            </div>
+        </form>
     </div>
 
     <script>

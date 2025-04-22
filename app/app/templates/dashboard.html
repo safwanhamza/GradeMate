@@ -126,17 +126,18 @@
     <div class="dashboard">
         <div class="card">
             <h3>Papers Graded</h3>
-            <p>120</p>
+            <p>{{ papers_graded }}</p>
         </div>
         <div class="card">
             <h3>Books Inputted</h3>
-            <p>45</p>
+            <p>{{ books_inputted }}</p>
         </div>
         <div class="card">
             <h3>Active Exams</h3>
-            <p>3</p>
+            <p>{{ active_exams }}</p>
         </div>
     </div>
+    
 
     <a href="{% url 'grading' %}"><button class="proceed-btn">Proceed to Grade →</button></a>
 
