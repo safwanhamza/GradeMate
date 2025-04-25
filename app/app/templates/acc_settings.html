@@ -4,25 +4,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Settings</title>
+    <title>GradeMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rgt6GkP1Vzk5sU6WnOVz0l8l9ka65y1gXkG5lh2k5Cyja74Fp8RFuh9Oe5l5aXv4Yg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            /* Changed font-family to Poppins to match the first example */
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
             background-color: #f7f9fc;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            /* Removed centering to allow content to flow below the navbar */
+            flex-direction: column;
+            /* Arrange items vertically */
+            /* Removed justify-content and align-items */
+            /* Removed height: 100vh; */
             padding: 20px;
             width: 100vw;
+            /* Add padding-top to prevent content from being hidden by the fixed navbar */
+            padding-top: 80px;
+            /* Adjust if your navbar height is different */
         }
 
+        /* Navbar Styles (copied from the first example with slight adjustment) */
+        .navbar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .nav-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4A90E2;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            margin-left: 52%;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #4A90E2;
+        }
+
+        /* User Menu and Dropdown Styles (copied from the first example) */
+        .user-menu {
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: none;
+            width: 180px;
+            z-index: 1001;
+            /* Ensure dropdown is above the navbar */
+        }
+
+        .user-dropdown p,
+        .user-dropdown a {
+            padding: 10px;
+            text-decoration: none;
+            color: black;
+            display: block;
+            text-align: center;
+        }
+
+        .user-dropdown a:hover {
+            background: #f0f0f0;
+        }
+
+
+        /* Existing Account Settings Container Styles */
         .container {
             background: white;
             padding: 30px;
@@ -31,6 +121,12 @@
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
             text-align: center;
+            /* Added margin-top to push the container down below the navbar */
+            /* This is an alternative to body padding-top, you can choose one */
+            /* margin-top: 30px; */
+            /* Added margin auto for horizontal centering after removing body centering */
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .settings-list {
@@ -107,6 +203,24 @@
 </head>
 
 <body>
+    <div class="navbar">
+        <div class="nav-left">
+            <div class="nav-title">GradeMate</div>
+        </div>
+        <div class="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'dashboard' %}">DashBoard</a>
+        </div>
+        <div class="user-menu" onclick="toggleDropdown()">
+            <i class="material-icons" style="font-size: 36px; color: #333; cursor: pointer;">account_circle</i>
+            <div class="user-dropdown" id="userDropdown">
+                <p>Welcome, User</p>
+                <a href="{% url 'acc_settings' %}">Account Settings</a>
+                <a href="{% url 'login_signup' %}">Logout</a>
+            </div>
+        </div>
+    </div>
+    <br><br><br>
     <div class="container">
         <h2>⚙️ Account Settings</h2>
         <div class="settings-list">
@@ -125,6 +239,13 @@
     </div>
 
     <script>
+        // JavaScript function for the user dropdown (copied from the first example)
+        function toggleDropdown() {
+            let dropdown = document.getElementById("userDropdown");
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        }
+
+        // Existing JavaScript functions for account settings (kept as is)
         function showForm(type) {
             const formContainer = document.getElementById("form-container");
             const formTitle = document.getElementById("form-title");
@@ -159,30 +280,30 @@
         }
 
         function saveChanges() {
-        const formTitle = document.getElementById("form-title").textContent;
-        const inputField = document.getElementById("input-field").value;
-        const message = document.getElementById("message");
+            const formTitle = document.getElementById("form-title").textContent;
+            const inputField = document.getElementById("input-field").value;
+            const message = document.getElementById("message");
 
-        let action = "";
-        if (formTitle.includes("Name")) action = "name";
-        else if (formTitle.includes("Email")) action = "email";
-        else if (formTitle.includes("Password")) action = "password";
+            let action = "";
+            if (formTitle.includes("Name")) action = "name";
+            else if (formTitle.includes("Email")) action = "email";
+            else if (formTitle.includes("Password")) action = "password";
 
-        fetch("{% url 'acc_settings' %}", {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": "{{ csrf_token }}",
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: new URLSearchParams({ action: action, value: inputField }),
-        })
-        .then(res => res.json())
-        .then(data => {
-            message.textContent = data.message;
-            message.className = `message ${data.status}`;
-            message.style.display = "block";
-        });
-    }
+            fetch("{% url 'acc_settings' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams({ action: action, value: inputField }),
+            })
+                .then(res => res.json())
+                .then(data => {
+                    message.textContent = data.message;
+                    message.className = `message ${data.status}`;
+                    message.style.display = "block";
+                });
+        }
 
         function deleteAccount() {
             const message = document.getElementById("message");
@@ -195,20 +316,19 @@
                 },
                 body: new URLSearchParams({ action: "delete" }),
             })
-            .then(res => res.json())
-            .then(data => {
-                message.textContent = data.message;
-                message.className = `message ${data.status}`;
-                message.style.display = "block";
+                .then(res => res.json())
+                .then(data => {
+                    message.textContent = data.message;
+                    message.className = `message ${data.status}`;
+                    message.style.display = "block";
 
-                if (data.redirect) {
-                    setTimeout(() => {
-                        window.location.href = "{% url 'login_signup' %}";
-                    }, 2000);
-                }
-            });
+                    if (data.redirect) {
+                        setTimeout(() => {
+                            window.location.href = "{% url 'login_signup' %}";
+                        }, 2000);
+                    }
+                });
         }
-
     </script>
 </body>
 
