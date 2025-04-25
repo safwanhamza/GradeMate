@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
+
 class ExamUpload(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     file = models.FileField(upload_to='uploads/')
@@ -44,3 +46,21 @@ class GradedAnswer(models.Model):
 
     def __str__(self):
         return f"Grade for {self.extracted.exam.user.username} - Q{self.extracted.question_index}"
+
+
+class DrivePDF(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    drive_file_id = models.CharField(max_length=100)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+class ChunkedText(models.Model):
+    pdf = models.ForeignKey(DrivePDF, on_delete=models.CASCADE, related_name='chunks')
+    content = models.TextField()
+    order = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.pdf.title} - Chunk {self.order}"

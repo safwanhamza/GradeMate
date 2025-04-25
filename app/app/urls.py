@@ -1,3 +1,7 @@
+from django.contrib import admin
+from django.urls import path
+from django.contrib.auth import views as auth_views
+from .views import *
 """
 URL configuration for app project.
 
@@ -14,10 +18,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path
-from django.contrib.auth import views as auth_views
-from .views import *
+
 
 urlpatterns = [
     path('', home, name='home'),
@@ -30,4 +31,7 @@ urlpatterns = [
     path('ocr-extracted/', ocr_extracted, name='ocr_extracted'),
     path('output/', output, name='output'),
     path('admin/', admin.site.urls),
+    path('api/upload-drive-pdf/', upload_and_chunk_drive_file, name='upload_drive_pdf'),
+    path('fetch-drive-pdfs/', fetch_drive_pdfs, name='fetch_drive_pdfs'),
+
 ]

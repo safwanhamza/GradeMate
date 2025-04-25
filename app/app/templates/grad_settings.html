@@ -1,18 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grading Settings</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
         body {
             background-color: #f7f9fc;
             display: flex;
@@ -22,7 +15,6 @@
             padding: 20px;
             width: 100vw;
         }
-
         .container {
             background: white;
             padding: 30px;
@@ -32,7 +24,6 @@
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
-
         .input-group {
             background: white;
             padding: 15px;
@@ -41,79 +32,79 @@
             margin-bottom: 20px;
             text-align: left;
         }
-
-        input[type="file"],
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+        input[type="file"], input[type="text"], select {
+            width: 100%; padding: 10px; border: 1px solid #ccc;
+            border-radius: 6px; margin-top: 5px;
         }
-
-        .range-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .range-group label {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        input[type="range"] {
-            width: 100%;
-        }
-
+        input[type="range"] { width: 100%; }
+        .range-group { margin-bottom: 20px; text-align: left; }
         .radio-group {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            margin-bottom: 20px;
+            display: flex; flex-direction: column;
+            align-items: flex-start; margin-bottom: 20px;
         }
-
-        .btn-apply {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            background: blue;
-            color: white;
-            display: block;
-            width: 100%;
+        .btn-apply, .btn-drive {
+            padding: 12px 20px; border: none; border-radius: 8px;
+            cursor: pointer; font-size: 16px;
+            background: blue; color: white; width: 100%;
+            margin-top: 10px;
+        }
+        #loader {
+            font-size: 15px; color: #444; margin-top: 10px;
+        }
+        #fetch-logs {
+            font-size: 14px; margin-top: 10px; white-space: pre-line;
+            background: #f1f1f1; padding: 10px; border-radius: 6px;
         }
     </style>
 </head>
-
 <body>
     <div class="container">
         <h2>⚙️ Grading Settings</h2>
 
         <div class="input-group">
             <label>📚 Input Textbook</label>
-            <input type="file" id="textbook-input" onchange="showFileName('textbook-input', 'textbook-name')">
+            <input type="file" name="textbook" id="textbook-input" onchange="showFileName('textbook-input', 'textbook-name')">
             <p id="textbook-name"></p>
+
+            <!-- 📥 Fetch from Drive -->
+            <form id="drive-fetch-form">
+                {% csrf_token %}
+                <button type="submit" class="btn-drive" id="drive-fetch-btn">📥 Load Textbooks from Drive</button>
+            </form>
+
+            <div id="loader" style="display:none;">⏳ Fetching files from Drive...</div>
+            <div id="fetch-logs"></div>
+
+            <label for="drive_pdf_select" style="margin-top: 15px;">⬇️ Or Select from Your Drive PDFs</label>
+            <select name="selected_pdf" id="drive_pdf_select">
+                <option disabled selected>Select a Drive PDF</option>
+                {% for pdf in drive_pdfs %}
+                    <option value="{{ pdf.id }}">{{ pdf.title }}</option>
+                {% empty %}
+                    <option disabled>No Drive PDFs found</option>
+                {% endfor %}
+            </select>
         </div>
 
         <div class="input-group">
             <label>🔑 Input Key</label>
-            <input type="file" id="key-input" onchange="showFileName('key-input', 'key-name')">
+            <input type="file" name="key" id="key-input" onchange="showFileName('key-input', 'key-name')">
             <p id="key-name"></p>
         </div>
 
         <div class="range-group">
             <label>🔍 Similarity Search (0.0 - 5.0)</label>
-            <input type="range" min="0.0" max="5.0" step="0.1">
+            <input type="range" name="similarity" min="0.0" max="5.0" step="0.1">
         </div>
 
         <div class="input-group">
             <label>📝 Input Manual Text</label>
-            <input type="text" placeholder="Enter text here...">
+            <input type="text" name="manual_text" placeholder="Enter text here...">
         </div>
 
         <div class="range-group">
             <label>🎨 Creativity Control (0.0 - 1.0)</label>
-            <input type="range" min="0.0" max="1.0" step="0.1">
+            <input type="range" name="creativity" min="0.0" max="1.0" step="0.1">
         </div>
 
         <div class="radio-group">
@@ -128,13 +119,55 @@
         function showFileName(inputId, displayId) {
             const input = document.getElementById(inputId);
             const display = document.getElementById(displayId);
-            if (input.files.length > 0) {
-                display.textContent = `Selected File: ${input.files[0].name}`;
-            } else {
-                display.textContent = "";
-            }
+            display.textContent = input.files.length ? `Selected File: ${input.files[0].name}` : "";
         }
+
+        document.getElementById("drive-fetch-form").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const loader = document.getElementById("loader");
+            const logDiv = document.getElementById("fetch-logs");
+            const button = document.getElementById("drive-fetch-btn");
+            const dropdown = document.getElementById("drive_pdf_select");
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            loader.style.display = "block";
+            logDiv.textContent = "Starting fetch...\n";
+            button.disabled = true;
+
+            fetch("{% url 'fetch_drive_pdfs' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                loader.style.display = "none";
+                button.disabled = false;
+
+                if (data.status === "ok") {
+                    logDiv.textContent += data.logs.join("\n");
+
+                    dropdown.innerHTML = '<option disabled selected>Select a Drive PDF</option>';
+                    data.files.forEach(file => {
+                        const option = document.createElement("option");
+                        option.value = file.id;
+                        option.textContent = file.title;
+                        dropdown.appendChild(option);
+                    });
+                } else {
+                    logDiv.textContent += `❌ Error: ${data.error}`;
+                }
+            })
+            .catch(err => {
+                loader.style.display = "none";
+                button.disabled = false;
+                logDiv.textContent += `❌ Fetch failed: ${err}`;
+            });
+        });
     </script>
 </body>
-
 </html>

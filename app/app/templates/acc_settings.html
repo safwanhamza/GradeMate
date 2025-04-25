@@ -159,21 +159,54 @@
         }
 
         function saveChanges() {
-            const message = document.getElementById("message");
-            message.textContent = "Changes saved successfully!";
-            message.className = "message success";
+        const formTitle = document.getElementById("form-title").textContent;
+        const inputField = document.getElementById("input-field").value;
+        const message = document.getElementById("message");
+
+        let action = "";
+        if (formTitle.includes("Name")) action = "name";
+        else if (formTitle.includes("Email")) action = "email";
+        else if (formTitle.includes("Password")) action = "password";
+
+        fetch("{% url 'acc_settings' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({ action: action, value: inputField }),
+        })
+        .then(res => res.json())
+        .then(data => {
+            message.textContent = data.message;
+            message.className = `message ${data.status}`;
             message.style.display = "block";
-        }
+        });
+    }
 
         function deleteAccount() {
             const message = document.getElementById("message");
-            message.textContent = "Account deleted successfully!";
-            message.className = "message error";
-            message.style.display = "block";
 
-            setTimeout(() => {
-                window.location.href = "{% url 'login_signup' %}";
-            }, 3000);
+            fetch("{% url 'acc_settings' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams({ action: "delete" }),
+            })
+            .then(res => res.json())
+            .then(data => {
+                message.textContent = data.message;
+                message.className = `message ${data.status}`;
+                message.style.display = "block";
+
+                if (data.redirect) {
+                    setTimeout(() => {
+                        window.location.href = "{% url 'login_signup' %}";
+                    }, 2000);
+                }
+            });
         }
 
     </script>

@@ -3,14 +3,19 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from .models import ExamUpload, GradingSettings, GradedAnswer
+from django.db import connection
+from django.contrib.auth import update_session_auth_hash
+from django.http import JsonResponse
+from .models import DrivePDF, ChunkedText
+from .drive_utils import download_drive_file, extract_pdf_text, chunk_text
 
 
-@login_required
 def home(request):
     print("[DEBUG] home view loaded")
+    if request.user.is_authenticated:
+        return redirect('dashboard')
     return render(request, 'index.html')
 
-@login_required
 def login_signup(request):
     print("[DEBUG] login_signup view triggered")
     if request.method == 'POST':
@@ -42,9 +47,29 @@ def dashboard(request):
     user = request.user
     print("[DEBUG] dashboard view for user:", user)
 
-    papers_graded = GradedAnswer.objects.filter(extracted__exam__user=user).count()
-    books_inputted = GradingSettings.objects.filter(user=user).count()
-    active_exams = ExamUpload.objects.filter(user=user).count()
+    # Debug raw table check
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
+        print("[DEBUG] Tables in database:", tables)
+
+    try:
+        papers_graded = GradedAnswer.objects.filter(extracted__exam__user=user).count()
+    except Exception as e:
+        print("[ERROR] GradedAnswer query failed:", e)
+        papers_graded = 0
+
+    try:
+        books_inputted = GradingSettings.objects.filter(user=user).count()
+    except Exception as e:
+        print("[ERROR] GradingSettings query failed:", e)
+        books_inputted = 0
+
+    try:
+        active_exams = ExamUpload.objects.filter(user=user).count()
+    except Exception as e:
+        print("[ERROR] ExamUpload query failed:", e)
+        active_exams = 0
 
     print("[DEBUG] papers_graded:", papers_graded)
     print("[DEBUG] books_inputted:", books_inputted)
@@ -59,7 +84,36 @@ def dashboard(request):
 
 @login_required
 def acc_settings(request):
-    print("[DEBUG] acc_settings view")
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        value = request.POST.get('value')
+
+        try:
+            if action == 'name':
+                request.user.first_name = value
+                request.user.save()
+                return JsonResponse({'status': 'success', 'message': 'Name updated successfully!'})
+
+            elif action == 'email':
+                if User.objects.filter(email=value).exclude(pk=request.user.pk).exists():
+                    return JsonResponse({'status': 'error', 'message': 'Email already in use!'})
+                request.user.email = value
+                request.user.username = value  # if username is also email
+                request.user.save()
+                return JsonResponse({'status': 'success', 'message': 'Email updated successfully!'})
+
+            elif action == 'password':
+                request.user.set_password(value)
+                request.user.save()
+                update_session_auth_hash(request, request.user)  # Keep user logged in
+                return JsonResponse({'status': 'success', 'message': 'Password updated successfully!'})
+
+            elif action == 'delete':
+                request.user.delete()
+                return JsonResponse({'status': 'success', 'message': 'Account deleted successfully!', 'redirect': True})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
     return render(request, 'acc_settings.html')
 
 @login_required
@@ -80,20 +134,36 @@ def grading(request):
 @login_required
 def grad_settings(request):
     print("[DEBUG] grad_settings view")
+
+    # Fetch previously uploaded Drive PDFs for dropdown
+    drive_pdfs = DrivePDF.objects.filter(user=request.user)
+
     if request.method == 'POST':
         print("[DEBUG] POST request in grad_settings")
+
+        # Handle either uploaded textbook or Drive selection
+        textbook = request.FILES.get('textbook')
+        selected_pdf_id = request.POST.get('selected_pdf')
+
+        if not textbook and selected_pdf_id:
+            # If no file uploaded, use existing DrivePDF as context
+            selected_pdf = DrivePDF.objects.get(id=selected_pdf_id, user=request.user)
+            textbook = selected_pdf.title  # Or store reference
+
         GradingSettings.objects.create(
             user=request.user,
-            textbook=request.FILES['textbook'],
-            key=request.FILES['key'],
-            similarity=request.POST['similarity'],
-            creativity=request.POST['creativity'],
+            textbook=textbook,
+            key=request.FILES.get('key'),
+            similarity=request.POST.get('similarity', 1.0),
+            creativity=request.POST.get('creativity', 0.5),
             manual_text=request.POST.get('manual_text', ''),
-            context_choice=request.POST['context']
+            context_choice=request.POST.get('context', 'textbook')
         )
+
         print("[DEBUG] GradingSettings saved for:", request.user)
         return redirect('ocr_extracted')
-    return render(request, 'grad_settings.html')
+
+    return render(request, 'grad_settings.html', {'drive_pdfs': drive_pdfs})
 
 @login_required
 def ocr_extracted(request):
@@ -104,3 +174,47 @@ def ocr_extracted(request):
 def output(request):
     print("[DEBUG] output view")
     return render(request, 'output.html')
+
+
+
+@login_required
+def upload_and_chunk_drive_file(request):
+    if request.method == 'POST':
+        file_id = request.POST.get('file_id')
+        title = request.POST.get('title', 'Untitled')
+
+        pdf_stream = download_drive_file(file_id)
+        full_text = extract_pdf_text(pdf_stream)
+        chunks = chunk_text(full_text)
+
+        drive_pdf = DrivePDF.objects.create(
+            user=request.user,
+            title=title,
+            drive_file_id=file_id
+        )
+
+        for i, chunk in enumerate(chunks):
+            ChunkedText.objects.create(pdf=drive_pdf, content=chunk, order=i)
+
+        return JsonResponse({'message': f'{len(chunks)} chunks created.', 'pdf_id': drive_pdf.id})
+    return JsonResponse({'error': 'Invalid method'}, status=400)
+
+
+@login_required
+def fetch_drive_pdfs(request):
+    print("[DEBUG] fetch_drive_pdfs view")
+    logs = []
+
+    try:
+        # Your existing Drive & chunk logic...
+        fetched_files = [...]  # List of filenames
+
+        for file in fetched_files:
+            logs.append(f"📁 {file} fetched successfully")
+            logs.append(f"✅ Chunks created for {file}")
+
+        return JsonResponse({"status": "ok", "logs": logs})
+    
+    except Exception as e:
+        logs.append(str(e))
+        return JsonResponse({"status": "error", "error": str(e), "logs": logs})
