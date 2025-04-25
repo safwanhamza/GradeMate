@@ -133,3 +133,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom login redirection path
 
 LOGIN_URL = '/login-signup/'
+
+
+# comment here
