@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 class PDFExtractor:
     def __init__(self, api_key=None):
-        """Initialize the PDF Extractor with a Groq API key."""
+        """Initialize the PDF Extractor with a Groq API key here."""
         try:
             from django.conf import settings
             self.api_key = api_key or getattr(settings, 'GROQ_API_KEY', None)

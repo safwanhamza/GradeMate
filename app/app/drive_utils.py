@@ -18,6 +18,7 @@ def download_drive_file(file_id):
 
     fh.seek(0)
     return fh
+    # return fh
 
 
 def extract_pdf_text(file_stream):

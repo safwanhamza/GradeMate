@@ -166,6 +166,7 @@ class ChromaDirect:
                 })
         
         return results
+        # return results
     
     def search_documents(self, query, k=5):
         """Search for documents relevant to the query."""
@@ -178,3 +179,4 @@ class ChromaDirect:
         
         docs = retriever.get_relevant_documents(query)
         return docs
+    

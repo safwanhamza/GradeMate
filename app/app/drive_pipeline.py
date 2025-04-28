@@ -19,6 +19,7 @@ from langchain_text_splitters import RecursiveJsonSplitter
 from langchain_nomic.embeddings import NomicEmbeddings
 from langchain_community.vectorstores import Chroma
 import logging
+# import logging
 
 
 # Ensure the logging setup is in place
@@ -601,6 +602,9 @@ def main(file_ids: List[str], progress_callback=None):
         progress_callback("\U0001F4E2 Ingesting chunks into Chroma DB...")
 
     vector_store = ingest_chroma(chunks, embedding_model)
+
+    # vector_store = ingest_chroma(chunks, embedding_model)
+    
 
     # Example of how you might use the MultiQueryRetriever
     # from langchain_google_genai import ChatGoogleGenerativeAI
