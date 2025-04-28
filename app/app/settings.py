@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+
 SECRET_KEY = 'django-insecure-gw3siuqevq&kl2u7ltwv5qbio1w#_+uab+xssc@zykm7=4okgg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -135,4 +135,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/login-signup/'
 
 
-# comment here
+
+# Groq API key for OCR and LLM processing
+GROQ_API_KEY = "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"

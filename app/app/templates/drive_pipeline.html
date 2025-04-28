@@ -1,0 +1,66 @@
+<!-- drive_pipelin.html -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Drive Pipeline Progress</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        #progress-box { border: 1px solid #ccc; padding: 20px; border-radius: 8px; }
+        #progress-log { max-height: 400px; overflow-y: auto; white-space: pre-line; margin-top: 15px; background-color: #f9f9f9; padding: 10px; border-radius: 6px; }
+        .btn { padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; cursor: pointer; border-radius: 6px; }
+        .btn:hover { background-color: #45a049; }
+    </style>
+</head>
+<body>
+
+    <h1>Drive Pipeline Runner 🚀</h1>
+
+    <button class="btn" onclick="startPipeline()">Start Drive Processing</button>
+
+    <div id="progress-box">
+        <h3>Progress:</h3>
+        <div id="progress-log">No activity yet...</div>
+    </div>
+
+    <script>
+        let intervalId = null;
+
+        function startPipeline() {
+            document.getElementById("progress-log").innerText = "⏳ Starting Drive pipeline...";
+
+            fetch("/start-drive-pipeline/", { method: "POST" })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "started") {
+                        intervalId = setInterval(fetchProgress, 2000);  // every 2 seconds
+                    } else {
+                        alert("Failed to start pipeline!");
+                    }
+                })
+                .catch(error => console.error("Error starting pipeline:", error));
+        }
+
+        function fetchProgress() {
+            fetch("/get-drive-pipeline-progress/")
+                .then(response => response.json())
+                .then(data => {
+                    const progressDiv = document.getElementById("progress-log");
+                    progressDiv.innerText = data.progress.join("\n");
+
+                    // Stop refreshing if finished
+                    if (data.progress.length > 0 && data.progress[data.progress.length - 1].includes("completed")) {
+                        clearInterval(intervalId);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching progress:", error);
+                    clearInterval(intervalId);
+                });
+        }
+    </script>
+
+</body>
+</html>

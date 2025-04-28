@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}GradeMate{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f7f9fc;
+        }
+
+        .navbar {
+            background-color: #fff;
+            color: #333;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-logo {
+            font-weight: bold;
+            font-size: 24px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .navbar-btn {
+            padding: 10px 20px;
+            color: white;
+            font-size: 20px;
+            background-color: green;
+            border: 1px solid green;
+            border-radius: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .navbar-btn:hover {
+            background-color: white;
+            color: green;
+        }
+
+        .footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        /* Add any other common styles here */
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="{% url 'home' %}" class="navbar-logo">GradeMate</a>
+        <a href="{% url 'login_signup' %}" class="navbar-btn" style="text-decoration: none;">Get Started →</a>
+    </div>
+
+    <!-- Main Content Block -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2025 GradeMate. All rights reserved.</p>
+    </div>
+
+</body>
+
+</html>

@@ -4,12 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GradeMate</title>
+    <title>Dashboard - GradeMate</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-        integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rgt6GkP1Vzk5sU6WnOVz0l8l9ka65y1gXkG5lh2k5Cyja74Fp8RFuh9Oe5l5aXv4Yg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
         * {
             margin: 0;
@@ -38,41 +35,9 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 40px;
-        }
-
-        .nav-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #4A90E2;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            margin-left: 52%;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .nav-links a:hover {
-            color: #4A90E2;
-        }
-
         .user-menu {
             position: relative;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .user-dropdown {
@@ -97,15 +62,6 @@
 
         .user-dropdown a:hover {
             background: #f0f0f0;
-        }
-
-        .welcome-text {
-            margin-right: 55%;
-            text-align: right;
-            font-size: 60px;
-            font-weight: 100;
-            color: #333;
-            margin-top: 30px;
         }
 
         .dashboard {
@@ -156,17 +112,9 @@
 
 <body>
     <div class="navbar">
-        <div class="nav-left">
-            <div class="nav-title">GradeMate</div>
-        </div>
-        <div class="nav-links">
-            <a href="{% url 'home' %}">Home</a>
-            <a href="{% url 'grading' %}">Exam Upload</a>
-            <a href="{% url 'ocr_extracted' %}">Text Extraction</a>
-            <a href="{% url 'output' %}">Output</a>
-        </div>
+        <h2>GradeMate Dashboard</h2>
         <div class="user-menu" onclick="toggleDropdown()">
-            <i class="material-icons" style="font-size: 36px; color: #333; cursor: pointer;">account_circle</i>
+            <img src="https://i.pravatar.cc/40" alt="User" style="border-radius: 50%; cursor: pointer;">
             <div class="user-dropdown" id="userDropdown">
                 <p>Welcome, User</p>
                 <a href="{% url 'acc_settings' %}">Account Settings</a>
@@ -174,8 +122,6 @@
             </div>
         </div>
     </div>
-
-    <div class="welcome-text">Welcome!</div>
 
     <div class="dashboard">
         <div class="card">
@@ -191,6 +137,7 @@
             <p>{{ active_exams }}</p>
         </div>
     </div>
+    
 
     <a href="{% url 'grading' %}"><button class="proceed-btn">Proceed to Grade →</button></a>
 

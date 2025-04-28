@@ -1,0 +1,8 @@
+
+
+
+
+Sort Products by Price: 0.0359 seconds
+Query Orders by Product and Date: 0.0180 seconds
+Sort Products by Price: 0.0120 seconds
+Query Orders by Product and Date: 0.0150 seconds

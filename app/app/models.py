@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-
 class ExamUpload(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     file = models.FileField(upload_to='uploads/')
@@ -64,3 +63,12 @@ class ChunkedText(models.Model):
 
     def __str__(self):
         return f"{self.pdf.title} - Chunk {self.order}"
+    
+
+
+class DrivePDFChunk(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    drive_file_id = models.CharField(max_length=255)
+    chunks = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)

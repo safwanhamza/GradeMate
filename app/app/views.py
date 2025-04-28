@@ -1,14 +1,85 @@
+
+#views.py
+import logging
+import traceback
+from django.utils.timezone import now
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
-from .models import ExamUpload, GradingSettings, GradedAnswer
-from django.db import connection
-from django.contrib.auth import update_session_auth_hash
 from django.http import JsonResponse
-from .models import DrivePDF, ChunkedText
+from django.db import connection
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+import threading
+import os
+import json
+from django.utils.timezone import now  # helpful for timestamps if needed
+from .models import ExamUpload, GradingSettings, GradedAnswer, DrivePDF, ChunkedText
 from .drive_utils import download_drive_file, extract_pdf_text, chunk_text
+from .gdrive_utils import fetch_drive_pdfs_and_chunk
+from django.shortcuts import get_object_or_404
+# from .drive_processor import process_drive_pdf as process_drive_pdf_logic
 
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+import json
+import os
+import logging, sys, pathlib
+
+# Keep existing pipeline imports
+from .drive_pipeline import (
+    load_and_partition_drive_documents,
+    restructure_all_elements_flat,
+    generate_captions_from_memory,
+    convert_elements_to_langchain_docs,
+    dynamic_chunk_documents,
+    ingest_chroma,
+    embedding_model,
+    handle_fallback_file,  # Make sure this is included
+)
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from .pdf_extractor import PDFExtractor
+import sys, os
+
+from .utils.evaluator import evaluate_exam
+# from .utils.evaluator import evaluate_exam   # 1️⃣ add import
+
+LOG_FILE = pathlib.Path(__file__).with_name("grademate.log")
+
+logging.basicConfig(
+    level=logging.INFO,                                 # DEBUG if you really need it
+    format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
+    handlers=[
+        logging.FileHandler(LOG_FILE, encoding="utf-8"),
+        logging.StreamHandler(sys.stdout),              # uses the patched UTF-8 stdout
+    ],
+    force=True,                                         # overwrite previous root config
+)
+
+logger = logging.getLogger(__name__)
+
+# Import your models
+from .models import (
+    ExamUpload, GradingSettings, GradedAnswer, 
+    DrivePDF, ChunkedText, ExtractedAnswer
+)
+
+# Import your pipeline utilities - make sure these paths match your project structure
+from .drive_utils import download_drive_file, extract_pdf_text, chunk_text
+from .gdrive_utils import fetch_drive_pdfs_and_chunk
+
+# Import your processing modules
+from .drive_processor import process_drive_pdf, process_all_drive_pdfs
+from .file_utils import handle_unsupported_file, get_supported_extension
+
+
+
+# Global variable to store pipeline progress
+pipeline_progress = []
 
 def home(request):
     print("[DEBUG] home view loaded")
@@ -116,20 +187,74 @@ def acc_settings(request):
 
     return render(request, 'acc_settings.html')
 
+
+
+
+
 @login_required
 def grading(request):
-    print("[DEBUG] grading view triggered")
+    """Handle file uploads for grading."""
     if request.method == 'POST':
         files = request.FILES.getlist('files')
-        print("[DEBUG] Files received:", files)
+        
         if files:
             for file in files:
-                print(f"[DEBUG] Saving file: {file.name}")
-                ExamUpload.objects.create(user=request.user, file=file)
+                # Save the uploaded file
+                exam_upload = ExamUpload.objects.create(
+                    user=request.user,
+                    file=file
+                )
+            
+            # Clear any previous extraction data
+            if 'extracted_data' in request.session:
+                del request.session['extracted_data']
+            
+            # Redirect to the OCR extraction page
             return redirect('ocr_extracted')
-        else:
-            print("[DEBUG] No files uploaded")
+    
     return render(request, 'grading.html')
+
+
+
+@login_required
+def direct_pdf_processor(request):
+    """Direct PDF processing page for testing."""
+    error_message = None
+    success_message = None
+    extracted_data = None
+    
+    if request.method == 'POST' and 'pdf_file' in request.FILES:
+        pdf_file = request.FILES['pdf_file']
+        
+        if not pdf_file.name.lower().endswith('.pdf'):
+            error_message = "Please upload a PDF file."
+        else:
+            try:
+                # Initialize the PDF extractor
+                from .pdf_extractor import PDFExtractor
+                extractor = PDFExtractor()
+                
+                # Process the PDF
+                extracted_data = extractor.extract_questions_and_answers(pdf_file)
+                success_message = "PDF processed successfully!"
+                
+                # Store in session
+                request.session['extracted_data'] = extracted_data
+                
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                error_message = f"Error processing PDF: {str(e)}"
+    
+    context = {
+        'error_message': error_message,
+        'success_message': success_message,
+        'extracted_data': extracted_data
+    }
+    
+    return render(request, 'direct_pdf_processor.html', context)
+
+
 
 @login_required
 def grad_settings(request):
@@ -165,15 +290,201 @@ def grad_settings(request):
 
     return render(request, 'grad_settings.html', {'drive_pdfs': drive_pdfs})
 
+
+
+# Add this to your views.py file or update the existing ocr_extracted function
+
+
 @login_required
 def ocr_extracted(request):
-    print("[DEBUG] ocr_extracted view")
-    return render(request, 'ocr_extracted.html')
+    """
+    Improved OCR extraction view with proper JSON handling
+    """
+    import json
+    import traceback
+    
+    logger = logging.getLogger(__name__)
+    logger.info("ocr_extracted view called")
+    
+    try:
+        # Check if we already have extracted data in session
+        logger.info(f"Session extracted_data exists: {bool('extracted_data' in request.session)}")
+        extracted_data = request.session.get("extracted_data")
+        
+        if not extracted_data:
+            # Process the latest uploaded PDF
+            latest_upload = ExamUpload.objects.filter(user=request.user).order_by("-uploaded_at").first()
+            
+            if latest_upload:
+                logger.info(f"Processing latest upload: {latest_upload.file.path}")
+                
+                with open(latest_upload.file.path, "rb") as f:
+                    from django.conf import settings
+                    extractor = PDFExtractor(api_key=settings.GROQ_API_KEY)
+                    extracted_data = extractor.extract_questions_and_answers(f)
+                    
+                    # Store in session
+                    request.session["extracted_data"] = extracted_data
+                    logger.info(f"Extracted {len(extracted_data)} questions")
+            else:
+                logger.warning("No uploaded PDF found")
+                extracted_data = []
+        
+        # Check if extracted data is valid
+        if not extracted_data or not isinstance(extracted_data, list):
+            logger.error("Invalid extracted data format")
+            extracted_data = generate_sample_data()  # Fall back to sample data
+            
+        # Create a dictionary for easier JSON serialization
+        exam_dict = {"extracted_questions": extracted_data}
+        
+        # Serialize to JSON string (use Python's built-in json module)
+        try:
+            json_string = json.dumps(exam_dict)
+            logger.info(f"Successfully serialized exam_dict to JSON: {len(json_string)} characters")
+        except Exception as json_error:
+            logger.error(f"JSON serialization error: {json_error}")
+            json_string = json.dumps({"error": "JSON serialization failed"})
+        
+        # Render the template with both the Python object and JSON string
+        context = {
+            "extracted_data": extracted_data,
+            "extracted_data_json": json_string,
+            "questions_count": len(extracted_data)
+        }
+        
+        logger.info(f"Rendering OCR extracted view with {len(extracted_data)} questions")
+        return render(request, "ocr_extracted.html", context)
+        
+    except Exception as e:
+        logger.error(f"Error in OCR extraction: {e}")
+        logger.error(traceback.format_exc())
+        
+        # Provide empty data in case of error
+        context = {
+            "extracted_data": [],
+            "extracted_data_json": json.dumps({
+                "extracted_questions": [],
+                "error": str(e)
+            }),
+            "error_message": f"Error: {str(e)}"
+        }
+        
+        return render(request, "ocr_extracted.html", context)
+
+
+def generate_sample_data():
+    """Generate comprehensive sample data for the OCR extracted view."""
+    sample_data = []
+    for i in range(1, 6):  # Generate 5 sample questions
+        sample_data.append({
+            "question_no": str(i),
+            "question_statement": f"Sample Question {i}: Describe a key concept in detail.",
+            "complete_answer": f"This is a sample answer for Question {i}, demonstrating a comprehensive response.",
+            "debug_info": "Sample data generated due to extraction failure"
+        })
+    return sample_data
+
+
+
 
 @login_required
 def output(request):
-    print("[DEBUG] output view")
-    return render(request, 'output.html')
+    """
+    Display the final grading output with detailed logging and robust error handling
+    """
+    import json
+    import traceback
+    
+    logger = logging.getLogger(__name__)
+    logger.info("[DEBUG] output view")
+    
+    # Get evaluation data from session with comprehensive handling
+    evaluation_json = request.session.get('evaluation_json')
+    logger.info(f"Output view - evaluation_json from session: {evaluation_json}")
+    
+    # Parse and validate the JSON
+    if evaluation_json:
+        try:
+            # Handle different data types
+            if isinstance(evaluation_json, str):
+                # Parse the JSON string
+                evaluation_data = json.loads(evaluation_json)
+                logger.info(f"[DEBUG] Successfully parsed JSON string, data type: {type(evaluation_data)}")
+            else:
+                # Already a Python object, just use it directly
+                evaluation_data = evaluation_json
+                # Serialize it for the template
+                evaluation_json = json.dumps(evaluation_data)
+                logger.info(f"[DEBUG] Using pre-parsed data, serialized for template")
+            
+            # Validate the structure to ensure it has required fields
+            if 'evaluations' in evaluation_data:
+                logger.info(f"[DEBUG] Found {len(evaluation_data['evaluations'])} evaluations")
+                
+                # Check for score/similarity_percentage field
+                for i, eval_item in enumerate(evaluation_data['evaluations']):
+                    # Ensure the correct score field exists
+                    if 'score' in eval_item and 'similarity_percentage' not in eval_item:
+                        # Keep the existing score field
+                        logger.info(f"[DEBUG] Question {i+1} has score field: {eval_item['score']}")
+                    elif 'similarity_percentage' in eval_item and 'score' not in eval_item:
+                        # Create score field for similarity_percentage
+                        eval_item['score'] = eval_item['similarity_percentage']
+                        logger.info(f"[DEBUG] Question {i+1} copying similarity_percentage to score: {eval_item['score']}")
+                    elif 'score' not in eval_item and 'similarity_percentage' not in eval_item:
+                        # Neither field exists, add default
+                        eval_item['score'] = 0
+                        logger.info(f"[DEBUG] Question {i+1} missing score fields, adding default")
+                
+                # Update the JSON string with possibly modified data
+                evaluation_json = json.dumps(evaluation_data)
+            elif 'total_score' in evaluation_data:
+                logger.info(f"[DEBUG] Found total_score: {evaluation_data['total_score']}")
+            else:
+                logger.warning("[DEBUG] Missing expected structure in evaluation data")
+                
+        except json.JSONDecodeError as e:
+            logger.error(f"[DEBUG] JSON parsing error: {e}")
+            logger.error(traceback.format_exc())
+            evaluation_data = None
+            evaluation_json = json.dumps({
+                "error": f"Invalid JSON data: {str(e)}",
+                "data_sample": str(evaluation_json)[:100] if evaluation_json else "None"
+            })
+        except Exception as e:
+            logger.error(f"[DEBUG] Unexpected error processing evaluation data: {e}")
+            logger.error(traceback.format_exc())
+            evaluation_data = None
+            evaluation_json = json.dumps({
+                "error": f"Error processing evaluation data: {str(e)}"
+            })
+    else:
+        logger.warning("[DEBUG] No evaluation_json found in session")
+        evaluation_data = None
+        evaluation_json = json.dumps({
+            "error": "No evaluation data available",
+            "message": "Please grade an exam first."
+        })
+    
+    # Log final data being sent to template
+    logger.info(f"[DEBUG] Final evaluation_json for template (first 200 chars): {evaluation_json[:200]}...")
+    
+    # Prepare context for template
+    context = {
+        'evaluation_json': evaluation_json,
+        'debug_info': {
+            'has_evaluation_data': evaluation_data is not None,
+            'data_type': type(evaluation_data).__name__ if evaluation_data else 'None',
+            'session_keys': list(request.session.keys()),
+            'evaluation_summary': f"{len(evaluation_data.get('evaluations', []))} questions" if evaluation_data and 'evaluations' in evaluation_data else 'No evaluation data'
+        }
+    }
+    
+    logger.info(f"[DEBUG] Rendering output template with context: {context}")
+    
+    return render(request, 'output.html', context)
+
 
 
 
@@ -200,23 +511,397 @@ def upload_and_chunk_drive_file(request):
     return JsonResponse({'error': 'Invalid method'}, status=400)
 
 
+
 @login_required
-def fetch_drive_pdfs(request):
-    print("[DEBUG] fetch_drive_pdfs view")
+def fetch_drive_pdfs_view(request):
+    if request.method == 'POST':
+        logs = []
+        try:
+            print("[DEBUG] fetch_drive_pdfs_view triggered by:", request.user)
+            logs.append("🚀 Starting fetch process on backend...")
+
+            fetched = fetch_drive_pdfs_and_chunk(request.user, logs)
+
+            print("[DEBUG] Number of PDFChunk objects returned:", len(fetched))
+            files = [{"id": obj.id, "title": obj.title} for obj in fetched]
+
+            print("[DEBUG] JSON files to return:", files)
+            return JsonResponse({
+                "status": "ok",
+                "logs": logs,
+                "files": files
+            })
+
+        except Exception as e:
+            logs.append(f"❌ Unexpected error: {str(e)}")
+            print("[ERROR] Exception in fetch_drive_pdfs_view:", e)
+            return JsonResponse({
+                "status": "error",
+                "logs": logs,
+                "error": str(e)
+            })
+
+
+@login_required
+def process_drive_pipeline(request):
+    """
+    Process all downloaded Drive files for the current user
+    """
+    from .drive_processor import process_all_drive_pdfs
+    
     logs = []
+    
+    def progress_callback(message):
+        logs.append(message)
+    
+    try:
+        # Call the simplified processor that doesn't depend on BLIP
+        results = process_all_drive_pdfs(
+            user=request.user,
+            progress_callback=progress_callback
+        )
+        
+        successful_files = results.get('successful_files', 0)
+        failed_files = results.get('failed_files', [])
+        
+        status = "ok" if successful_files > 0 or results.get('status') == "no_files" else "error"
+        message = f"✅ Completed Drive Processing: {successful_files} files successful, {len(failed_files)} files failed."
+        
+        if failed_files:
+            failed_titles = [f.get('title', 'Unknown') for f in failed_files]
+        else:
+            failed_titles = []
+        
+        return JsonResponse({
+            "status": status,
+            "timestamp": now().strftime("%Y-%m-%d %H:%M:%S"),
+            "message": message,
+            "logs": logs,
+            "success_count": successful_files,
+            "failed_count": len(failed_files),
+            "failed_files": failed_titles
+        })
+        
+    except Exception as e:
+        import traceback
+        error_traceback = traceback.format_exc()
+        logs.append(f"❌ Processing pipeline failed with error: {str(e)}")
+        logs.append(error_traceback)
+        
+        return JsonResponse({
+            "status": "error",
+            "timestamp": now().strftime("%Y-%m-%d %H:%M:%S"),
+            "message": f"Pipeline failed: {str(e)}",
+            "logs": logs,
+            "success_count": 0,
+            "failed_count": 0,
+            "failed_files": []
+        })
+    
+
+@login_required
+def drive_pipeline_page(request):
+    return render(request, 'drive_pipeline.html')
+
+@login_required
+@csrf_exempt
+def start_drive_pipeline(request):
+    global pipeline_progress
+    pipeline_progress = []
+
+    def pipeline_runner(file_ids):
+        from app.drive_pipeline import main as drive_main  # Import here to avoid circular imports
+        try:
+            pipeline_progress.append("🚀 Starting Drive pipeline...")
+
+            drive_main(file_ids=file_ids, progress_callback=lambda msg: pipeline_progress.append(msg))
+
+            pipeline_progress.append("✅ Drive pipeline completed successfully!")
+        except Exception as e:
+            pipeline_progress.append(f"❌ Error: {str(e)}")
 
     try:
-        # Your existing Drive & chunk logic...
-        fetched_files = [...]  # List of filenames
+        # Get the latest DrivePDFs for the user
+        drive_pdfs = DrivePDF.objects.filter(user=request.user)
+        if not drive_pdfs.exists():
+            return JsonResponse({'status': 'error', 'message': 'No Drive PDFs found.'})
 
-        for file in fetched_files:
-            logs.append(f"📁 {file} fetched successfully")
-            logs.append(f"✅ Chunks created for {file}")
+        file_ids = [pdf.drive_file_id for pdf in drive_pdfs]
 
-        return JsonResponse({"status": "ok", "logs": logs})
-    
+        # Run the pipeline in a new thread
+        threading.Thread(target=pipeline_runner, args=(file_ids,)).start()
+
+        return JsonResponse({'status': 'started'})
+
     except Exception as e:
-        logs.append(str(e))
-        return JsonResponse({"status": "error", "error": str(e), "logs": logs})
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+@login_required
+def get_drive_pipeline_progress(request):
+    global pipeline_progress
+    return JsonResponse({'progress': pipeline_progress})
+
+
+
+@login_required
+def get_processed_files(request):
+    """API endpoint to get all processed files"""
+    try:
+        drive_pdfs = DrivePDF.objects.filter(user=request.user)
+        files_data = []
+        
+        for pdf in drive_pdfs:
+            chunk_count = ChunkedText.objects.filter(pdf=pdf).count()
+            files_data.append({
+                'id': pdf.id,
+                'title': pdf.title,
+                'drive_file_id': pdf.drive_file_id,
+                'chunk_count': chunk_count,
+                'uploaded_at': pdf.uploaded_at.strftime('%Y-%m-%d %H:%M')
+            })
+        
+        return JsonResponse({
+            'status': 'success',
+            'files': files_data
+        })
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'error': str(e)
+        }, status=500)
+
+
+
+@login_required
+def get_file_chunks(request):
+    """API endpoint to get chunks for a specific file"""
+    try:
+        file_id = request.GET.get('file_id')
+        if not file_id:
+            return JsonResponse({
+                'status': 'error',
+                'error': 'No file ID provided'
+            }, status=400)
+        
+        # Fetch the DrivePDF object, ensuring it belongs to the current user
+        pdf = get_object_or_404(DrivePDF, id=file_id, user=request.user)
+
+        # Fetch the associated chunks
+        chunks = ChunkedText.objects.filter(pdf=pdf).order_by('order')
+        
+        chunks_data = []
+        for chunk in chunks:
+            chunks_data.append({
+                'id': chunk.id,
+                'order': chunk.order,
+                'content': chunk.content
+            })
+        
+        return JsonResponse({
+            'status': 'success',
+            'file_id': pdf.id,
+            'file_title': pdf.title,
+            'chunks': chunks_data
+        })
+    except Exception as e:
+        logger.error(f"Error fetching chunks for file ID {file_id}: {str(e)}")
+        return JsonResponse({
+            'status': 'error',
+            'error': 'Internal Server Error',
+            'message': str(e)  # Log the error message in the response for debugging
+        }, status=500)
+
+
+
+
+
+
+@login_required
+@csrf_exempt
+def upload_exam(request):
+    """Handle exam paper upload, extract questions and answers."""
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Only POST method allowed'}, status=405)
     
-# comment here
+    if 'file' not in request.FILES:
+        return JsonResponse({'status': 'error', 'message': 'No file uploaded'}, status=400)
+    
+    file = request.FILES['file']
+    
+    # Check if file is a PDF
+    if not file.name.lower().endswith('.pdf'):
+        return JsonResponse({'status': 'error', 'message': 'Only PDF files are supported'}, status=400)
+    
+    try:
+        # Create a temporary path to store the file
+        temp_path = f"temp_exams/{request.user.id}_{file.name}"
+        path = default_storage.save(temp_path, ContentFile(file.read()))
+        
+        # Reset file pointer to start
+        file.seek(0)
+
+
+        # Initialize the extractor
+        groq_api_key = os.environ.get('GROQ_API_KEY')
+        extractor = PDFExtractor(api_key=groq_api_key)
+        
+        # First extract all text
+        text_extraction_result = {
+            'status': 'processing',
+            'message': 'Extracting text from PDF...',
+            'extracted_text': None
+        }
+        
+        # Return initial response for long-running process
+        return JsonResponse(text_extraction_result)
+        
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Error processing PDF: {str(e)}'
+        }, status=500)
+
+
+
+
+@login_required
+def process_exam(request):
+    try:
+        data = json.loads(request.body)
+        file_path = data.get('file_path')
+        
+        if not file_path:
+            return JsonResponse({
+                'status': 'error', 
+                'message': 'No file path provided'
+            }, status=400)
+        
+        # Check file exists and is a PDF
+        if not default_storage.exists(file_path) or not file_path.lower().endswith('.pdf'):
+            return JsonResponse({
+                'status': 'error', 
+                'message': 'Invalid or missing PDF file'
+            }, status=404)
+        
+        with default_storage.open(file_path, 'rb') as f:
+            extractor = PDFExtractor()
+            questions_and_answers = extractor.extract_questions_and_answers(f)
+            
+            if not questions_and_answers:
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': 'Could not extract exam data'
+                }, status=500)
+            
+            return JsonResponse({
+                'status': 'success',
+                'questions_and_answers': questions_and_answers
+            })
+            
+    except Exception as e:
+        logger.exception("Exam processing error")
+        return JsonResponse({
+            'status': 'error', 
+            'message': f'Unexpected error: {str(e)}'
+        }, status=500)
+
+
+
+
+@login_required
+def exam_extraction_status(request, task_id):
+    """Check the status of a long-running PDF extraction task."""
+    # This would be implemented with a task queue like Celery
+    # For now, return a placeholder
+    return JsonResponse({
+        'status': 'completed',
+        'message': 'PDF processing completed',
+        'result': None  # Would contain the actual result
+    })
+
+
+
+
+@login_required
+@csrf_exempt
+def grade_exam(request):
+    """
+    Handle grading of an already extracted exam with robust JSON parsing
+    """
+    logger = logging.getLogger(__name__)
+    logger.info("grade_exam view called")
+
+    # Only allow POST requests
+    if request.method != 'POST':
+        return JsonResponse({
+            'status': 'error', 
+            'error': 'Only POST method allowed'
+        }, status=405)
+
+    try:
+        # Parse request body with robust error handling
+        try:
+            data = json.loads(request.body)
+            extracted_data = data.get('extracted_data', [])
+            
+            # Validate data is in the right format
+            if not isinstance(extracted_data, list):
+                logger.error(f"Invalid data format: {type(extracted_data)}")
+                return JsonResponse({
+                    'status': 'error',
+                    'error': 'Invalid data format'
+                }, status=400)
+                
+            logger.info(f"Received {len(extracted_data)} questions for grading")
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON parsing error: {e}")
+            return JsonResponse({
+                'status': 'error',
+                'error': f'Invalid JSON: {str(e)}'
+            }, status=400)
+
+        # Process grading
+        try:
+            # Import the evaluation function
+            from .utils.evaluator import evaluate_exam
+            
+            # Evaluate the exam
+            evaluation_result = evaluate_exam(extracted_data)
+            
+            # Convert the result to a dictionary
+            if hasattr(evaluation_result, 'model_dump'):
+                result_dict = evaluation_result.model_dump()
+            elif hasattr(evaluation_result, 'dict'):
+                result_dict = evaluation_result.dict()
+            else:
+                result_dict = evaluation_result
+                
+            # Convert to JSON - use Python's json module
+            evaluation_json = json.dumps(result_dict)
+            
+            # Store in session
+            request.session['evaluation_json'] = evaluation_json
+            
+            # Return the result
+            return JsonResponse({
+                'status': 'success',
+                'evaluation_json': evaluation_json,
+                'total_questions': len(extracted_data)
+            })
+            
+        except Exception as e:
+            logger.error(f"Grading error: {e}")
+            logger.error(traceback.format_exc())
+            return JsonResponse({
+                'status': 'error',
+                'error': f'Grading error: {str(e)}'
+            }, status=500)
+            
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        logger.error(traceback.format_exc())
+        return JsonResponse({
+            'status': 'error',
+            'error': f'Server error: {str(e)}'
+        }, status=500)
