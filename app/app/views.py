@@ -12,6 +12,7 @@ from django.db import connection
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import threading
+from .pdf_report_generator import generate_exam_report_pdf, convert_evaluation_to_dict
 import os
 import json
 from django.utils.timezone import now  # helpful for timestamps if needed
@@ -20,14 +21,8 @@ from .drive_utils import download_drive_file, extract_pdf_text, chunk_text
 from .gdrive_utils import fetch_drive_pdfs_and_chunk
 from django.shortcuts import get_object_or_404
 # from .drive_processor import process_drive_pdf as process_drive_pdf_logic
-
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-import json
-import os
 import logging, sys, pathlib
+from django.http import JsonResponse, HttpResponse
 
 # Keep existing pipeline imports
 from .drive_pipeline import (
@@ -295,7 +290,6 @@ def grad_settings(request):
 # Add this to your views.py file or update the existing ocr_extracted function
 
 
-
 @login_required
 def ocr_extracted(request):
     """
@@ -347,8 +341,6 @@ def ocr_extracted(request):
         }
         
         return render(request, "ocr_extracted.html", context)
-
-
 
 # Make a Test Endpoint for Debugging
 
@@ -402,88 +394,51 @@ def generate_sample_data():
 
 
 
-
 @login_required
 def output(request):
     """
-    Display the final grading output with detailed logging and robust error handling
+    Display the final grading output with detailed logging
     """
     import json
-    import traceback
+    import logging
     
     logger = logging.getLogger(__name__)
     logger.info("[DEBUG] output view")
     
-    # Get evaluation data from session with comprehensive handling
+    # Try to get evaluation data from session
     evaluation_json = request.session.get('evaluation_json')
-    logger.info(f"Output view - evaluation_json from session: {evaluation_json}")
     
-    # Parse and validate the JSON
     if evaluation_json:
         try:
-            # Handle different data types
-            if isinstance(evaluation_json, str):
-                # Parse the JSON string
-                evaluation_data = json.loads(evaluation_json)
-                logger.info(f"[DEBUG] Successfully parsed JSON string, data type: {type(evaluation_data)}")
-            else:
-                # Already a Python object, just use it directly
-                evaluation_data = evaluation_json
-                # Serialize it for the template
-                evaluation_json = json.dumps(evaluation_data)
-                logger.info(f"[DEBUG] Using pre-parsed data, serialized for template")
+            # Log the raw evaluation JSON 
+            logger.info(f"[DEBUG] Raw evaluation JSON from session: {evaluation_json}")
             
-            # Validate the structure to ensure it has required fields
-            if 'evaluations' in evaluation_data:
-                logger.info(f"[DEBUG] Found {len(evaluation_data['evaluations'])} evaluations")
-                
-                # Check for score/similarity_percentage field
-                for i, eval_item in enumerate(evaluation_data['evaluations']):
-                    # Ensure the correct score field exists
-                    if 'score' in eval_item and 'similarity_percentage' not in eval_item:
-                        # Keep the existing score field
-                        logger.info(f"[DEBUG] Question {i+1} has score field: {eval_item['score']}")
-                    elif 'similarity_percentage' in eval_item and 'score' not in eval_item:
-                        # Create score field for similarity_percentage
-                        eval_item['score'] = eval_item['similarity_percentage']
-                        logger.info(f"[DEBUG] Question {i+1} copying similarity_percentage to score: {eval_item['score']}")
-                    elif 'score' not in eval_item and 'similarity_percentage' not in eval_item:
-                        # Neither field exists, add default
-                        eval_item['score'] = 0
-                        logger.info(f"[DEBUG] Question {i+1} missing score fields, adding default")
-                
-                # Update the JSON string with possibly modified data
-                evaluation_json = json.dumps(evaluation_data)
-            elif 'total_score' in evaluation_data:
-                logger.info(f"[DEBUG] Found total_score: {evaluation_data['total_score']}")
+            # Try to parse the JSON to validate it
+            if isinstance(evaluation_json, str):
+                evaluation_data = json.loads(evaluation_json)
+                logger.info(f"[DEBUG] Parsed evaluation data: {evaluation_data}")
             else:
-                logger.warning("[DEBUG] Missing expected structure in evaluation data")
-                
+                # If it's already a Python object, just use it directly
+                evaluation_data = evaluation_json
+                # And serialize it for the template
+                evaluation_json = json.dumps(evaluation_data)
+                logger.info(f"[DEBUG] Evaluation data (already parsed): {evaluation_data}")
         except json.JSONDecodeError as e:
-            logger.error(f"[DEBUG] JSON parsing error: {e}")
-            logger.error(traceback.format_exc())
+            logger.error(f"[DEBUG] Error parsing evaluation JSON: {e}")
             evaluation_data = None
-            evaluation_json = json.dumps({
-                "error": f"Invalid JSON data: {str(e)}",
-                "data_sample": str(evaluation_json)[:100] if evaluation_json else "None"
-            })
-        except Exception as e:
-            logger.error(f"[DEBUG] Unexpected error processing evaluation data: {e}")
-            logger.error(traceback.format_exc())
-            evaluation_data = None
-            evaluation_json = json.dumps({
-                "error": f"Error processing evaluation data: {str(e)}"
-            })
     else:
         logger.warning("[DEBUG] No evaluation_json found in session")
         evaluation_data = None
-        evaluation_json = json.dumps({
-            "error": "No evaluation data available",
-            "message": "Please grade an exam first."
-        })
     
-    # Log final data being sent to template
-    logger.info(f"[DEBUG] Final evaluation_json for template (first 200 chars): {evaluation_json[:200]}...")
+    # If no evaluation data in session, create a placeholder
+    if not evaluation_data:
+        logger.warning("[DEBUG] Creating placeholder evaluation data")
+        evaluation_data = {
+            "message": "No evaluation data available. Please grade an exam first.",
+            "score": 0,
+            "detailed_feedback": "No exam has been graded yet."
+        }
+        evaluation_json = json.dumps(evaluation_data)
     
     # Prepare context for template
     context = {
@@ -492,7 +447,6 @@ def output(request):
             'has_evaluation_data': evaluation_data is not None,
             'data_type': type(evaluation_data).__name__ if evaluation_data else 'None',
             'session_keys': list(request.session.keys()),
-            'evaluation_summary': f"{len(evaluation_data.get('evaluations', []))} questions" if evaluation_data and 'evaluations' in evaluation_data else 'No evaluation data'
         }
     }
     
@@ -838,85 +792,136 @@ def exam_extraction_status(request, task_id):
 
 
 
+
 @login_required
 @csrf_exempt
 def grade_exam(request):
     """
-    Handle grading of an already extracted exam with robust JSON parsing
+    Handle grading of an already extracted exam with comprehensive error handling
+    and proper session storage of results
     """
-    logger = logging.getLogger(__name__)
     logger.info("grade_exam view called")
 
     # Only allow POST requests
     if request.method != 'POST':
+        logger.warning(f"Incorrect method used: {request.method}")
         return JsonResponse({
             'status': 'error', 
             'error': 'Only POST method allowed'
         }, status=405)
 
     try:
-        # Parse request body with robust error handling
+        # Parse request body
         try:
             data = json.loads(request.body)
-            extracted_data = data.get('extracted_data', [])
-            
-            # Validate data is in the right format
-            if not isinstance(extracted_data, list):
-                logger.error(f"Invalid data format: {type(extracted_data)}")
-                return JsonResponse({
-                    'status': 'error',
-                    'error': 'Invalid data format'
-                }, status=400)
-                
-            logger.info(f"Received {len(extracted_data)} questions for grading")
-        except json.JSONDecodeError as e:
-            logger.error(f"JSON parsing error: {e}")
+            extracted_data = data.get('extracted_data', {})
+            logger.info(f"[DEBUG] Extracted data received: {json.dumps(extracted_data, indent=2)}")
+        except json.JSONDecodeError:
+            logger.error("Invalid JSON in request body")
             return JsonResponse({
-                'status': 'error',
-                'error': f'Invalid JSON: {str(e)}'
+                'status': 'error', 
+                'error': 'Invalid JSON data'
             }, status=400)
+
+        # Validate extracted data
+        if not extracted_data or not isinstance(extracted_data, list):
+            logger.error("No valid exam data provided")
+            return JsonResponse({
+                'status': 'error', 
+                'error': 'No exam data provided'
+            }, status=400)
+
+        logger.info(f"Received {len(extracted_data)} questions for grading")
 
         # Process grading
         try:
-            # Import the evaluation function
-            from .utils.evaluator import evaluate_exam
-            
-            # Evaluate the exam
+            # Attempt to evaluate the exam
             evaluation_result = evaluate_exam(extracted_data)
+            logger.info(f"[DEBUG] Evaluation result: {evaluation_result}")
+
+            # Convert to dictionary 
+            model_data = convert_evaluation_to_dict(evaluation_result)
             
-            # Convert the result to a dictionary
-            if hasattr(evaluation_result, 'model_dump'):
-                result_dict = evaluation_result.model_dump()
-            elif hasattr(evaluation_result, 'dict'):
-                result_dict = evaluation_result.dict()
-            else:
-                result_dict = evaluation_result
-                
-            # Convert to JSON - use Python's json module
-            evaluation_json = json.dumps(result_dict)
+            # Manually convert to JSON string
+            evaluation_json = json.dumps(model_data, indent=2)
             
-            # Store in session
+            # IMPORTANT: Store evaluation data in the session for the output view
             request.session['evaluation_json'] = evaluation_json
-            
-            # Return the result
-            return JsonResponse({
+            logger.info(f"[DEBUG] Stored evaluation_json in session: {evaluation_json}")
+
+            # Create response data
+            response_data = {
                 'status': 'success',
                 'evaluation_json': evaluation_json,
                 'total_questions': len(extracted_data)
-            })
+            }
             
-        except Exception as e:
-            logger.error(f"Grading error: {e}")
-            logger.error(traceback.format_exc())
+            logger.info(f"[DEBUG] Response data being sent to frontend: {response_data}")
+
+            return JsonResponse(response_data)
+
+        except ImportError:
+            logger.error("Evaluator module not found")
             return JsonResponse({
                 'status': 'error',
-                'error': f'Grading error: {str(e)}'
+                'error': 'Grading module not configured'
             }, status=500)
-            
+
+        except Exception as grading_error:
+            # Log error and traceback
+            logger.error(f"Grading failed: {grading_error}")
+            logger.error(traceback.format_exc())
+
+            return JsonResponse({
+                'status': 'error',
+                'error': f"Grading process failed: {str(grading_error)}",
+                'traceback': traceback.format_exc()  # Include full traceback for debugging
+            }, status=500)
+
+    except Exception as final_error:
+        # Ultimate catch-all for any unexpected errors
+        logger.critical(f"Catastrophic error in exam grading: {final_error}")
+        logger.critical(traceback.format_exc())
+
+        return JsonResponse({
+            'status': 'error', 
+            'error': 'Unexpected error during exam processing',
+            'details': str(final_error),
+            'traceback': traceback.format_exc()  # Capture and return full traceback
+        }, status=500)
+    
+
+
+
+
+@login_required
+def download_report_pdf(request):
+    """
+    Generate and download a PDF report of the exam evaluation
+    """
+    try:
+        # Get evaluation data from session
+        evaluation_json = request.session.get('evaluation_json')
+        
+        if not evaluation_json:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'No evaluation data found. Please grade an exam first.'
+            }, status=400)
+        
+        # Parse the evaluation data
+        if isinstance(evaluation_json, str):
+            evaluation_data = json.loads(evaluation_json)
+        else:
+            evaluation_data = evaluation_json
+        
+        # Generate the PDF report
+        response = generate_exam_report_pdf(evaluation_data)
+        return response
+        
     except Exception as e:
-        logger.error(f"Unexpected error: {e}")
-        logger.error(traceback.format_exc())
+        logger.error(f"Error generating PDF report: {e}")
         return JsonResponse({
             'status': 'error',
-            'error': f'Server error: {str(e)}'
+            'message': f'Error generating PDF report: {str(e)}'
         }, status=500)

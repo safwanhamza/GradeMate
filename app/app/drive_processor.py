@@ -224,89 +224,59 @@ def process_document_simple(path: str, output_figures_path: Optional[str] = None
 
 def create_chroma_db(chunks, embedding_model, persist_directory=None, progress_callback=None):
     """
-    Create a Chroma vector store from chunks.
-    
-    Args:
-        chunks: List of Document objects to store
-        embedding_model: The embedding model to use
-        persist_directory: Directory to persist the Chroma DB (optional)
-        progress_callback: Callback function for progress updates
-    
-    Returns:
-        tuple: (success, vector_store_or_error_message)
+    Create or load a Chroma vector store from chunks.
     """
     try:
         from langchain_community.vectorstores import Chroma
-        import shutil
-        
-        # Define the Chroma DB path if not provided
+        import os
+
         if not persist_directory:
             persist_directory = os.path.join(os.getcwd(), "chroma_db")
         
-        logger.info(f"Creating Chroma DB at {persist_directory} with {len(chunks)} chunks")
+        logger.info(f"Preparing Chroma DB at {persist_directory}")
+
+        # Check if DB already exists
+        existing_db = os.path.exists(os.path.join(persist_directory, "chroma.sqlite3"))
         
-        # Verify embedding model is working
-        embedding_test_success = verify_embedding_model(embedding_model)
-        if not embedding_test_success:
-            error_msg = "Embedding model test failed, aborting Chroma DB creation"
-            logger.error(error_msg)
+        if existing_db:
+            logger.info(f"✅ Existing Chroma DB found at {persist_directory}, loading it...")
             if progress_callback:
-                progress_callback(f"❌ {error_msg}")
-            return False, error_msg
-        
-        # Remove existing DB if it exists
-        if os.path.exists(persist_directory):
-            logger.info(f"Removing existing Chroma DB at {persist_directory}")
-            if progress_callback:
-                progress_callback(f"🗑️ Removing existing Chroma DB at {persist_directory}")
-            shutil.rmtree(persist_directory)
-        
-        # Create directory if it doesn't exist
-        os.makedirs(persist_directory, exist_ok=True)
-        
-        # Create new DB
-        logger.info(f"Creating new Chroma DB with {len(chunks)} chunks")
-        if progress_callback:
-            progress_callback(f"📥 Creating new Chroma DB with {len(chunks)} chunks")
-        
-        start_time = time.time()
-        vector_store = Chroma.from_documents(
-            documents=chunks,
-            embedding=embedding_model,
-            persist_directory=persist_directory
-        )
-        
-        # Make sure to persist the DB
-        vector_store.persist()
-        end_time = time.time()
-        
-        logger.info(f"✅ Successfully created Chroma DB in {end_time - start_time:.2f} seconds")
-        
-        # Verify the DB was created properly with a test query
-        try:
-            logger.info(f"Verifying DB contents with test query...")
-            results = vector_store.similarity_search("test query", k=1)
-            logger.info(f"Verification query returned {len(results)} results")
+                progress_callback(f"✅ Loaded existing Chroma DB")
             
+            # Just load the existing DB
+            vector_store = Chroma(
+                persist_directory=persist_directory,
+                embedding_function=embedding_model
+            )
+            return True, vector_store
+        
+        else:
+            logger.info(f"📥 No existing DB, creating a new Chroma DB with {len(chunks)} chunks")
             if progress_callback:
-                progress_callback(f"✅ Successfully created and verified Chroma DB with {len(chunks)} chunks")
+                progress_callback(f"📥 Creating new Chroma DB with {len(chunks)} chunks")
+
+            start_time = time.time()
+            vector_store = Chroma.from_documents(
+                documents=chunks,
+                embedding=embedding_model,
+                persist_directory=persist_directory
+            )
+            vector_store.persist()
+            end_time = time.time()
+
+            logger.info(f"✅ Successfully created Chroma DB in {end_time - start_time:.2f} seconds")
+            if progress_callback:
+                progress_callback(f"✅ Chroma DB created with {len(chunks)} chunks")
             
             return True, vector_store
-        except Exception as e:
-            error_msg = f"DB verification failed: {str(e)}"
-            logger.error(error_msg)
-            if progress_callback:
-                progress_callback(f"⚠️ {error_msg}")
-            return False, error_msg
-        
+
     except Exception as e:
-        error_msg = f"Error creating Chroma DB: {str(e)}"
+        error_msg = f"Error creating or loading Chroma DB: {str(e)}"
         logger.exception(error_msg)
         if progress_callback:
             progress_callback(f"❌ {error_msg}")
-        import traceback
-        logger.error(traceback.format_exc())
         return False, str(e)
+
 
 def process_drive_pdf(drive_pdf: DrivePDF, embedding_model=None, force_reprocess=False, direct_to_chroma=False) -> Dict[str, Any]:
     """

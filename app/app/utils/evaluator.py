@@ -3,17 +3,19 @@
 import os
 import json
 import logging
-import re  # Add re module for regex
-from typing import List, Dict, Any, Tuple
+import re  # For regex
+from typing import List, Dict, Any, Tuple, Union
+import traceback
 
 # Use the latest Pydantic import
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 from langchain_core.prompts import PromptTemplate
-from langchain_core.output_parsers import PydanticOutputParser  # Remove OutputParsingException
+from langchain_core.output_parsers import PydanticOutputParser
 from langchain_groq import ChatGroq
 from langchain_nomic.embeddings import NomicEmbeddings
 from langchain_community.vectorstores import Chroma
+
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -30,6 +32,15 @@ class QuestionEvaluation(BaseModel):
         description="Concise feedback explaining the similarity score, highlighting correct and incorrect aspects",
         max_length=500
     )
+    question_statement: str = Field(default="", description="The original question text")
+    complete_answer: str = Field(default="", description="The student's answer")
+    
+    # Add validator to ensure question_no is always a string
+    @validator('question_no', pre=True)
+    def ensure_question_no_is_string(cls, v):
+        if v is None:
+            return "Unknown"
+        return str(v)  # Convert any type to string
 
 
 class ExamEvaluationReport(BaseModel):
@@ -42,7 +53,7 @@ class ExamEvaluationReport(BaseModel):
     )
     overall_feedback: str = Field(
         description="General feedback about the entire exam performance",
-        max_length=500
+        max_length=1000
     )
 
 def truncate_feedback(feedback, max_length=500):
@@ -59,6 +70,65 @@ def truncate_feedback(feedback, max_length=500):
     
     # If no good truncation point, just truncate and add ellipsis
     return feedback[:max_length-3] + "..."
+
+def generate_summary_feedback(evaluations: List[QuestionEvaluation]) -> str:
+    """Generate comprehensive summary feedback based on evaluation results."""
+    if not evaluations:
+        return "No evaluations provided."
+    
+    # Calculate stats
+    scores = [eval.score for eval in evaluations]
+    avg_score = sum(scores) / len(scores)
+    max_score = max(scores)
+    min_score = min(scores)
+    
+    # Count by performance category
+    excellent = sum(1 for s in scores if s >= 80)
+    good = sum(1 for s in scores if 60 <= s < 80)
+    needs_improvement = sum(1 for s in scores if s < 60)
+    
+    # Identify strong and weak areas
+    strong_questions = [e.question_no for e in evaluations if e.score >= 75]
+    weak_questions = [e.question_no for e in evaluations if e.score < 50]
+    
+    # Generate main assessment based on overall score
+    if avg_score >= 85:
+        assessment = "You demonstrated outstanding understanding of the subject matter."
+    elif avg_score >= 75:
+        assessment = "You showed excellent comprehension of most concepts."
+    elif avg_score >= 60:
+        assessment = "You demonstrated good understanding of core concepts with some areas needing improvement."
+    elif avg_score >= 50:
+        assessment = "You have a basic grasp of the material but need to strengthen your understanding in several areas."
+    else:
+        assessment = "You need to focus on building stronger understanding of the fundamental concepts."
+    
+    # Construct detailed feedback
+    feedback = f"{assessment}\n\n"
+    
+    # Highlight strengths and weaknesses
+    if strong_questions:
+        feedback += f"Strengths: You performed well on question(s) {', '.join(strong_questions)}. "
+        feedback += "Continue to build on these areas of strength.\n\n"
+    
+    if weak_questions:
+        feedback += f"Areas for improvement: Focus on strengthening your understanding of concepts in question(s) {', '.join(weak_questions)}.\n\n"
+    
+    # Add specific recommendations
+    feedback += "Recommendations:\n"
+    
+    if needs_improvement > 0:
+        feedback += "1. Review the core concepts for questions where you scored below 60%.\n"
+    
+    if good + needs_improvement > len(evaluations) / 2:
+        feedback += "2. Practice more problems to reinforce your understanding of the material.\n"
+    
+    feedback += f"3. Pay special attention to questions {', '.join(weak_questions) if weak_questions else 'with lower scores'} when preparing for future exams.\n"
+    
+    if avg_score < 60:
+        feedback += "4. Consider seeking additional help through tutoring or study groups.\n"
+    
+    return feedback
 
 class LangchainExamEvaluator:
     def __init__(
@@ -78,12 +148,15 @@ class LangchainExamEvaluator:
             embedding_model_path (str, optional): Path to Chroma vector store
         """
         # Comprehensive API key retrieval
-        from django.conf import settings
-        self.api_key = (
-            api_key or 
-            os.environ.get('GROQ_API_KEY') or 
-            getattr(settings, 'GROQ_API_KEY', None)
-        )
+        try:
+            from django.conf import settings
+            self.api_key = (
+                api_key or 
+                os.environ.get('GROQ_API_KEY') or 
+                getattr(settings, 'GROQ_API_KEY', None)
+            )
+        except ImportError:
+            self.api_key = api_key or os.environ.get('GROQ_API_KEY')
         
         if not self.api_key:
             raise ValueError("Groq API key is required. Set it in environment variables or Django settings.")
@@ -128,11 +201,15 @@ input_variables=[
         )
         
         # Initialize LLM
-        self.llm = ChatGroq(
-            temperature=temperature, 
-            model_name=model, 
-            api_key=self.api_key
-        )
+        try:
+            self.llm = ChatGroq(
+                temperature=temperature, 
+                model_name=model, 
+                api_key=self.api_key
+            )
+        except Exception as e:
+            logger.error(f"Failed to initialize LLM: {e}")
+            self.llm = None
         
         # Setup vector store (optional)
         try:
@@ -144,17 +221,24 @@ input_variables=[
             logger.warning(f"Could not load vector store: {e}")
             self.vector_store = None
 
-
-
     def grade_question(self, question_no, question_statement, complete_answer) -> QuestionEvaluation:
         try:
+            # Ensure question_no is string
+            question_no = str(question_no)
+            
             # Handle "No answer provided" case
             if not complete_answer or complete_answer.strip().lower() in ["no answer provided", "no clear answer provided"]:
                 return QuestionEvaluation(
                     question_no=question_no,
                     score=0,
-                    feedback="No answer was provided for this question."
+                    feedback="No answer was provided for this question.",
+                    question_statement=question_statement,
+                    complete_answer=complete_answer
                 )
+            
+            # If LLM is not available, use fallback
+            if not self.llm:
+                return self._fallback_grading(question_no, question_statement, complete_answer)
             
             # Modify the prompt to more explicitly require JSON format
             prompt_template = """You are an expert academic grader. Evaluate this answer:
@@ -210,7 +294,9 @@ input_variables=[
                     result = QuestionEvaluation(
                         question_no=result_dict.get('question_no', question_no),
                         score=result_dict.get('score', 30),
-                        feedback=truncate_feedback(result_dict.get('feedback', "No specific feedback provided."), 500)
+                        feedback=truncate_feedback(result_dict.get('feedback', "No specific feedback provided."), 500),
+                        question_statement=question_statement,
+                        complete_answer=complete_answer
                     )
                     return result
                 
@@ -248,7 +334,9 @@ input_variables=[
                 return QuestionEvaluation(
                     question_no=question_no,
                     score=score,
-                    feedback=feedback_text
+                    feedback=feedback_text,
+                    question_statement=question_statement,
+                    complete_answer=complete_answer
                 )
                     
             except Exception as json_err:
@@ -256,52 +344,81 @@ input_variables=[
                 logger.error(f"Raw response: {content[:500]}...")
                 
                 # Create a fallback evaluation with information extracted from text
-                # Look for numeric values that might represent scores
-                score = 30  # Default score
-                
-                # Try to extract a score from the text
-                score_patterns = [
-                    r'score[^\d]*(\d+)',
-                    r'(\d+)[^\d]*points',
-                    r'grade[^\d]*(\d+)',
-                    r'(\d+)[^\d]*percent',
-                    r'(\d+)[^\d]*%',
-                    r'(\d+)[^\d]*/[^\d]*100'
-                ]
-                
-                for pattern in score_patterns:
-                    match = re.search(pattern, content, re.IGNORECASE)
-                    if match:
-                        try:
-                            score = int(match.group(1))
-                            if 0 <= score <= 100:  # Validate score range
-                                break
-                        except ValueError:
-                            continue
-                
-                # Try to extract meaningful feedback
-                # Just take the first couple of sentences that aren't obviously system text
-                sentences = re.split(r'(?<=[.!?])\s+', content)
-                filtered_sentences = [s for s in sentences if len(s) > 15 and "<" not in s and "```" not in s]
-                feedback = " ".join(filtered_sentences[:2])[:200] if filtered_sentences else "Processing error occurred."
-                
-                return QuestionEvaluation(
-                    question_no=question_no,
-                    score=score,
-                    feedback=feedback
-                )
+                return self._extract_evaluation_from_text(question_no, question_statement, complete_answer, content)
             
         except Exception as e:
             logger.error(f"Error grading question {question_no}: {e}")
+            logger.error(traceback.format_exc())
             # Fallback evaluation
             return QuestionEvaluation(
-                question_no=question_no,
+                question_no=str(question_no),
                 score=30,
-                feedback="Unable to grade due to processing error."
+                feedback="Unable to grade due to processing error. Please review manually.",
+                question_statement=question_statement,
+                complete_answer=complete_answer
             )
-
-
-
+    
+    def _extract_evaluation_from_text(self, question_no, question_statement, complete_answer, content):
+        """Extract evaluation information from unstructured text"""
+        # Try to extract a score from the text
+        score = 30  # Default score
+        
+        score_patterns = [
+            r'score[^\d]*(\d+)',
+            r'(\d+)[^\d]*points',
+            r'grade[^\d]*(\d+)',
+            r'(\d+)[^\d]*percent',
+            r'(\d+)[^\d]*%',
+            r'(\d+)[^\d]*/[^\d]*100'
+        ]
+        
+        for pattern in score_patterns:
+            match = re.search(pattern, content, re.IGNORECASE)
+            if match:
+                try:
+                    score = int(match.group(1))
+                    if 0 <= score <= 100:  # Validate score range
+                        break
+                except ValueError:
+                    continue
+        
+        # Try to extract meaningful feedback
+        # Just take the first couple of sentences that aren't obviously system text
+        sentences = re.split(r'(?<=[.!?])\s+', content)
+        filtered_sentences = [s for s in sentences if len(s) > 15 and "<" not in s and "```" not in s]
+        feedback = " ".join(filtered_sentences[:2])[:200] if filtered_sentences else "Processing error occurred."
+        
+        return QuestionEvaluation(
+            question_no=str(question_no),
+            score=score,
+            feedback=feedback,
+            question_statement=question_statement,
+            complete_answer=complete_answer
+        )
+    
+    def _fallback_grading(self, question_no, question_statement, complete_answer):
+        """Simple fallback grading when LLM is not available"""
+        # Simple scoring based on answer presence and length
+        if not complete_answer or complete_answer == "No answer provided" or complete_answer == "No clear answer provided":
+            score = 0
+            feedback = "No answer provided by the student to assess."
+        elif len(complete_answer) < 20:
+            score = 30
+            feedback = "Very brief answer that lacks detail and explanation."
+        elif len(complete_answer) < 50:
+            score = 60
+            feedback = "Basic answer with limited explanation. Could be more detailed."
+        else:
+            score = 80
+            feedback = "Good answer with adequate detail and explanation."
+        
+        return QuestionEvaluation(
+            question_no=str(question_no),
+            score=score,
+            feedback=feedback,
+            question_statement=question_statement,
+            complete_answer=complete_answer
+        )
 
     def evaluate_exam(self, extracted_data: List[Dict[str, Any]]) -> ExamEvaluationReport:
         """
@@ -316,12 +433,11 @@ input_variables=[
         logger.info(f"Starting exam evaluation for {len(extracted_data)} questions")
         
         question_evaluations = []
-        total_score = 0
         
         for question_data in extracted_data:
             try:
                 # Extract necessary fields with robust handling
-                question_no = question_data.get("question_no", "Unknown")
+                question_no = str(question_data.get("question_no", "Unknown"))
                 question_statement = question_data.get("question_statement", "")
                 complete_answer = question_data.get("complete_answer", "No answer provided")
                 
@@ -338,36 +454,29 @@ input_variables=[
                 )
                 
                 question_evaluations.append(question_eval)
-                total_score += question_eval.score
+                logger.info(f"Evaluated question {question_no}: score={question_eval.score}")
             
             except Exception as e:
-                logger.error(f"Error processing question {question_no}: {e}")
+                logger.error(f"Error processing question {question_data.get('question_no', 'unknown')}: {e}")
+                logger.error(traceback.format_exc())
                 # Add a default evaluation if processing fails
                 question_evaluations.append(
                     QuestionEvaluation(
-                        question_no=question_no,
+                        question_no=str(question_data.get("question_no", "Unknown")),
                         score=30,
-                        feedback="Unable to grade due to processing error."
+                        feedback="Unable to grade due to processing error. Please review manually.",
+                        question_statement=question_data.get("question_statement", ""),
+                        complete_answer=question_data.get("complete_answer", "")
                     )
                 )
         
-        # Calculate overall exam score and feedback
+        # Calculate total score
+        total_score = 0
         if question_evaluations:
-            total_score = total_score // len(question_evaluations)
-        else:
-            total_score = 0
+            total_score = sum(q.score for q in question_evaluations) // len(question_evaluations)
         
-        # Generate overall feedback based on total score
-        if total_score >= 90:
-            overall_feedback = "Outstanding performance! Demonstrates exceptional understanding and mastery of the subject matter."
-        elif total_score >= 80:
-            overall_feedback = "Excellent exam performance. Shows strong comprehension of key concepts with minimal errors."
-        elif total_score >= 70:
-            overall_feedback = "Good performance. Demonstrates solid understanding with room for improvement in some areas."
-        elif total_score >= 60:
-            overall_feedback = "Satisfactory performance. Basic understanding achieved, but significant improvement needed."
-        else:
-            overall_feedback = "Performance requires substantial improvement. Recommend comprehensive review of course materials and seeking additional support."
+        # Generate comprehensive feedback
+        overall_feedback = generate_summary_feedback(question_evaluations)
         
         # Create and return the comprehensive exam report
         exam_report = ExamEvaluationReport(
@@ -399,6 +508,7 @@ def evaluate_exam(extracted_data: List[Dict[str, Any]]) -> ExamEvaluationReport:
 
     except Exception as e:
         logger.error(f"Comprehensive exam evaluation failed: {e}")
+        logger.error(traceback.format_exc())
         # Fallback report in case of catastrophic failure
         return ExamEvaluationReport(
             evaluations=[],

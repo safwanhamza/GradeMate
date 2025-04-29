@@ -1,3 +1,4 @@
+<!--base.html-->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -65,9 +66,11 @@
 <body>
     <!-- Navigation Bar -->
     <div class="navbar">
-        <a href="{% url 'home' %}" class="navbar-logo">GradeMate</a>
-        <a href="{% url 'login_signup' %}" class="navbar-btn" style="text-decoration: none;">Get Started →</a>
+        {% if request.path != '/grad-settings/' %}
+            <a href="{% url 'some_start_url' %}" class="btn-get-started" style="background: green; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold;">Get Started →</a>
+        {% endif %}
     </div>
+    
 
     <!-- Main Content Block -->
     <main>

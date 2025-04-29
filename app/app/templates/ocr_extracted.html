@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OCR Extracted Answers</title>
+    <!-- Add MathJax for rendering mathematical notation -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         body { 
             font-family: Arial, sans-serif; 
@@ -181,6 +184,19 @@
         .mt-4 {
             margin-top: 1.5rem;
         }
+        /* Styles for multi-part questions */
+        .question-part {
+            border-left: 3px solid #0d6efd;
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+        .question-part h5 {
+            margin-top: 0;
+            color: #0d6efd;
+        }
+        .math-notation {
+            font-family: "Computer Modern", serif;
+        }
     </style>
 </head>
 <body>
@@ -196,24 +212,12 @@
         <div class="card">
             <div class="card-body">
                 {% if extracted_data %}
-                    <div>
-                        {% for question in extracted_data %}
-                        <div class="card mb-3">
-                            <div class="card-header">
-                                Question {{ question.question_no }}
-                            </div>
-                            <div class="card-body">
-                                <h5>Question:</h5>
-                                <p>{{ question.question_statement }}</p>
-                                
-                                <h5>Student's Answer:</h5>
-                                <p>{{ question.complete_answer|linebreaks }}</p>
-                            </div>
-                        </div>
-                        {% endfor %}
+                    <div id="questions-container">
+                        <!-- Questions will be rendered here by JavaScript -->
+                        <div class="text-center p-3">Loading questions...</div>
                     </div>
                     
-                    <button class="collapsible">Show JSON Data</button>
+                    <button class="collapsible mt-4">Show JSON Data</button>
                     <div class="collapsible-content">
                         <div style="padding: 0 18px;">
                             <pre id="json-display">Loading JSON data...</pre>
@@ -338,7 +342,107 @@
                 return '<span class="' + cls + '">' + match + '</span>';
             });
         }
-    
+        
+        // Check if question is a multi-part question
+        function isMultiPartQuestion(questionText) {
+            // Regular expressions to match common multi-part question patterns
+            const patterns = [
+                /\d+\.\s*[\w\s]+\s*\d+\./i, // "1. Question text 2."
+                /part\s+[a-z\d]/i, // "Part A" or "part 1"
+                /\([a-z\d]\)/i,    // "(a)" or "(1)"
+                /\d+\.\s*[a-zA-Z]/i, // "1. Something"
+                /^[\da-z][\.\)]\s+/m, // Line starting with "a." or "1)"
+                /^\s*[-–•]\s+/m,  // List items
+                /\b(i{1,3}|iv|v|vi|vii|viii|ix|x|xi|xii)\b[\.:\)]/i // Roman numerals
+            ];
+            
+            // Check each pattern
+            return patterns.some(pattern => pattern.test(questionText));
+        }
+
+        // Parse multi-part question into separate parts
+        function parseMultiPartQuestion(questionText) {
+            // Try to split by numbered points (e.g., "1. ... 2. ... 3. ...")
+            const numberedMatch = questionText.match(/\d+\.\s*[\w\s]+(?=\s+\d+\.|\s*$)/g);
+            if (numberedMatch && numberedMatch.length > 1) {
+                return numberedMatch.map(part => part.trim());
+            }
+            
+            // Try to split by lettered parts (e.g., "(a) ... (b) ... (c) ...")
+            const letteredMatch = questionText.match(/\([a-z]\)\s*[\w\s]+(?=\s+\([a-z]\)|\s*$)/gi);
+            if (letteredMatch && letteredMatch.length > 1) {
+                return letteredMatch.map(part => part.trim());
+            }
+            
+            // Try to split by list items
+            const listMatch = questionText.match(/(?:^|\n)\s*[-–•]\s+[\w\s]+(?=\s*\n\s*[-–•]|\s*$)/g);
+            if (listMatch && listMatch.length > 1) {
+                return listMatch.map(part => part.trim());
+            }
+            
+            // If no patterns match or only one part found, return the original text
+            return [questionText];
+        }
+
+        // Prepare LaTeX math notation for MathJax
+        function prepareMathNotation(text) {
+            if (!text) return '';
+            
+            // Handle common math notation patterns
+            let processed = text
+
+            // Replace overbar notation like \overline{x} or ¯{x}
+            .replace(/\\overline\{([^}]+)\}/g, '\\overline{$1}')
+            .replace(/\u00AF\{([^}]+)\}/g, '\\overline{$1}')
+            
+            // Replace subscripts like x_{10} or x_10
+            .replace(/\_\{([^}]+)\}/g, '_{$1}')
+            
+            // Replace superscripts like x^{2} or x^2
+            .replace(/\^\{([^}]+)\}/g, '^{$1}')
+            
+            // Replace XOR symbol with \oplus
+            .replace(/⊕/g, '\\oplus')
+            .replace(/⊜/g, '\\oplus') // Sometimes displayed differently
+            
+            // Replace 'and' dot with \cdot
+            .replace(/·/g, '\\cdot')
+            
+            // Replace negation with \neg
+            .replace(/¬/g, '\\neg')
+            
+            // Replace greek letters
+            .replace(/Π/g, '\\Pi')
+            .replace(/Σ/g, '\\Sigma')
+            
+            // Wrap math expressions in $...$ for MathJax inline math mode
+            .replace(/\$([^$]+)\$/g, '$$$1$$'); // Already has $ delimiters
+            
+            // Look for common math patterns not already in delimiters
+            const mathPatterns = [
+                /\([^)]*\\overline\{[^}]+\}[^)]*\)/g,     // (expression with \overline)
+                /\([^)]*[_^]\{[^}]+\}[^)]*\)/g,           // (expression with subscripts or superscripts)
+                /\b[a-zA-Z]+_\d+\b/g,                      // subscripts like x_2
+                /\b[a-zA-Z]+\^\d+\b/g,                     // superscripts like x^2
+                /\([^)]*\\[a-zA-Z]+[^)]*\)/g,              // (expression with \commands)
+                /\[[^]]*\\[a-zA-Z]+[^]]*\]/g,              // [expression with \commands]
+                /\([^)]*\d+[_^]\{[^}]+\}[^)]*\)/g,         // numbers with sub/superscripts in parentheses
+                /\[x,y,z\]/g,                               // coordinate notation
+                /\\[a-zA-Z]+\{[^}]+\}/g                    // Any LaTeX command
+            ];
+            
+            // Find all math expressions that aren't already in delimiters
+            for (const pattern of mathPatterns) {
+                processed = processed.replace(pattern, match => {
+                    // Check if already in $ delimiters
+                    if (match.startsWith('$') && match.endsWith('$')) return match;
+                    return `$${match}$`;
+                });
+            }
+            
+            return processed;
+        }
+        
         // Get extracted data from the script tag
         function getExtractedData() {
             try {
@@ -357,12 +461,15 @@
                     length: Array.isArray(data) ? data.length : 'N/A'
                 });
                 
+                // Process and enhance the extracted questions
+                let questions = Array.isArray(data) ? data : [];
+                
+                // Process each question to handle multi-part questions
+                questions = processQuestions(questions);
+                
                 // Ensure we have data in proper format
-                if (Array.isArray(data) && data.length > 0) {
-                    return { extracted_questions: data };
-                } else if (data && typeof data === 'object') {
-                    // If it's already in expected format
-                    return data;
+                if (questions.length > 0) {
+                    return { extracted_questions: questions };
                 } else {
                     throw new Error('Invalid data structure');
                 }
@@ -394,7 +501,10 @@
                         debugLog('Successfully extracted data from DOM', { 
                             count: questions.length 
                         });
-                        return { extracted_questions: questions };
+                        
+                        // Process questions to handle multi-part questions
+                        const processedQuestions = processQuestions(questions);
+                        return { extracted_questions: processedQuestions };
                     }
                 } catch (domError) {
                     debugLog('Error extracting data from DOM', domError.message);
@@ -402,6 +512,100 @@
                 
                 return null;
             }
+        }
+        
+        // Process questions to handle multi-part questions
+        function processQuestions(questions) {
+            const processedQuestions = [];
+            
+            questions.forEach(question => {
+                // Check if this is a multi-part question
+                if (isMultiPartQuestion(question.question_statement)) {
+                    debugLog('Detected multi-part question', question.question_no);
+                    
+                    // Try to extract the common prefix before the numbered parts
+                    let prefix = '';
+                    const prefixMatch = question.question_statement.match(/^(.*?)(?=\d+\.|$)/s);
+                    if (prefixMatch && prefixMatch[1].trim()) {
+                        prefix = prefixMatch[1].trim();
+                    }
+                    
+                    // Parse the multi-part question
+                    const parts = parseMultiPartQuestion(question.question_statement);
+                    
+                    // If we could extract parts, use them
+                    if (parts.length > 1) {
+                        debugLog(`Split into ${parts.length} parts`, parts);
+                        
+                        // Also split the answer if possible
+                        const answerParts = [];
+                        if (question.complete_answer && question.complete_answer !== "No answer provided") {
+                            // Try to match the parts format in the answer
+                            const patterns = [
+                                /\d+\.\s*[^\d]+(?=\s+\d+\.|\s*$)/g, // "1. Answer text 2."
+                                /\([a-z]\)\s*[^(]+(?=\s+\([a-z]\)|\s*$)/gi, // "(a) Answer text (b)"
+                                /(?:^|\n)\s*[-–•]\s+[^-–•]+(?=\s*\n\s*[-–•]|\s*$)/g, // List items
+                            ];
+                            
+                            let matchedAnswerParts = null;
+                            for (const pattern of patterns) {
+                                const match = question.complete_answer.match(pattern);
+                                if (match && match.length > 0) {
+                                    matchedAnswerParts = match;
+                                    break;
+                                }
+                            }
+                            
+                            if (matchedAnswerParts && matchedAnswerParts.length === parts.length) {
+                                matchedAnswerParts.forEach(part => answerParts.push(part.trim()));
+                            } else {
+                                // Split answer by proportional length if we couldn't match patterns
+                                const totalLength = question.complete_answer.length;
+                                const partLength = Math.ceil(totalLength / parts.length);
+                                
+                                for (let i = 0; i < parts.length; i++) {
+                                    const start = i * partLength;
+                                    const end = Math.min(start + partLength, totalLength);
+                                    answerParts.push(question.complete_answer.substring(start, end).trim());
+                                }
+                            }
+                        } else {
+                            // If no answer, create empty answers for each part
+                            parts.forEach(() => answerParts.push("No answer provided"));
+                        }
+                        
+                        // Create separate question objects for each part
+                        parts.forEach((part, index) => {
+                            const partNumber = `${question.question_no}${String.fromCharCode(97 + index)}`; // a, b, c...
+                            
+                            processedQuestions.push({
+                                question_no: partNumber,
+                                question_statement: prefix ? `${prefix} ${part}` : part,
+                                complete_answer: answerParts[index] || "No answer provided",
+                                is_part: true,
+                                parent_question: question.question_no,
+                                part_index: index
+                            });
+                        });
+                    } else {
+                        // If we couldn't extract parts, use the original question
+                        processedQuestions.push({
+                            ...question,
+                            question_statement: prepareMathNotation(question.question_statement),
+                            complete_answer: prepareMathNotation(question.complete_answer)
+                        });
+                    }
+                } else {
+                    // Regular question - add math notation support
+                    processedQuestions.push({
+                        ...question,
+                        question_statement: prepareMathNotation(question.question_statement),
+                        complete_answer: prepareMathNotation(question.complete_answer)
+                    });
+                }
+            });
+            
+            return processedQuestions;
         }
     
         // Get CSRF token function
@@ -455,6 +659,82 @@
                 alertElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
+        
+        // Render questions to the container
+        function renderQuestions(questions) {
+            const container = document.getElementById('questions-container');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            // Group questions by parent
+            const groupedQuestions = {};
+            
+            questions.forEach(question => {
+                if (question.is_part && question.parent_question) {
+                    if (!groupedQuestions[question.parent_question]) {
+                        groupedQuestions[question.parent_question] = [];
+                    }
+                    groupedQuestions[question.parent_question].push(question);
+                } else {
+                    // Regular question
+                    const card = document.createElement('div');
+                    card.className = 'card mb-3';
+                    
+                    card.innerHTML = `
+                        <div class="card-header">
+                            Question ${question.question_no}
+                        </div>
+                        <div class="card-body">
+                            <h5>Question:</h5>
+                            <p class="math-notation">${question.question_statement}</p>
+                            
+                            <h5>Student's Answer:</h5>
+                            <p class="math-notation">${question.complete_answer || "No answer provided"}</p>
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                }
+            });
+            
+            // Render grouped questions
+            for (const [parentNo, parts] of Object.entries(groupedQuestions)) {
+                const card = document.createElement('div');
+                card.className = 'card mb-3';
+                
+                let partsHTML = '';
+                parts.forEach((part, index) => {
+                    partsHTML += `
+                        <div class="question-part">
+                            <h5>Part ${String.fromCharCode(97 + index).toUpperCase()}</h5>
+                            <p class="math-notation">${part.question_statement}</p>
+                            <div class="mt-2">
+                                <strong>Answer:</strong>
+                                <p class="math-notation">${part.complete_answer || "No answer provided"}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        Question ${parentNo}
+                    </div>
+                    <div class="card-body">
+                        <h5>Multi-part Question:</h5>
+                        ${partsHTML}
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            }
+            
+            // Trigger MathJax to render math notations
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        }
     
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
@@ -469,6 +749,11 @@
                 debugLog('Questions found', { 
                     count: extractedData.extracted_questions?.length || 0 
                 });
+                
+                // Render the questions
+                if (extractedData.extracted_questions) {
+                    renderQuestions(extractedData.extracted_questions);
+                }
             } else if (jsonDisplay) {
                 jsonDisplay.textContent = 'No valid data found';
                 debugLog('No valid extracted data found');

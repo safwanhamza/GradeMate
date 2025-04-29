@@ -1,275 +1,321 @@
- <!-- output.html -->
+<!DOCTYPE html>
+<html lang="en">
 
- <!DOCTYPE html>
- <html lang="en">
- 
- <head>
-     <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>Final Grade Output</title>
-     <style>
-         * {
-             margin: 0;
-             padding: 0;
-             box-sizing: border-box;
-             font-family: 'Arial', sans-serif;
-         }
- 
-         body {
-             background-color: #f7f9fc;
-             display: flex;
-             flex-direction: column;
-             align-items: center;
-             justify-content: center;
-             min-height: 100vh;
-             padding: 20px;
-             width: 100vw;
-         }
- 
-         .container {
-             background: white;
-             padding: 40px;
-             width: 90%;
-             max-width: 1200px;
-             border-radius: 12px;
-             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-             text-align: center;
-             margin-bottom: 30px;
-         }
- 
-         .grade-summary {
-             display: flex;
-             justify-content: center;
-             flex-wrap: wrap;
-             gap: 20px;
-             margin-bottom: 20px;
-         }
- 
-         .card {
-             background: white;
-             padding: 20px;
-             border-radius: 10px;
-             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-             text-align: center;
-             width: 200px;
-             font-size: 18px;
-             font-weight: bold;
-         }
- 
-         .question-card {
-             background: white;
-             padding: 20px;
-             border-radius: 10px;
-             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-             text-align: center;
-             width: 200px;
-             font-size: 18px;
-             font-weight: bold;
-             transition: all 0.3s ease;
-         }
- 
-         .question-card:hover {
-             transform: translateY(-5px);
-             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-         }
- 
-         .feedback-container {
-             margin-top: 30px;
-             text-align: left;
-             padding: 20px;
-             background: #f8f9fa;
-             border-radius: 10px;
-             display: none;
-         }
- 
-         .buttons {
-             margin-top: 20px;
-             display: flex;
-             justify-content: center;
-             gap: 20px;
-         }
- 
-         .btn {
-             padding: 14px 24px;
-             border: none;
-             border-radius: 8px;
-             cursor: pointer;
-             font-size: 18px;
-             font-weight: bold;
-             transition: all 0.3s ease;
-         }
- 
-         .btn:hover {
-             transform: translateY(-2px);
-             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-         }
- 
-         .btn-generate {
-             background: #4a6cf7;
-             color: white;
-         }
- 
-         .btn-download {
-             background: #28a745;
-             color: white;
-             display: none;
-         }
- 
-         .btn-startover {
-             background: #212529;
-             color: white;
-         }
- 
-         .success-score {
-             color: #28a745;
-         }
- 
-         .warning-score {
-             color: #ffc107;
-         }
- 
-         .danger-score {
-             color: #dc3545;
-         }
- 
-         .debug-info {
-             margin-top: 20px;
-             padding: 10px;
-             background-color: #f8f9fa;
-             border: 1px solid #ddd;
-             border-radius: 4px;
-             text-align: left;
-             font-family: monospace;
-             font-size: 14px;
-             display: none;
-         }
-     </style>
- </head>
- 
- <body>
-     <div class="container">
-         <h2>📊 Final Grade Report</h2>
-         <br>
-         <div class="grade-summary">
-             <div class="card">Total Questions: <span id="total-questions">Loading...</span></div>
-             <div class="card">Total Score: <span id="total-score">Loading...</span></div>
-         </div>
-         <div class="grade-summary" id="questions-container">
-             <!-- Question Score Cards Will Be Generated Here -->
-             <div id="loading-questions" class="card">Loading question scores...</div>
-         </div>
-         
-         <div class="feedback-container" id="feedback-container">
-             <h3>Detailed Feedback:</h3>
-             <div id="detailed-feedback">Loading detailed feedback...</div>
-         </div>
-         
-         <div class="buttons">
-             <button class="btn btn-generate" id="generate-btn" onclick="generateReport()">Generate Report</button>
-             <button class="btn btn-download" id="download-btn">Download Report</button>
-             <a href="{% url 'dashboard' %}"><button class="btn btn-startover">Start Over</button></a>
-         </div>
- 
-         <!-- Debug information - hidden by default -->
-         <div class="debug-info" id="debug-info">
-             <h4>Debug Information</h4>
-             <div id="debug-output"></div>
-         </div>
-     </div>
- 
-     <!-- Load the evaluation data from the session -->
-     {% if evaluation_json %}
-     <script id="evaluation-data" type="application/json">{{ evaluation_json|safe }}</script>
-     {% endif %}
- 
-     <script>
-         // Debug logging function
-         function debugLog(message, data) {
-             console.log(message, data);
-             
-             const debugOutput = document.getElementById('debug-output');
-             if (debugOutput) {
-                 const entry = document.createElement('div');
-                 entry.style.marginBottom = '10px';
-                 
-                 let content = `<strong>${message}</strong>`;
-                 if (data !== undefined) {
-                     if (typeof data === 'object') {
-                         try {
-                             content += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-                         } catch (e) {
-                             content += `<pre>${String(data)}</pre>`;
-                         }
-                     } else {
-                         content += `<pre>${data}</pre>`;
-                     }
-                 }
-                 
-                 entry.innerHTML = content;
-                 debugOutput.appendChild(entry);
-             }
-         }
-         
-         // Enable debug mode with URL parameter ?debug=true
-         const urlParams = new URLSearchParams(window.location.search);
-         const debugMode = urlParams.get('debug') === 'true';
-         if (debugMode) {
-             document.getElementById('debug-info').style.display = 'block';
-             debugLog('Debug mode enabled');
-         }
- 
-         // Get the score class based on the score value
-         function getScoreClass(score) {
-             if (score >= 80) return 'success-score';
-             if (score >= 60) return 'warning-score';
-             return 'danger-score';
-         }
- 
-         document.addEventListener("DOMContentLoaded", function() {
-             debugLog('DOM Content Loaded');
-             
-             // Try to load evaluation data
-             let evaluationData = null;
-             const evaluationElement = document.getElementById('evaluation-data');
-             
-             if (evaluationElement) {
-                 try {
-                     evaluationData = JSON.parse(evaluationElement.textContent);
-                     debugLog('Loaded evaluation data:', evaluationData);
-                 } catch (e) {
-                     debugLog('Error parsing evaluation data:', e.message);
-                 }
-             } else {
-                 debugLog('Evaluation data element not found');
-             }
-             
-             // Check if we have evaluation data from the server
-             if (!evaluationData) {
-                 // Try to retrieve from session storage as fallback
-                 try {
-                     const storedData = sessionStorage.getItem('evaluationData');
-                     if (storedData) {
-                         evaluationData = JSON.parse(storedData);
-                         debugLog('Loaded evaluation data from session storage:', evaluationData);
-                     }
-                 } catch (e) {
-                     debugLog('Error loading from session storage:', e.message);
-                 }
-             }
-             
-             // If we have data, display it
-             if (evaluationData) {
-                 displayEvaluationResults(evaluationData);
-             } else {
-                 debugLog('No evaluation data available');
-                 // Show a message
-                 document.getElementById('total-questions').textContent = 'No data';
-                 document.getElementById('total-score').textContent = 'No data';
-                 document.getElementById('loading-questions').textContent = 'No evaluation data available';
-             }
-         });
- 
-         function displayEvaluationResults(data) {
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Grade Output</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f7f9fc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            width: 100vw;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            width: 90%;
+            max-width: 1200px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .grade-summary {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 200px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .question-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .feedback-container {
+            margin-top: 30px;
+            text-align: left;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .summary-container {
+            margin-top: 30px;
+            text-align: left;
+            padding: 20px;
+            background: #f0f7ff;
+            border-radius: 10px;
+            border-left: 5px solid #4a6cf7;
+        }
+
+        .summary-container h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .summary-container ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .summary-container li {
+            margin-bottom: 8px;
+        }
+
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-generate {
+            background: #4a6cf7;
+            color: white;
+        }
+
+        .btn-download {
+            background: #28a745;
+            color: white;
+            display: none;
+        }
+
+        .btn-startover {
+            background: #212529;
+            color: white;
+        }
+
+        .success-score {
+            color: #28a745;
+        }
+
+        .warning-score {
+            color: #ffc107;
+        }
+
+        .danger-score {
+            color: #dc3545;
+        }
+
+        .debug-info {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 14px;
+            display: none;
+        }
+
+        .question-statement {
+            font-size: 14px;
+            font-weight: normal;
+            color: #333;
+            margin-top: 8px;
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>📊 Final Grade Report</h2>
+        <br>
+        <div class="grade-summary">
+            <div class="card">Total Questions: <span id="total-questions">Loading...</span></div>
+            <div class="card">Total Score: <span id="total-score">Loading...</span></div>
+        </div>
+        <div class="grade-summary" id="questions-container">
+            <!-- Question Score Cards Will Be Generated Here -->
+            <div id="loading-questions" class="card">Loading question scores...</div>
+        </div>
+        
+        <div class="feedback-container" id="feedback-container">
+            <h3>Detailed Feedback:</h3>
+            <div id="detailed-feedback">Loading detailed feedback...</div>
+        </div>
+        
+        <!-- New summary section -->
+        <div class="summary-container" id="summary-container" style="display: none;">
+            <h3>Summary and Recommendations:</h3>
+            <div id="summary-content">Analysis of your performance is loading...</div>
+        </div>
+        
+        <div class="buttons">
+            <button class="btn btn-generate" id="generate-btn" onclick="generateReport()">Generate Report</button>
+            <button class="btn btn-download" id="download-btn">Download Report</button>
+            <a href="{% url 'dashboard' %}"><button class="btn btn-startover">Start Over</button></a>
+        </div>
+
+        <!-- Debug information - hidden by default -->
+        <div class="debug-info" id="debug-info">
+            <h4>Debug Information</h4>
+            <div id="debug-output"></div>
+        </div>
+    </div>
+
+    <!-- Load the evaluation data from the session -->
+    {% if evaluation_json %}
+    <script id="evaluation-data" type="application/json">{{ evaluation_json|safe }}</script>
+    {% endif %}
+
+    <script>
+        // Debug logging function
+        function debugLog(message, data) {
+            console.log(message, data);
+            
+            const debugOutput = document.getElementById('debug-output');
+            if (debugOutput) {
+                const entry = document.createElement('div');
+                entry.style.marginBottom = '10px';
+                
+                let content = `<strong>${message}</strong>`;
+                if (data !== undefined) {
+                    if (typeof data === 'object') {
+                        try {
+                            content += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                        } catch (e) {
+                            content += `<pre>${String(data)}</pre>`;
+                        }
+                    } else {
+                        content += `<pre>${data}</pre>`;
+                    }
+                }
+                
+                entry.innerHTML = content;
+                debugOutput.appendChild(entry);
+            }
+        }
+        
+        // Enable debug mode with URL parameter ?debug=true
+        const urlParams = new URLSearchParams(window.location.search);
+        const debugMode = urlParams.get('debug') === 'true';
+        if (debugMode) {
+            document.getElementById('debug-info').style.display = 'block';
+            debugLog('Debug mode enabled');
+        }
+
+        // Get the score class based on the score value
+        function getScoreClass(score) {
+            if (score >= 80) return 'success-score';
+            if (score >= 60) return 'warning-score';
+            return 'danger-score';
+        }
+        
+        // Format score as percentage
+        function formatScore(score) {
+            return `${score}% (${score}/100)`;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            debugLog('DOM Content Loaded');
+            
+            // Try to load evaluation data
+            let evaluationData = null;
+            const evaluationElement = document.getElementById('evaluation-data');
+            
+            if (evaluationElement) {
+                try {
+                    evaluationData = JSON.parse(evaluationElement.textContent);
+                    debugLog('Loaded evaluation data:', evaluationData);
+                } catch (e) {
+                    debugLog('Error parsing evaluation data:', e.message);
+                }
+            } else {
+                debugLog('Evaluation data element not found');
+            }
+            
+            // Check if we have evaluation data from the server
+            if (!evaluationData) {
+                // Try to retrieve from session storage as fallback
+                try {
+                    const storedData = sessionStorage.getItem('evaluationData');
+                    if (storedData) {
+                        evaluationData = JSON.parse(storedData);
+                        debugLog('Loaded evaluation data from session storage:', evaluationData);
+                    }
+                } catch (e) {
+                    debugLog('Error loading from session storage:', e.message);
+                }
+            }
+            
+            // If we have data, display it
+            if (evaluationData) {
+                displayEvaluationResults(evaluationData);
+                generateSummary(evaluationData);
+            } else {
+                debugLog('No evaluation data available');
+                // Show a message
+                document.getElementById('total-questions').textContent = 'No data';
+                document.getElementById('total-score').textContent = 'No data';
+                document.getElementById('loading-questions').textContent = 'No evaluation data available';
+            }
+        });
+
+        function displayEvaluationResults(data) {
             debugLog('Displaying evaluation results');
             
             // Update the score summary
@@ -288,7 +334,7 @@
                 
                 // Use calculated average or take total_score if provided
                 const averageScore = data.total_score || (questionCount > 0 ? Math.round(totalScore / questionCount) : 0);
-                document.getElementById('total-score').textContent = `${averageScore}/100`;
+                document.getElementById('total-score').textContent = formatScore(averageScore);
                 document.getElementById('total-score').className = getScoreClass(averageScore);
                 
                 // Clear loading message
@@ -302,13 +348,29 @@
                     // Use score field first, then similarity_percentage as fallback
                     const score = question.score || question.similarity_percentage || 0;
                     
-                    card.innerHTML = `Q${question.question_no}: <span class="${getScoreClass(score)}">${score}/100</span>`;
+                    // Create card HTML with question statement
+                    card.innerHTML = `
+                        <div>Q${question.question_no}: <span class="${getScoreClass(score)}">${score}%</span></div>
+                        <div class="question-statement" title="${question.question_statement || 'No question statement'}">
+                            ${question.question_statement || 'No question statement'}
+                        </div>
+                    `;
+                    
                     card.dataset.questionNo = question.question_no;
                     card.dataset.feedback = question.feedback || 'No feedback provided';
+                    card.dataset.statement = question.question_statement || 'No question statement';
+                    card.dataset.answer = question.complete_answer || 'No answer provided';
+                    card.dataset.score = score;
                     
                     // Add click event to show feedback
                     card.addEventListener('click', function() {
-                        showFeedback(this.dataset.questionNo, this.dataset.feedback);
+                        showFeedback(
+                            this.dataset.questionNo, 
+                            this.dataset.statement,
+                            this.dataset.answer,
+                            this.dataset.score,
+                            this.dataset.feedback
+                        );
                     });
                     
                     document.getElementById('questions-container').appendChild(card);
@@ -316,8 +378,7 @@
                 
                 // Show the detailed feedback if available
                 if (data.overall_feedback) {
-                    document.getElementById('feedback-container').style.display = 'block';
-                    document.getElementById('detailed-feedback').textContent = data.overall_feedback;
+                    showSummary(data.overall_feedback);
                 }
                 
                 // Enable the download button
@@ -325,17 +386,12 @@
                 document.getElementById('download-btn').style.display = 'inline-block';
             } else if (data.total_score !== undefined) {
                 // Direct total score format
-                document.getElementById('total-score').textContent = `${data.total_score}/100`;
+                document.getElementById('total-score').textContent = formatScore(data.total_score);
                 document.getElementById('total-score').className = getScoreClass(data.total_score);
                 
                 // Display message
                 if (data.overall_feedback) {
-                    const messageCard = document.createElement("div");
-                    messageCard.classList.add("card");
-                    messageCard.style.width = "100%";
-                    messageCard.textContent = data.overall_feedback;
-                    document.getElementById('questions-container').innerHTML = '';
-                    document.getElementById('questions-container').appendChild(messageCard);
+                    showSummary(data.overall_feedback);
                 }
                 
                 // Enable the download button
@@ -347,77 +403,186 @@
                 document.getElementById('total-score').textContent = 'Invalid';
                 document.getElementById('loading-questions').textContent = 'Invalid evaluation data format';
             }
-        } 
-         function showFeedback(questionNo, feedback) {
-             document.getElementById('feedback-container').style.display = 'block';
-             document.getElementById('detailed-feedback').innerHTML = `
-                 <h4>Question ${questionNo} Feedback:</h4>
-                 <p>${feedback}</p>
-             `;
-             
-             // Scroll to the feedback
-             document.getElementById('feedback-container').scrollIntoView({ behavior: 'smooth' });
-         }
- 
-         function generateReport() {
-             debugLog('Generate report clicked');
-             
-             let btn = document.querySelector('.btn-generate');
-             btn.innerHTML = "Generating...";
-             
-             // Simulate report generation 
-             setTimeout(() => {
-                 btn.style.display = "none";
-                 document.getElementById("download-btn").style.display = "inline-block";
-                 
-                 // Show feedback container
-                 document.getElementById('feedback-container').style.display = 'block';
-                 document.getElementById('detailed-feedback').innerHTML = `
-                     <p>Report generated successfully. Click "Download Report" to save a PDF copy.</p>
-                 `;
-             }, 1500);
-         }
- 
-         // Download button click handler
-         document.getElementById('download-btn').addEventListener('click', function() {
-             debugLog('Download button clicked');
-             
-             // Create a printable version
-             const printWindow = window.open('', '_blank');
-             printWindow.document.write(`
-                 <html>
-                 <head>
-                     <title>Exam Grading Report</title>
-                     <style>
-                         body { font-family: Arial; padding: 20px; }
-                         h1 { text-align: center; }
-                         .summary { margin: 20px 0; }
-                         .question { margin: 10px 0; padding: 10px; border: 1px solid #ddd; }
-                     </style>
-                 </head>
-                 <body>
-                     <h1>Exam Grading Report</h1>
-                     <div class="summary">
-                         <p><strong>Total Questions:</strong> ${document.getElementById('total-questions').textContent}</p>
-                         <p><strong>Overall Score:</strong> ${document.getElementById('total-score').textContent}</p>
-                     </div>
-                     <h2>Question Scores:</h2>
-                     <div class="questions">
-                         ${Array.from(document.querySelectorAll('.question-card')).map(card => `
-                             <div class="question">
-                                 <p><strong>${card.textContent}</strong></p>
-                                 <p>Feedback: ${card.dataset.feedback}</p>
-                             </div>
-                         `).join('')}
-                     </div>
-                 </body>
-                 </html>
-             `);
-             
-             printWindow.document.close();
-             printWindow.print();
-         });
-     </script>
- </body>
- 
- </html>
+        }
+
+        function showFeedback(questionNo, statement, answer, score, feedback) {
+            document.getElementById('feedback-container').style.display = 'block';
+            document.getElementById('detailed-feedback').innerHTML = `
+                <h4>Question ${questionNo}</h4>
+                <p><strong>Statement:</strong> ${statement}</p>
+                <p><strong>Your answer:</strong> ${answer}</p>
+                <p><strong>Score:</strong> <span class="${getScoreClass(score)}">${score}%</span></p>
+                <p><strong>Feedback:</strong> ${feedback}</p>
+            `;
+            
+            // Scroll to the feedback
+            document.getElementById('feedback-container').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function showSummary(summary) {
+            const summaryContainer = document.getElementById('summary-container');
+            const summaryContent = document.getElementById('summary-content');
+            
+            if (summaryContainer && summaryContent) {
+                summaryContent.textContent = summary;
+                summaryContainer.style.display = 'block';
+            }
+        }
+        
+        function generateSummary(data) {
+            if (!data.evaluations || data.evaluations.length === 0) return;
+            
+            // If overall feedback already exists, use it
+            if (data.overall_feedback) {
+                showSummary(data.overall_feedback);
+                return;
+            }
+            
+            // Calculate stats
+            const scores = data.evaluations.map(q => q.score || q.similarity_percentage || 0);
+            const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+            const maxScore = Math.max(...scores);
+            const minScore = Math.min(...scores);
+            
+            // Count by category
+            const excellent = scores.filter(s => s >= 80).length;
+            const good = scores.filter(s => s >= 60 && s < 80).length;
+            const needsWork = scores.filter(s => s < 60).length;
+            
+            // Generate summary text
+            let summary = '';
+            
+            if (avgScore >= 80) {
+                summary = 'Excellent work! You have demonstrated a strong understanding of the concepts.';
+            } else if (avgScore >= 60) {
+                summary = 'Good effort! You have a solid foundation but there are some areas to improve.';
+            } else {
+                summary = 'You need to focus on understanding the fundamental concepts better.';
+            }
+            
+            summary += '\n\nBased on your performance:\n';
+            summary += `- You did exceptionally well on ${excellent} question(s)\n`;
+            summary += `- You performed adequately on ${good} question(s)\n`;
+            summary += `- You need improvement on ${needsWork} question(s)\n\n`;
+            
+            // Add recommendations
+            summary += 'Recommendations:\n';
+            if (needsWork > 0) {
+                summary += '1. Review the concepts for questions where you scored below 60%\n';
+            }
+            if (minScore < 50) {
+                summary += '2. Seek additional help for topics with lowest scores\n';
+            }
+            summary += '3. Continue practicing with similar problems to reinforce your understanding';
+            
+            showSummary(summary);
+        }
+
+        function generateReport() {
+            debugLog('Generate report clicked');
+            
+            let btn = document.querySelector('.btn-generate');
+            btn.innerHTML = "Generating...";
+            
+            // Simulate report generation 
+            setTimeout(() => {
+                btn.style.display = "none";
+                document.getElementById("download-btn").style.display = "inline-block";
+                
+                // Show feedback container
+                const feedback = document.getElementById('feedback-container');
+                feedback.style.display = 'block';
+                document.getElementById('detailed-feedback').innerHTML = `
+                    <p>Report generated successfully. Click "Download Report" to save a PDF copy.</p>
+                `;
+                
+                // Scroll to the feedback
+                feedback.scrollIntoView({ behavior: 'smooth' });
+            }, 1500);
+        }
+
+        // Download button click handler
+        document.getElementById('download-btn').addEventListener('click', function() {
+            debugLog('Download button clicked');
+
+            // Redirect to the download endpoint
+            window.location.href = "{% url 'download_report_pdf' %}";
+            
+            // Get all question data for the report
+            const questions = Array.from(document.querySelectorAll('.question-card')).map(card => {
+                return {
+                    questionNo: card.dataset.questionNo,
+                    statement: card.dataset.statement,
+                    answer: card.dataset.answer,
+                    score: card.dataset.score,
+                    feedback: card.dataset.feedback
+                };
+            });
+            
+            // Get the summary content
+            const summaryContent = document.getElementById('summary-content').textContent;
+            
+            // Create a printable version
+            const printWindow = window.open('', '_blank');
+            
+            // Build HTML content
+            let questionHtml = '';
+            questions.forEach(q => {
+                const scoreClass = getScoreClass(q.score);
+                questionHtml += `
+                    <div class="question" style="margin: 15px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px;">
+                        <h3>Question ${q.questionNo}: <span style="color: ${scoreClass === 'success-score' ? '#28a745' : (scoreClass === 'warning-score' ? '#ffc107' : '#dc3545')};">${q.score}%</span></h3>
+                        <p><strong>Statement:</strong> ${q.statement}</p>
+                        <p><strong>Your answer:</strong> ${q.answer}</p>
+                        <p><strong>Feedback:</strong> ${q.feedback}</p>
+                    </div>
+                `;
+            });
+            
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Exam Grading Report</title>
+                    <style>
+                        body { font-family: Arial; padding: 20px; line-height: 1.6; }
+                        h1, h2 { text-align: center; color: #333; }
+                        .summary { 
+                            margin: 20px 0; 
+                            padding: 15px; 
+                            background-color: #f0f7ff; 
+                            border-left: 5px solid #4a6cf7;
+                            border-radius: 5px;
+                        }
+                        .question { margin: 15px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+                        .success { color: #28a745; }
+                        .warning { color: #ffc107; }
+                        .danger { color: #dc3545; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Exam Grading Report</h1>
+                    <div class="summary">
+                        <p><strong>Total Questions:</strong> ${document.getElementById('total-questions').textContent}</p>
+                        <p><strong>Overall Score:</strong> ${document.getElementById('total-score').textContent}</p>
+                    </div>
+                    
+                    <h2>Question Details</h2>
+                    <div class="questions">
+                        ${questionHtml}
+                    </div>
+                    
+                    <h2>Summary and Recommendations</h2>
+                    <div class="summary">
+                        <pre style="font-family: Arial; white-space: pre-wrap;">${summaryContent}</pre>
+                    </div>
+                </body>
+                </html>
+            `);
+            
+            printWindow.document.close();
+            printWindow.print();
+        });
+    </script>
+</body>
+
+</html>

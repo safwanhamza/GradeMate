@@ -57,7 +57,8 @@ urlpatterns = [
     path('extraction-status/<str:task_id>/', exam_extraction_status, name='exam_extraction_status'),
     path('direct-pdf-processor/', direct_pdf_processor, name='direct_pdf_processor'),
     path('admin/', admin.site.urls),
+    # New PDF download endpoint
+    path('download-report/', download_report_pdf, name='download_report_pdf'),
 ]
 
 
-# comment here

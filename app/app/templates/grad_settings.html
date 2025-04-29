@@ -1,307 +1,274 @@
-<!-- grade setting.html file -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Grading Settings</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
-    body {
-      background-color: #f7f9fc;
-      display: flex; justify-content: center; align-items: center;
-      height: 100vh; padding: 20px; width: 100vw;
-    }
-    .container {
-      background: white;
-      padding: 30px;
-      width: 90%; max-width: 800px;
-      border-radius: 12px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-    .input-group {
-      background: white;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      text-align: left;
-    }
-    input[type="file"], input[type="text"], select {
-      width: 100%; padding: 10px; border: 1px solid #ccc;
-      border-radius: 6px; margin-top: 5px;
-    }
-    input[type="range"] { width: 100%; }
-    .range-group { margin-bottom: 20px; text-align: left; }
-    .radio-group {
-      display: flex; flex-direction: column;
-      align-items: flex-start; margin-bottom: 20px;
-    }
-    .btn-apply, .btn-drive {
-      padding: 12px 20px; border: none; border-radius: 8px;
-      cursor: pointer; font-size: 16px;
-      background: blue; color: white; width: 100%;
-      margin-top: 10px;
-    }
-    #loader {
-      font-size: 15px; color: #444; margin-top: 10px;
-    }
-    #fetch-logs {
-      font-size: 14px; margin-top: 10px; white-space: pre-line;
-      background: #f1f1f1; padding: 10px; border-radius: 6px;
-      max-height: 200px; overflow-y: auto;
-    }
-    .close {
-      color: #aaa;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .close:hover,
-    .close:focus {
-      color: black;
-      text-decoration: none;
-      cursor: pointer;
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.4);
-    }
-    .modal-content {
-      background-color: #fefefe;
-      margin: 10% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-      max-width: 900px;
-      border-radius: 8px;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-    
-    /* New styles for exam processing */
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid rgba(0, 0, 0, 0.1);
-      border-radius: 50%;
-      border-left-color: #2196F3;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 10px;
-    }
+{% extends 'base.html' %}
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+{% block title %}Grading Settings | GradeMate{% endblock %}
 
-    #extracted-questions {
-      margin-top: 20px;
-      text-align: left;
-    }
+{% block content %}
+<div class="container" style="max-width: 800px; margin: 30px auto; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);">
+    <h2 style="text-align: center; margin-bottom: 30px;">⚙️ Grading Settings</h2>
 
-    .question-item {
-      background: #f9f9f9;
-      border-left: 4px solid #2196F3;
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 4px;
-    }
+    <div class="input-group" style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-bottom: 20px; text-align: left;">
+        <label>📚 Input Textbook</label>
+        <input type="file" id="textbook-input" onchange="showFileName('textbook-input', 'textbook-name')" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; margin-top: 5px;">
+        <p id="textbook-name"></p>
 
-    .question-statement, .student-answer {
-      margin-top: 10px;
-    }
+        <form id="drive-fetch-form">
+            {% csrf_token %}
+            <button type="submit" class="btn-primary" id="drive-fetch-btn" style="width: 100%; margin-top: 10px; padding: 12px 20px;">📥 Load Textbooks from Drive</button>
+        </form>
 
-    .student-answer {
-      background: #f5f5f5;
-      padding: 10px;
-      border-radius: 4px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>⚙️ Grading Settings</h2>
-
-    <div class="input-group">
-      <label>📚 Input Textbook</label>
-      <input type="file" id="textbook-input" onchange="showFileName('textbook-input', 'textbook-name')">
-      <p id="textbook-name"></p>
-
-      <form id="drive-fetch-form">
-        {% csrf_token %}
-        <button type="submit" class="btn-drive" id="drive-fetch-btn">📥 Load Textbooks from Drive</button>
-      </form>
-
-      <button class="btn-drive" id="view-files-btn" style="margin-top: 10px;">
-        📋 View Processed Files
-      </button>
-
-      <div id="loader" style="display:none;">⏳ Fetching files from Drive...</div>
-      <div id="fetch-logs"></div>
-    </div>
-
-    <div class="input-group">
-      <label>📝 Upload and Process Exam Paper</label>
-      <form id="exam-upload-form" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="file" id="exam-file" name="file" accept=".pdf">
-        <button type="submit" class="btn-drive">Process Exam</button>
-      </form>
-      <div id="upload-status" style="display: none;">
-        <div class="spinner"></div>
-        <p>Processing exam... This may take a few minutes.</p>
-      </div>
-      
-      <div id="extracted-questions" style="display: none;">
-        <h3>Extracted Questions and Answers</h3>
-        <div id="questions-container">
-          <!-- Extracted questions will be displayed here -->
+        <div class="drive-link-section" style="margin-top: 10px;">
+            <label>📁 Or Enter Drive Folder Link</label>
+            <div style="display: flex; margin-top: 5px;">
+                <input type="text" id="drive-link-input" placeholder="Paste Google Drive folder link here" style="flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+                <button id="process-drive-link" class="btn-primary" style="margin-left: 5px; padding: 10px 15px;">Go</button>
+            </div>
         </div>
-      </div>
+
+        <button class="btn-primary" id="view-files-btn" style="width: 100%; margin-top: 10px; padding: 12px 20px;">
+            📋 View Processed Files
+        </button>
+
+        <div id="loader" style="display:none; font-size: 15px; color: #444; margin-top: 10px;">⏳ Fetching files from Drive...</div>
+        <div id="fetch-logs" style="font-size: 14px; margin-top: 10px; white-space: pre-line; background: #f1f1f1; padding: 10px; border-radius: 6px; max-height: 200px; overflow-y: auto;"></div>
     </div>
 
-    <div class="input-group">
-      <label>🔑 Input Key</label>
-      <input type="file" id="key-input" onchange="showFileName('key-input', 'key-name')">
-      <p id="key-name"></p>
-    </div>
+    <a href="{% url 'grading' %}">
+        <button class="btn-primary" style="width: 100%; padding: 12px 20px; font-weight: bold;">✅ Apply Settings</button>
+    </a>
+</div>
 
-    <div class="range-group">
-      <label>🔍 Similarity Search (0.0 - 5.0)</label>
-      <input type="range" name="similarity" min="0.0" max="5.0" step="0.1">
-    </div>
-
-    <div class="input-group">
-      <label>📝 Input Manual Text</label>
-      <input type="text" name="manual_text" placeholder="Enter text here...">
-    </div>
-
-    <div class="range-group">
-      <label>🎨 Creativity Control (0.0 - 1.0)</label>
-      <input type="range" name="creativity" min="0.0" max="1.0" step="0.1">
-    </div>
-
-    <div class="radio-group">
-      <label><input type="radio" name="context" value="textbook"> 📖 Restrict Context Only to Textbook</label>
-      <label><input type="radio" name="context" value="both"> 🤖 Use Context from Textbook & AI</label>
-    </div>
-
-    <a href="{% url 'grading' %}"><button class="btn-apply">✅ Apply Settings</button></a>
-  </div>
-
-  <!-- Modal for viewing processed files -->
-  <div id="filesModal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>Processed Files</h2>
-      
-      <div id="filesContainer">
-        <div id="filesList" style="margin-bottom: 20px;">
-          <!-- Files will be displayed here -->
+<!-- Modal for viewing processed files -->
+<div id="filesModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+    <div class="modal-content" style="background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 900px; border-radius: 8px; max-height: 80vh; overflow-y: auto;">
+        <span class="close" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+        <h2>Processed Files</h2>
+        
+        <div id="filesContainer">
+            <div id="filesList" style="margin-bottom: 20px;">
+                <!-- Files will be displayed here -->
+            </div>
+            
+            <div id="fileContent" style="display: none; border-top: 1px solid #ddd; padding-top: 15px;">
+                <h3 id="selectedFileName"></h3>
+                <div id="chunksContainer" style="max-height: 50vh; overflow-y: auto;">
+                    <!-- Chunks will be displayed here -->
+                </div>
+            </div>
         </div>
         
-        <div id="fileContent" style="display: none; border-top: 1px solid #ddd; padding-top: 15px;">
-          <h3 id="selectedFileName"></h3>
-          <div id="chunksContainer" style="max-height: 50vh; overflow-y: auto;">
-            <!-- Chunks will be displayed here -->
-          </div>
+        <div id="loadingFiles" style="text-align: center; padding: 20px;">
+            <p>Loading files...</p>
         </div>
-      </div>
-      
-      <div id="loadingFiles" style="text-align: center; padding: 20px;">
-        <p>Loading files...</p>
-      </div>
     </div>
-  </div>
+</div>
 
-  <script>
+<style>
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .btn-primary {
+        background-color: #0056b3;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+    
+    .btn-primary:hover {
+        background-color: #004494;
+    }
+    
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        border-left-color: #2196F3;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 10px;
+    }
+</style>
+
+<script>
     function showFileName(inputId, displayId) {
-      const input = document.getElementById(inputId);
-      const display = document.getElementById(displayId);
-      display.textContent = input.files.length ? `Selected File: ${input.files[0].name}` : "";
+        const input = document.getElementById(inputId);
+        const display = document.getElementById(displayId);
+        display.textContent = input.files.length ? `Selected File: ${input.files[0].name}` : "";
     }
 
     // Handle the "Load Textbooks from Drive" button
     document.getElementById("drive-fetch-form").addEventListener("submit", function (e) {
-      e.preventDefault();
+        e.preventDefault();
 
-      const loader = document.getElementById("loader");
-      const logDiv = document.getElementById("fetch-logs");
-      const button = document.getElementById("drive-fetch-btn");
-      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const loader = document.getElementById("loader");
+        const logDiv = document.getElementById("fetch-logs");
+        const button = document.getElementById("drive-fetch-btn");
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-      loader.style.display = "block";
-      logDiv.textContent = "Starting fetch...\n";
-      button.disabled = true;
+        loader.style.display = "block";
+        logDiv.textContent = "Starting fetch...\n";
+        button.disabled = true;
 
-      // Step 1: Fetch the list of PDFs from Drive
-      fetch("{% url 'fetch_drive_pdfs' %}", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken
-        },
-        body: JSON.stringify({})
-      })
-      .then(response => response.json())
-      .then(data => {
-        loader.style.display = "none";
-
-        if (data.status === "ok") {
-          logDiv.textContent += data.logs.join("\n");
-
-          if (data.files && Array.isArray(data.files) && data.files.length > 0) {
-            logDiv.textContent += `\nFound ${data.files.length} PDFs. Processing all...\n`;
-            
-            // Step 2: Process all PDFs
-            fetch("{% url 'process_drive_pipeline' %}", {
-              method: "POST",
-              headers: {
+        // Step 1: Fetch the list of PDFs from Drive
+        fetch("{% url 'fetch_drive_pdfs' %}", {
+            method: "POST",
+            headers: {
                 "Content-Type": "application/json",
                 "X-CSRFToken": csrfToken
-              },
-              body: JSON.stringify({}) // No pdf_id needed since we'll process all
-            })
-            .then(response => response.json())
-            .then(data => {
-              loader.style.display = "none";
-              button.disabled = false;
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            loader.style.display = "none";
 
-              if (data.status === "ok") {
-                logDiv.textContent += `\n✅ ${data.message}`;
-              } else {
-                logDiv.textContent += `\n❌ Error: ${data.error}`;
-              }
-            })
-            .catch(err => {
-              loader.style.display = "none";
-              button.disabled = false;
-              logDiv.textContent += `\n❌ Processing failed: ${err}`;
-            });
-          } else {
-            logDiv.textContent += "\n⚠️ No files found.";
+            if (data.status === "ok") {
+                logDiv.textContent += data.logs.join("\n");
+
+                if (data.files && Array.isArray(data.files) && data.files.length > 0) {
+                    logDiv.textContent += `\nFound ${data.files.length} PDFs. Processing all...\n`;
+                    
+                    // Step 2: Process all PDFs
+                    processDriveFiles();
+                } else {
+                    logDiv.textContent += "\n⚠️ No files found.";
+                    button.disabled = false;
+                }
+            } else {
+                logDiv.textContent += `❌ Error: ${data.error}`;
+                button.disabled = false;
+            }
+        })
+        .catch(err => {
+            loader.style.display = "none";
             button.disabled = false;
-          }
-        } else {
-          logDiv.textContent += `❌ Error: ${data.error}`;
-          button.disabled = false;
+            logDiv.textContent += `❌ Fetch failed: ${err}`;
+        });
+    });
+
+    // Process drive files function
+    function processDriveFiles(folderId = null) {
+        const loader = document.getElementById("loader");
+        const logDiv = document.getElementById("fetch-logs");
+        const button = document.getElementById("drive-fetch-btn");
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        // Prepare the request body
+        let requestBody = {};
+        if (folderId) {
+            requestBody.folder_id = folderId;
         }
-      })
-      .catch(err => {
-        loader.style.display = "none";
-        button.disabled = false;
-        logDiv.textContent += `❌ Fetch failed: ${err}`;
-      });
+
+        fetch("{% url 'process_drive_pipeline' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken
+            },
+            body: JSON.stringify(requestBody)
+        })
+        .then(response => response.json())
+        .then(data => {
+            loader.style.display = "none";
+            button.disabled = false;
+
+            if (data.status === "ok") {
+                logDiv.textContent += `\n✅ ${data.message}`;
+            } else {
+                logDiv.textContent += `\n❌ Error: ${data.error}`;
+            }
+        })
+        .catch(err => {
+            loader.style.display = "none";
+            button.disabled = false;
+            logDiv.textContent += `\n❌ Processing failed: ${err}`;
+        });
+    }
+
+    // Process Drive Link button handler
+    document.getElementById("process-drive-link").addEventListener("click", function() {
+        const linkInput = document.getElementById("drive-link-input");
+        const driveLink = linkInput.value.trim();
+        
+        if (!driveLink) {
+            alert("Please enter a Google Drive folder link");
+            return;
+        }
+        
+        // Extract folder ID from various possible Drive link formats
+        let folderId = null;
+        
+        // Pattern for folder links like https://drive.google.com/drive/folders/1wEtrJspJlZuYiNMVf584sLlVs72c7CgT
+        const folderPattern = /\/folders\/([a-zA-Z0-9_-]+)/;
+        const match = driveLink.match(folderPattern);
+        
+        if (match && match[1]) {
+            folderId = match[1];
+        } else {
+            // Try alternative patterns or direct ID input
+            const altPattern = /id=([a-zA-Z0-9_-]+)/;
+            const altMatch = driveLink.match(altPattern);
+            
+            if (altMatch && altMatch[1]) {
+                folderId = altMatch[1];
+            } else if (/^[a-zA-Z0-9_-]{25,}$/.test(driveLink)) {
+                // If it's just the ID directly pasted
+                folderId = driveLink;
+            }
+        }
+        
+        if (!folderId) {
+            alert("Could not extract a valid folder ID from the provided link. Please check the format.");
+            return;
+        }
+        
+        const loader = document.getElementById("loader");
+        const logDiv = document.getElementById("fetch-logs");
+        
+        loader.style.display = "block";
+        logDiv.textContent = `Starting fetch from folder ID: ${folderId}...\n`;
+        
+        // Process the custom folder
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        // First fetch the files from the custom folder
+        fetch("{% url 'fetch_drive_pdfs' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken
+            },
+            body: JSON.stringify({
+                folder_id: folderId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "ok") {
+                logDiv.textContent += data.logs.join("\n");
+
+                if (data.files && Array.isArray(data.files) && data.files.length > 0) {
+                    logDiv.textContent += `\nFound ${data.files.length} files. Processing all...\n`;
+                    
+                    // Process the files from custom folder
+                    processDriveFiles(folderId);
+                } else {
+                    logDiv.textContent += "\n⚠️ No files found in this folder.";
+                    loader.style.display = "none";
+                }
+            } else {
+                logDiv.textContent += `\n❌ Error: ${data.error}`;
+                loader.style.display = "none";
+            }
+        })
+        .catch(err => {
+            loader.style.display = "none";
+            logDiv.textContent += `\n❌ Fetch failed: ${err}`;
+        });
     });
 
     // View Processed Files functionality
@@ -312,190 +279,108 @@
     
     // When the user clicks the button, open the modal
     viewFilesBtn.onclick = function() {
-      modal.style.display = "block";
-      fetchProcessedFiles();
+        modal.style.display = "block";
+        fetchProcessedFiles();
     }
     
     // When the user clicks on (x), close the modal
     span.onclick = function() {
-      modal.style.display = "none";
+        modal.style.display = "none";
     }
     
     // When the user clicks anywhere outside of the modal, close it
     window.onclick = function(event) {
-      if (event.target == modal) {
-        modal.style.display = "none";
-      }
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
     }
     
     // Fetch the processed files
     function fetchProcessedFiles() {
-      const filesList = document.getElementById("filesList");
-      const loadingFiles = document.getElementById("loadingFiles");
-      const fileContent = document.getElementById("fileContent");
-      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-      
-      filesList.innerHTML = "";
-      fileContent.style.display = "none";
-      loadingFiles.style.display = "block";
-      
-      fetch("{% url 'get_processed_files' %}", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken
-        }
-      })
-      .then(response => response.json())
-      .then(data => {
-        loadingFiles.style.display = "none";
+        const filesList = document.getElementById("filesList");
+        const loadingFiles = document.getElementById("loadingFiles");
+        const fileContent = document.getElementById("fileContent");
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         
-        if (data.files && data.files.length > 0) {
-          let filesHtml = '<ul style="list-style-type: none; padding: 0;">';
-          
-          data.files.forEach(file => {
-            filesHtml += `
-              <li style="padding: 10px; margin: 5px 0; background: #f5f5f5; border-radius: 5px; display: flex; justify-content: space-between; align-items: center;">
-                <span>${file.title}</span>
-                <span class="badge" style="background: #4CAF50; color: white; padding: 3px 8px; border-radius: 3px;">${file.chunk_count} chunks</span>
-                <button onclick="viewFileChunks(${file.id})" style="background: #2196F3; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">View Chunks</button>
-              </li>`;
-          });
-          
-          filesHtml += '</ul>';
-          filesList.innerHTML = filesHtml;
-        } else {
-          filesList.innerHTML = "<p>No processed files found.</p>";
-        }
-      })
-      .catch(error => {
-        loadingFiles.style.display = "none";
-        filesList.innerHTML = `<p>Error fetching files: ${error}</p>`;
-      });
+        filesList.innerHTML = "";
+        fileContent.style.display = "none";
+        loadingFiles.style.display = "block";
+        
+        fetch("{% url 'get_processed_files' %}", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            loadingFiles.style.display = "none";
+            
+            if (data.files && data.files.length > 0) {
+                let filesHtml = '<ul style="list-style-type: none; padding: 0;">';
+                
+                data.files.forEach(file => {
+                    filesHtml += `
+                        <li style="padding: 10px; margin: 5px 0; background: #f5f5f5; border-radius: 5px; display: flex; justify-content: space-between; align-items: center;">
+                            <span>${file.title}</span>
+                            <span class="badge" style="background: #4CAF50; color: white; padding: 3px 8px; border-radius: 3px;">${file.chunk_count} chunks</span>
+                            <button onclick="viewFileChunks(${file.id})" style="background: #2196F3; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">View Chunks</button>
+                        </li>`;
+                });
+                
+                filesHtml += '</ul>';
+                filesList.innerHTML = filesHtml;
+            } else {
+                filesList.innerHTML = "<p>No processed files found.</p>";
+            }
+        })
+        .catch(error => {
+            loadingFiles.style.display = "none";
+            filesList.innerHTML = `<p>Error fetching files: ${error}</p>`;
+        });
     }
     
     // View chunks for a specific file
     function viewFileChunks(fileId) {
-      const chunksContainer = document.getElementById("chunksContainer");
-      const selectedFileName = document.getElementById("selectedFileName");
-      const fileContent = document.getElementById("fileContent");
-      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-      
-      chunksContainer.innerHTML = "<p>Loading chunks...</p>";
-      fileContent.style.display = "block";
-      
-      fetch(`{% url 'get_file_chunks' %}?file_id=${fileId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken
-        }
-      })
-      .then(response => response.json())
-      .then(data => {
-        selectedFileName.textContent = data.file_title;
+        const chunksContainer = document.getElementById("chunksContainer");
+        const selectedFileName = document.getElementById("selectedFileName");
+        const fileContent = document.getElementById("fileContent");
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         
-        if (data.chunks && data.chunks.length > 0) {
-          let chunksHtml = '';
-          
-          data.chunks.forEach((chunk, index) => {
-            chunksHtml += `
-              <div style="margin-bottom: 15px; padding: 15px; background: #f9f9f9; border-left: 4px solid #2196F3; border-radius: 4px;">
-                <h4>Chunk ${index + 1}</h4>
-                <pre style="white-space: pre-wrap; background: #f5f5f5; padding: 10px; border-radius: 4px; max-height: 300px; overflow-y: auto;">${chunk.content}</pre>
-              </div>`;
-          });
-          
-          chunksContainer.innerHTML = chunksHtml;
-        } else {
-          chunksContainer.innerHTML = "<p>No chunks found for this file.</p>";
-        }
-      })
-      .catch(error => {
-        chunksContainer.innerHTML = `<p>Error fetching chunks: ${error}</p>`;
-      });
+        chunksContainer.innerHTML = "<p>Loading chunks...</p>";
+        fileContent.style.display = "block";
+        
+        fetch(`{% url 'get_file_chunks' %}?file_id=${fileId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            selectedFileName.textContent = data.file_title;
+            
+            if (data.chunks && data.chunks.length > 0) {
+                let chunksHtml = '';
+                
+                data.chunks.forEach((chunk, index) => {
+                    chunksHtml += `
+                        <div style="margin-bottom: 15px; padding: 15px; background: #f9f9f9; border-left: 4px solid #2196F3; border-radius: 4px;">
+                            <h4>Chunk ${index + 1}</h4>
+                            <pre style="white-space: pre-wrap; background: #f5f5f5; padding: 10px; border-radius: 4px; max-height: 300px; overflow-y: auto;">${chunk.content}</pre>
+                        </div>`;
+                });
+                
+                chunksContainer.innerHTML = chunksHtml;
+            } else {
+                chunksContainer.innerHTML = "<p>No chunks found for this file.</p>";
+            }
+        })
+        .catch(error => {
+            chunksContainer.innerHTML = `<p>Error fetching chunks: ${error}</p>`;
+        });
     }
-    
-    // Handle exam file upload
-    document.getElementById('exam-upload-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const fileInput = document.getElementById('exam-file');
-      if (!fileInput.files.length) {
-        alert('Please select a file to upload.');
-        return;
-      }
-      
-      const file = fileInput.files[0];
-      if (!file.name.toLowerCase().endsWith('.pdf')) {
-        alert('Only PDF files are supported.');
-        return;
-      }
-      
-      const formData = new FormData();
-      formData.append('file', file);
-      
-      // Show loading indicator
-      const statusDiv = document.getElementById('upload-status');
-      statusDiv.style.display = 'block';
-      
-      // Upload the file
-      fetch("{% url 'upload_exam' %}", {
-        method: 'POST',
-        headers: {
-          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-        },
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        // Hide loading indicator
-        statusDiv.style.display = 'none';
-        
-        if (data.status === 'error') {
-          alert(`Error: ${data.message}`);
-          return;
-        }
-        
-        // Display extracted questions and answers
-        if (data.questions_and_answers && data.questions_and_answers.length > 0) {
-          displayExtractedQuestions(data.questions_and_answers);
-        } else {
-          alert('No questions or answers were extracted from the PDF.');
-        }
-      })
-      .catch(error => {
-        statusDiv.style.display = 'none';
-        alert(`Error: ${error.message}`);
-      });
-    });
-
-    // Function to display extracted questions and answers
-    function displayExtractedQuestions(questionsAndAnswers) {
-      const container = document.getElementById('questions-container');
-      container.innerHTML = '';
-      
-      questionsAndAnswers.forEach(item => {
-        const questionDiv = document.createElement('div');
-        questionDiv.className = 'question-item';
-        
-        questionDiv.innerHTML = `
-          <h3>Question ${item.question_no}</h3>
-          <div class="question-statement">
-            <strong>Question:</strong>
-            <p>${item.question_statement}</p>
-          </div>
-          <div class="student-answer">
-            <strong>Student's Answer:</strong>
-            <p>${item.complete_answer}</p>
-          </div>
-        `;
-        
-        container.appendChild(questionDiv);
-      });
-      
-      document.getElementById('extracted-questions').style.display = 'block';
-    }
-  </script>
-</body>
-</html>
+</script>
+{% endblock %}
