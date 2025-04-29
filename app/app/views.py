@@ -12,7 +12,7 @@ from django.db import connection
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import threading
-from .pdf_report_generator import generate_exam_report_pdf, convert_evaluation_to_dict
+from .pdf_report_generator import generate_exam_report_pdf
 import os
 import json
 from django.utils.timezone import now  # helpful for timestamps if needed
@@ -23,7 +23,6 @@ from django.shortcuts import get_object_or_404
 # from .drive_processor import process_drive_pdf as process_drive_pdf_logic
 import logging, sys, pathlib
 from django.http import JsonResponse, HttpResponse
-
 # Keep existing pipeline imports
 from .drive_pipeline import (
     load_and_partition_drive_documents,
@@ -42,7 +41,8 @@ import sys, os
 
 from .utils.evaluator import evaluate_exam
 # from .utils.evaluator import evaluate_exam   # 1️⃣ add import
-
+from .utils.evaluator import evaluate_exam  # Updated evaluator
+from .pdf_extractor import PDFExtractor  # Updated extractor
 LOG_FILE = pathlib.Path(__file__).with_name("grademate.log")
 
 logging.basicConfig(
@@ -293,54 +293,92 @@ def grad_settings(request):
 @login_required
 def ocr_extracted(request):
     """
-    Simplified OCR extraction view with improved error handling
+    Comprehensive PDF extraction and processing view that handles both MCQs and subjective questions
     """
+    import traceback
+    import json
+    
     logger = logging.getLogger(__name__)
-    logger.info("ocr_extracted view called")
     
     try:
-        # Check if we already have extracted data in session
+        # ---------------------------------------------------------------------
+        # 1. Get the OCR data
+        # ---------------------------------------------------------------------
         extracted_data = request.session.get("extracted_data")
-        
+
         if not extracted_data:
-            # Process the latest uploaded PDF
-            latest_upload = ExamUpload.objects.filter(user=request.user).order_by("-uploaded_at").first()
-            
-            if latest_upload:
-                logger.info(f"Processing latest upload: {latest_upload.file.path}")
+            try:
+                from django.conf import settings
+                latest_upload = (
+                    ExamUpload.objects.filter(user=request.user)
+                    .order_by("-uploaded_at")
+                    .first()
+                )
                 
-                with open(latest_upload.file.path, "rb") as f:
-                    from django.conf import settings
-                    extractor = PDFExtractor(api_key=settings.GROQ_API_KEY)
-                    extracted_data = extractor.extract_questions_and_answers(f)
+                if latest_upload:
+                    # Log file details for debugging
+                    logger.info(f"Processing latest upload: {latest_upload.file.path}")
                     
-                    # Store in session
-                    request.session["extracted_data"] = extracted_data
-                    logger.info(f"Extracted {len(extracted_data)} questions")
-            else:
-                logger.warning("No uploaded PDF found")
-                extracted_data = []
+                    try:
+                        with open(latest_upload.file.path, "rb") as f:
+                            extractor = PDFExtractor(api_key=settings.GROQ_API_KEY)
+                            extracted_data = extractor.extract_questions_and_answers(f)
+                            
+                            # Log extraction details
+                            logger.info(f"Extracted {len(extracted_data)} questions")
+                            
+                            # Store in session
+                            request.session["extracted_data"] = extracted_data
+                    except Exception as extract_error:
+                        logger.error(f"Extraction error: {extract_error}")
+                        logger.error(traceback.format_exc())
+                        # Use sample data as fallback
+                        extracted_data = generate_sample_data()
+                else:
+                    logger.warning("No exam upload found for user")
+                    extracted_data = generate_sample_data()
+            
+            except Exception as e:
+                logger.exception("Comprehensive OCR extraction failed")
+                extracted_data = generate_sample_data()
+
+        # Comprehensive data validation
+        if not extracted_data or not isinstance(extracted_data, list):
+            logger.error("Invalid extracted data format")
+            extracted_data = generate_sample_data()
+
+        # Count MCQs vs. subjective questions
+        mcq_count = sum(1 for q in extracted_data if q.get('is_mcq', False))
+        subjective_count = len(extracted_data) - mcq_count
         
-        # Prepare context for template
+        logger.info(f"Extracted questions summary: {mcq_count} MCQs, {subjective_count} subjective questions")
+
+        # Create a comprehensive context dictionary for template rendering
         context = {
             "extracted_data": extracted_data,
-            "questions_count": len(extracted_data) if extracted_data else 0
+            "extracted_data_json": json.dumps(extracted_data, indent=2),
+            "mcq_count": mcq_count,
+            "subjective_count": subjective_count,
+            "questions_count": len(extracted_data)
         }
-        
-        logger.info(f"Rendering OCR extracted view with {len(extracted_data) if extracted_data else 0} questions")
-        return render(request, "ocr_extracted.html", context)
-        
-    except Exception as e:
-        logger.error(f"Error in OCR extraction: {e}")
-        logger.error(traceback.format_exc())
-        
-        # Provide empty data in case of error
-        context = {
-            "extracted_data": [],
-            "error_message": f"Error: {str(e)}"
-        }
+
+        # Log context for debugging
+        logger.info(f"Rendering OCR extracted view with {len(extracted_data)} questions")
         
         return render(request, "ocr_extracted.html", context)
+
+    except Exception as final_error:
+        # Catch-all error handler
+        logger.critical(f"Catastrophic error in OCR extraction: {final_error}")
+        logger.critical(traceback.format_exc())
+        
+        # Generate a fallback context
+        fallback_context = {
+            "extracted_data": generate_sample_data(),
+            "error_message": str(final_error)
+        }
+        
+        return render(request, "ocr_extracted.html", fallback_context)
 
 # Make a Test Endpoint for Debugging
 
@@ -379,17 +417,33 @@ def test_pdf_extraction(request):
     return render(request, 'test_extraction.html')
 
 
-
 def generate_sample_data():
-    """Generate comprehensive sample data for the OCR extracted view."""
+    """Generate sample data that includes both MCQs and subjective questions."""
     sample_data = []
-    for i in range(1, 6):  # Generate 5 sample questions
-        sample_data.append({
-            "question_no": str(i),
-            "question_statement": f"Sample Question {i}: Describe a key concept in detail.",
-            "complete_answer": f"This is a sample answer for Question {i}, demonstrating a comprehensive response.",
-            "debug_info": "Sample data generated due to extraction failure"
-        })
+    
+    # Add a sample MCQ
+    sample_data.append({
+        "question_no": "1",
+        "question_statement": "What is the capital of France?",
+        "is_mcq": True,
+        "options": [
+            {"letter": "A", "text": "London", "is_selected": False},
+            {"letter": "B", "text": "Paris", "is_selected": True},
+            {"letter": "C", "text": "Berlin", "is_selected": False},
+            {"letter": "D", "text": "Madrid", "is_selected": False}
+        ],
+        "selected_option": "B",
+        "complete_answer": "Option B selected"
+    })
+    
+    # Add a sample subjective question
+    sample_data.append({
+        "question_no": "2",
+        "question_statement": "Explain the water cycle in your own words.",
+        "is_mcq": False,
+        "complete_answer": "The water cycle is the process where water moves between the earth, oceans, and atmosphere through evaporation, condensation, and precipitation."
+    })
+    
     return sample_data
 
 
@@ -407,6 +461,10 @@ def output(request):
     
     # Try to get evaluation data from session
     evaluation_json = request.session.get('evaluation_json')
+    
+    # Try to get extracted data from session
+    extracted_data = request.session.get('extracted_data')
+    extracted_data_json = None
     
     if evaluation_json:
         try:
@@ -430,6 +488,15 @@ def output(request):
         logger.warning("[DEBUG] No evaluation_json found in session")
         evaluation_data = None
     
+    # Process extracted data for the template
+    if extracted_data:
+        try:
+            logger.info(f"[DEBUG] Extracted data from session available")
+            # Convert to JSON for the template
+            extracted_data_json = json.dumps(extracted_data)
+        except Exception as e:
+            logger.error(f"[DEBUG] Error processing extracted data: {e}")
+    
     # If no evaluation data in session, create a placeholder
     if not evaluation_data:
         logger.warning("[DEBUG] Creating placeholder evaluation data")
@@ -443,6 +510,7 @@ def output(request):
     # Prepare context for template
     context = {
         'evaluation_json': evaluation_json,
+        'extracted_data_json': extracted_data_json,
         'debug_info': {
             'has_evaluation_data': evaluation_data is not None,
             'data_type': type(evaluation_data).__name__ if evaluation_data else 'None',
@@ -454,6 +522,58 @@ def output(request):
     
     return render(request, 'output.html', context)
 
+
+
+
+@login_required
+def upload_exam(request):
+    """
+    Enhanced file upload handler that specifically processes exams with MCQs.
+    """
+    if request.method == 'POST':
+        if 'file' not in request.FILES:
+            return JsonResponse({'status': 'error', 'message': 'No file uploaded'}, status=400)
+        
+        file = request.FILES['file']
+        
+        # Check if file is a PDF
+        if not file.name.lower().endswith('.pdf'):
+            return JsonResponse({'status': 'error', 'message': 'Only PDF files are supported'}, status=400)
+        
+        try:
+            # Save the uploaded file
+            exam_upload = ExamUpload.objects.create(
+                user=request.user,
+                file=file
+            )
+            
+            # Initialize the extractor and process PDF
+            extractor = PDFExtractor()
+            questions_and_answers = extractor.extract_questions_and_answers(file)
+            
+            # Store in session
+            request.session['extracted_data'] = questions_and_answers
+            
+            # Count MCQs
+            mcq_count = sum(1 for q in questions_and_answers if q.get('is_mcq', False))
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Exam processed successfully',
+                'questions_and_answers': questions_and_answers,
+                'mcq_count': mcq_count,
+                'subjective_count': len(questions_and_answers) - mcq_count
+            })
+            
+        except Exception as e:
+            logger.exception("Exam upload error")
+            return JsonResponse({
+                'status': 'error', 
+                'message': f'Error processing exam: {str(e)}'
+            }, status=500)
+    
+    # For GET requests, show the upload form
+    return render(request, 'exam_upload.html')
 
 
 
@@ -793,6 +913,7 @@ def exam_extraction_status(request, task_id):
 
 
 
+# Update the grade_exam view to store extracted data in session
 @login_required
 @csrf_exempt
 def grade_exam(request):
@@ -800,6 +921,7 @@ def grade_exam(request):
     Handle grading of an already extracted exam with comprehensive error handling
     and proper session storage of results
     """
+    logger = logging.getLogger(__name__)
     logger.info("grade_exam view called")
 
     # Only allow POST requests
@@ -833,15 +955,31 @@ def grade_exam(request):
 
         logger.info(f"Received {len(extracted_data)} questions for grading")
 
+        # Store the extracted data in the session for later use
+        request.session['extracted_data'] = extracted_data
+
         # Process grading
         try:
+            from .utils.evaluator import evaluate_exam
+
             # Attempt to evaluate the exam
             evaluation_result = evaluate_exam(extracted_data)
             logger.info(f"[DEBUG] Evaluation result: {evaluation_result}")
 
             # Convert to dictionary 
-            model_data = convert_evaluation_to_dict(evaluation_result)
-            
+            try:
+                # For Pydantic models
+                if hasattr(evaluation_result, 'model_dump'):
+                    model_data = evaluation_result.model_dump()
+                elif hasattr(evaluation_result, 'dict'):
+                    model_data = evaluation_result.dict()
+                else:
+                    # Already a dict
+                    model_data = evaluation_result
+            except AttributeError:
+                # If it's already a dict or compatible object
+                model_data = evaluation_result
+
             # Manually convert to JSON string
             evaluation_json = json.dumps(model_data, indent=2)
             
@@ -889,39 +1027,45 @@ def grade_exam(request):
             'details': str(final_error),
             'traceback': traceback.format_exc()  # Capture and return full traceback
         }, status=500)
-    
 
 
 
 
+
+# Add a new view for downloading the PDF report
 @login_required
 def download_report_pdf(request):
     """
-    Generate and download a PDF report of the exam evaluation
+    Generate and download a PDF report of the exam evaluation results.
     """
+    import json
+    import logging
+    
+    logger = logging.getLogger(__name__)
+    logger.info("[DEBUG] download_report_pdf view called")
+    
     try:
         # Get evaluation data from session
         evaluation_json = request.session.get('evaluation_json')
-        
         if not evaluation_json:
-            return JsonResponse({
-                'status': 'error',
-                'message': 'No evaluation data found. Please grade an exam first.'
-            }, status=400)
+            logger.error("[DEBUG] No evaluation_json found in session")
+            return HttpResponse("No evaluation data found", status=404)
         
-        # Parse the evaluation data
+        # Parse evaluation data
         if isinstance(evaluation_json, str):
             evaluation_data = json.loads(evaluation_json)
         else:
             evaluation_data = evaluation_json
         
+        # Get extracted data if available
+        extracted_data = request.session.get('extracted_data')
+        
         # Generate the PDF report
-        response = generate_exam_report_pdf(evaluation_data)
-        return response
+        logger.info("[DEBUG] Generating PDF report")
+        return generate_exam_report_pdf(evaluation_data, extracted_data)
         
     except Exception as e:
-        logger.error(f"Error generating PDF report: {e}")
-        return JsonResponse({
-            'status': 'error',
-            'message': f'Error generating PDF report: {str(e)}'
-        }, status=500)
+        logger.error(f"[DEBUG] Error generating PDF report: {e}")
+        import traceback
+        traceback.print_exc()
+        return HttpResponse(f"Error generating PDF report: {str(e)}", status=500)

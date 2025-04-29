@@ -6,6 +6,7 @@ from django.contrib import admin
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from .views import *
+from .views import download_report_pdf
 
 """
 URL configuration for app project.
@@ -36,6 +37,7 @@ urlpatterns = [
     path('grading/', grading, name='grading'),
     path('grad-settings/', grad_settings, name='grad_settings'),
     path('ocr-extracted/', ocr_extracted, name='ocr_extracted'),
+    path('download-report/', download_report_pdf, name='download_report_pdf'),
     path('output/', output, name='output'),
 
     # --- Existing Drive APIs ---
