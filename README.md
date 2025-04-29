@@ -1,17 +1,100 @@
-## GradeMate
-GradeMate is a Generative AI web app for automated exam grading using NLP, LLMs, and advanced RAG techniques (Graph RAG, Query Expansion, Merged Retrieval, etc). The development of project is in progress.
+# GradeMate
 
-### Tech Stack:
-- Frontend: React JS
-- Backend: Python, Django
-- AI: LLMs( Qwen, Gemini, Llama)
-- Embeddings: Nomic-ai
-- RAG: Langchain, LangGraph(Graph RAG, Query Expansion, Merged Retrieval, etc)
-- Vector Databases: milvus, chroma
-- Cloud: AWS, Runpod
+This project aims to revolutionize exam grading by developing GradeMate, an AIpowered automated grading system for exam papers. It addresses the challenge of
+manual, time-consuming, and inconsistent exam evaluation processes in educational
+institutions. The motivation behind this work is to enhance grading efficiency,
+fairness, and scalability.
+We utilized NLP techniques, LLMs (Large Language Models), and RAG (RetrievalAugmented Generation) methodologies. The system architecture includes a
+frontend dashboard, backend grading engine, and custom RAG pipelines.
+Results show that GradeMate achieves high semantic grading accuracy compared to
+manual grading, drastically reducing grading time and offering consistent
+evaluation across different answer styles.
+In conclusion, GradeMate successfully demonstrates the feasibility of AI-driven
+descriptive exam evaluation and opens avenues for future work, such as expanding
+support for subjective creativity assessment and multilingual grading.
+
+## Tech Stack
+
+- **Full Stack Development**: Python, Django
+- **AI Models**: GroqCloud, Deepseek, Gemini, Llama, Google AI Studio
+- **Embeddings**: Nomic.ai
+- **RAG Frameworks**: LangChain, LangGraph
+- **Vector Databases**: Chroma
+
+## Project Structure
+
+```
+GradeMate/
+├── ai/                     # AI models and related scripts
+├── app/                    # Django application files
+├── docs/                   # Documentation and resources
+├── downloaded_models/      # Pre-trained models
+├── extraction/             # Data extraction utilities
+├── mvp/                    # Minimum Viable Product implementation
+├── requirements.txt        # Python dependencies
+├── Dockerfile              # Containerization setup
+└── README.md               # Project overview and setup instructions
+```
+
+##  Installation & Setup
+
+### Via Repository Clone
+Follow these steps to set up the project on your local machine:
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/safwanhamza/GradeMate.git
+cd GradeMate
+```
+
+### 2. Set Up a Virtual Environment
+
+It's recommended to use a virtual environment to manage dependencies:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+### 3. Install Dependencies
+
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### 4. Apply Migrations
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+### 5. Run the Development Server
+
+```bash
+python manage.py runserver
+```
+
+Access the application at [http://localhost:8000](http://localhost:8000).
+
+### Via Docker
+
+To containerize the application using Docker:
+
+### 1. Build the Docker Image
+
+```bash
+docker build -t grademate-app
+```
+
+### 2. Run the Docker Container
+
+```bash
+docker run -d -p 8000:8000 grademate-app
+```
 
 
-### Project Files
-- **MVP:** Core functionalities like preparation of grading engine on custom textbooks by examiners guidelines and answer generation is available [here.](https://huggingface.co/spaces/hamzasafwan/GradeMate_MVP)
-- **Design:** Upcoming App design and architecture is available [here.](https://www.figma.com/proto/uSEp5kuYOc9btq1ibraodO/GradeMate-UI%2FUX-Design?node-id=9-2&node-type=canvas&t=uGmNmkSIPeQ5EZkZ-0&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=9%3A2)
-- **Documentation:** Project Documentation is available [here.](https://github.com/safwanhamza/GradeMate/tree/main/docs)
+## Documentation
+Documentation is available in the [docs/](docs/) directory.
