@@ -59,7 +59,7 @@ def initialize_llmchain(llm_model, temperature, max_tokens, top_k, vector_db, pr
             max_new_tokens = max_tokens,
             top_k = top_k,
         )
-    
+    #
     memory = ConversationBufferMemory(
         memory_key="chat_history",
         output_key='answer',
