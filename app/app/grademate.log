@@ -1,0 +1,649 @@
+2025-04-28 11:54:35,537 | WARNING  | django.request | Not Found: /favicon.ico
+2025-04-28 11:55:57,544 | INFO     | app.views | ocr_extracted view called
+2025-04-28 11:55:57,544 | INFO     | app.views | Session extracted_data exists: False
+2025-04-28 11:55:57,548 | INFO     | app.views | Processing latest upload: C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\Uni Working\grademate_folder\app\uploads\Evaluation_of_Regression_Models_V2_ZxthmLy.pdf
+2025-04-28 11:55:58,261 | INFO     | app.pdf_extractor | Total pages in PDF: 8
+2025-04-28 11:55:58,493 | INFO     | app.pdf_extractor | Successfully extracted 8 page images
+2025-04-28 11:56:00,711 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:56:00,716 | INFO     | app.pdf_extractor | Successfully extracted text from page 1
+2025-04-28 11:56:02,376 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:56:02,377 | INFO     | app.pdf_extractor | Successfully extracted text from page 2
+2025-04-28 11:56:03,552 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:56:03,553 | INFO     | app.pdf_extractor | Successfully extracted text from page 3
+2025-04-28 11:56:05,549 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:56:05,550 | INFO     | app.pdf_extractor | Successfully extracted text from page 4
+2025-04-28 11:56:06,668 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:56:06,669 | INFO     | app.pdf_extractor | Successfully extracted text from page 5
+2025-04-28 11:56:07,969 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:56:07,971 | INFO     | app.pdf_extractor | Successfully extracted text from page 6
+2025-04-28 11:56:10,447 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:56:10,448 | INFO     | app.pdf_extractor | Successfully extracted text from page 7
+2025-04-28 11:56:13,347 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:56:13,348 | INFO     | app.pdf_extractor | Successfully extracted text from page 8
+2025-04-28 11:56:13,348 | INFO     | app.pdf_extractor | Total extracted text length: 3574 characters
+2025-04-28 11:56:14,127 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:56:14,128 | INFO     | app.pdf_extractor | Extracted 0 questions from PDF
+2025-04-28 11:56:14,128 | INFO     | app.views | Extracted 0 questions
+2025-04-28 11:56:14,128 | ERROR    | app.views | Invalid extracted data format
+2025-04-28 11:56:14,128 | INFO     | app.views | Successfully serialized exam_dict to JSON: 1360 characters
+2025-04-28 11:56:14,128 | INFO     | app.views | Rendering OCR extracted view with 5 questions
+2025-04-28 11:57:24,190 | INFO     | app.views | grade_exam view called
+2025-04-28 11:57:24,191 | INFO     | app.views | Received 5 questions for grading
+2025-04-28 11:57:27,658 | INFO     | chromadb.telemetry.product.posthog | Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-04-28 11:57:28,732 | INFO     | app.utils.evaluator | Starting exam evaluation for 5 questions
+2025-04-28 11:57:30,368 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:57:32,087 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:57:33,945 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:57:36,067 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:57:38,115 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:57:38,117 | INFO     | app.utils.evaluator | Completed exam evaluation. Total Score: 47
+2025-04-28 11:57:40,111 | INFO     | app.views | [DEBUG] output view
+2025-04-28 11:57:40,112 | INFO     | app.views | Output view - evaluation_json from session: {"evaluations": [{"question_no": "1", "score": 75, "feedback": "The answer lacks detail and does not address the question. Please provide a more comprehensive response next time."}, {"question_no": "2", "score": 50, "feedback": "The answer is too generic and lacks specific details about a key concept."}, {"question_no": "3", "score": 40, "feedback": "The answer does not provide a detailed description of a key concept and appears to be a placeholder response."}, {"question_no": "4", "score": 40, "feedback": "The answer is too generic and does not provide a detailed description of any key concept."}, {"question_no": "5", "score": 30, "feedback": "The answer is irrelevant and does not address the question."}], "total_score": 47, "overall_feedback": "Performance requires substantial improvement. Recommend comprehensive review of course materials and seeking additional support."}
+2025-04-28 11:57:40,113 | INFO     | app.views | [DEBUG] Successfully parsed JSON string, data type: <class 'dict'>
+2025-04-28 11:57:40,113 | INFO     | app.views | [DEBUG] Found 5 evaluations
+2025-04-28 11:57:40,113 | INFO     | app.views | [DEBUG] Question 1 has score field: 75
+2025-04-28 11:57:40,114 | INFO     | app.views | [DEBUG] Question 2 has score field: 50
+2025-04-28 11:57:40,114 | INFO     | app.views | [DEBUG] Question 3 has score field: 40
+2025-04-28 11:57:40,114 | INFO     | app.views | [DEBUG] Question 4 has score field: 40
+2025-04-28 11:57:40,114 | INFO     | app.views | [DEBUG] Question 5 has score field: 30
+2025-04-28 11:57:40,115 | INFO     | app.views | [DEBUG] Final evaluation_json for template (first 200 chars): {"evaluations": [{"question_no": "1", "score": 75, "feedback": "The answer lacks detail and does not address the question. Please provide a more comprehensive response next time."}, {"question_no": "2...
+2025-04-28 11:57:40,115 | INFO     | app.views | [DEBUG] Rendering output template with context: {'evaluation_json': '{"evaluations": [{"question_no": "1", "score": 75, "feedback": "The answer lacks detail and does not address the question. Please provide a more comprehensive response next time."}, {"question_no": "2", "score": 50, "feedback": "The answer is too generic and lacks specific details about a key concept."}, {"question_no": "3", "score": 40, "feedback": "The answer does not provide a detailed description of a key concept and appears to be a placeholder response."}, {"question_no": "4", "score": 40, "feedback": "The answer is too generic and does not provide a detailed description of any key concept."}, {"question_no": "5", "score": 30, "feedback": "The answer is irrelevant and does not address the question."}], "total_score": 47, "overall_feedback": "Performance requires substantial improvement. Recommend comprehensive review of course materials and seeking additional support."}', 'debug_info': {'has_evaluation_data': True, 'data_type': 'dict', 'session_keys': ['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'extracted_data', 'evaluation_json'], 'evaluation_summary': '5 questions'}}
+2025-04-28 11:58:25,993 | INFO     | app.views | grade_exam view called
+2025-04-28 11:58:25,994 | INFO     | app.views | Received 5 questions for grading
+2025-04-28 11:58:27,252 | INFO     | app.utils.evaluator | Starting exam evaluation for 5 questions
+2025-04-28 11:58:28,782 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:58:30,531 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:58:32,619 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:58:36,099 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:58:38,890 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 11:58:38,891 | INFO     | app.utils.evaluator | Completed exam evaluation. Total Score: 31
+2025-04-28 11:58:40,423 | INFO     | app.views | [DEBUG] output view
+2025-04-28 11:58:40,423 | INFO     | app.views | Output view - evaluation_json from session: {"evaluations": [{"question_no": "1", "score": 0, "feedback": "The answer is incorrect or irrelevant."}, {"question_no": "2", "score": 50, "feedback": "The answer is too generic and lacks specific details or concepts."}, {"question_no": "3", "score": 40, "feedback": "The answer is too generic and lacks specific details about the key concept. It does not demonstrate a clear understanding or provide a structured response."}, {"question_no": "4", "score": 40, "feedback": "The answer did not provide a detailed explanation of a key concept."}, {"question_no": "5", "score": 25, "feedback": "The answer is irrelevant and does not address the question. Please provide a detailed explanation of a key concept in future responses."}], "total_score": 31, "overall_feedback": "Performance requires substantial improvement. Recommend comprehensive review of course materials and seeking additional support."}
+2025-04-28 11:58:40,424 | INFO     | app.views | [DEBUG] Successfully parsed JSON string, data type: <class 'dict'>
+2025-04-28 11:58:40,425 | INFO     | app.views | [DEBUG] Found 5 evaluations
+2025-04-28 11:58:40,425 | INFO     | app.views | [DEBUG] Question 1 has score field: 0
+2025-04-28 11:58:40,425 | INFO     | app.views | [DEBUG] Question 2 has score field: 50
+2025-04-28 11:58:40,425 | INFO     | app.views | [DEBUG] Question 3 has score field: 40
+2025-04-28 11:58:40,425 | INFO     | app.views | [DEBUG] Question 4 has score field: 40
+2025-04-28 11:58:40,426 | INFO     | app.views | [DEBUG] Question 5 has score field: 25
+2025-04-28 11:58:40,426 | INFO     | app.views | [DEBUG] Final evaluation_json for template (first 200 chars): {"evaluations": [{"question_no": "1", "score": 0, "feedback": "The answer is incorrect or irrelevant."}, {"question_no": "2", "score": 50, "feedback": "The answer is too generic and lacks specific det...
+2025-04-28 11:58:40,426 | INFO     | app.views | [DEBUG] Rendering output template with context: {'evaluation_json': '{"evaluations": [{"question_no": "1", "score": 0, "feedback": "The answer is incorrect or irrelevant."}, {"question_no": "2", "score": 50, "feedback": "The answer is too generic and lacks specific details or concepts."}, {"question_no": "3", "score": 40, "feedback": "The answer is too generic and lacks specific details about the key concept. It does not demonstrate a clear understanding or provide a structured response."}, {"question_no": "4", "score": 40, "feedback": "The answer did not provide a detailed explanation of a key concept."}, {"question_no": "5", "score": 25, "feedback": "The answer is irrelevant and does not address the question. Please provide a detailed explanation of a key concept in future responses."}], "total_score": 31, "overall_feedback": "Performance requires substantial improvement. Recommend comprehensive review of course materials and seeking additional support."}', 'debug_info': {'has_evaluation_data': True, 'data_type': 'dict', 'session_keys': ['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'extracted_data', 'evaluation_json'], 'evaluation_summary': '5 questions'}}
+2025-04-28 12:00:04,783 | INFO     | oauth2client.transport | Attempting refresh to obtain initial access_token
+2025-04-28 12:00:04,799 | INFO     | oauth2client.client | Refreshing access_token
+2025-04-28 12:00:28,033 | INFO     | app.drive_processor | Successfully set up Nomic Embeddings
+2025-04-28 12:00:28,036 | INFO     | app.drive_processor | Processing document: DA2 Semester Project - Fitness Tracker Data (1).pdf
+2025-04-28 12:00:28,037 | INFO     | app.drive_processor | Attempting to process file at: downloaded_files\DA2 Semester Project - Fitness Tracker Data (1).pdf
+2025-04-28 12:00:28,042 | INFO     | app.drive_processor | Created 7 chunks for DA2 Semester Project - Fitness Tracker Data (1).pdf
+2025-04-28 12:00:28,044 | INFO     | app.drive_processor | Processing document: BSDSf21M007_Assignment_1.pdf
+2025-04-28 12:00:28,044 | INFO     | app.drive_processor | Attempting to process file at: downloaded_files\BSDSf21M007_Assignment_1.pdf
+2025-04-28 12:00:28,055 | INFO     | app.drive_processor | Created 197 chunks for BSDSf21M007_Assignment_1.pdf
+2025-04-28 12:00:28,057 | INFO     | app.drive_processor | Processing document: README.md
+2025-04-28 12:00:28,057 | INFO     | app.drive_processor | Attempting to process file at: downloaded_files\README.md
+2025-04-28 12:00:28,058 | INFO     | app.drive_processor | Created 1 chunks for README.md
+2025-04-28 12:00:28,059 | INFO     | app.drive_processor | Processing document: index.html
+2025-04-28 12:00:28,060 | INFO     | app.drive_processor | Attempting to process file at: downloaded_files\index.html
+2025-04-28 12:00:28,061 | INFO     | app.drive_processor | Created 1 chunks for index.html
+2025-04-28 12:00:28,062 | INFO     | app.drive_processor | Processing document: execution.txt
+2025-04-28 12:00:28,062 | INFO     | app.drive_processor | Attempting to process file at: downloaded_files\execution.txt
+2025-04-28 12:00:28,063 | INFO     | app.drive_processor | Created 1 chunks for execution.txt
+2025-04-28 12:00:28,065 | INFO     | app.drive_processor | Processing document: app.py
+2025-04-28 12:00:28,065 | INFO     | app.drive_processor | Attempting to process file at: downloaded_files\app.py
+2025-04-28 12:00:28,066 | INFO     | app.drive_processor | Created 16 chunks for app.py
+2025-04-28 12:00:28,068 | INFO     | app.drive_processor | Processing document: preprocessed_customers.csv
+2025-04-28 12:00:28,068 | INFO     | app.drive_processor | Attempting to process file at: downloaded_files\preprocessed_customers.csv
+2025-04-28 12:00:28,074 | INFO     | app.drive_processor | Created 1 chunks for preprocessed_customers.csv
+2025-04-28 12:00:28,075 | INFO     | app.drive_processor | Processing document: ass2-draft.docx
+2025-04-28 12:00:28,076 | INFO     | app.drive_processor | Attempting to process file at: downloaded_files\ass2-draft.docx
+2025-04-28 12:00:28,077 | INFO     | app.drive_processor | Created 1 chunks for ass2-draft.docx
+2025-04-28 12:00:28,078 | INFO     | app.drive_processor | Processing document: Logistic_Regression_Solution.ipynb
+2025-04-28 12:00:28,078 | INFO     | app.drive_processor | Attempting to process file at: downloaded_files\Logistic_Regression_Solution.ipynb
+2025-04-28 12:00:28,079 | INFO     | app.drive_processor | Created 1 chunks for Logistic_Regression_Solution.ipynb
+2025-04-28 12:00:28,088 | ERROR    | app.drive_processor | Failed to create Chroma DB: [WinError 5] Access is denied: 'C:\\Users\\M.Hussain\\OneDrive - Cedar Financial\\Documents\\Uni Working\\grademate_folder\\app\\chroma_db\\1c02d45a-e792-4fb7-a937-5da0e59deb58'
+2025-04-28 14:14:52,045 | INFO     | django.utils.autoreload | C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\Uni Working\GradeMate_Folder\app\app\pdf_extractor.py changed, reloading.
+2025-04-28 14:23:56,320 | INFO     | django.utils.autoreload | C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\Uni Working\GradeMate_Folder\app\app\views.py changed, reloading.
+2025-04-28 14:28:39,990 | INFO     | django.utils.autoreload | C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\Uni Working\GradeMate_Folder\app\app\views.py changed, reloading.
+2025-04-28 15:33:56,783 | INFO     | app.views | ocr_extracted view called
+2025-04-28 15:33:56,804 | INFO     | app.views | Processing latest upload: C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\Uni Working\grademate_folder\app\uploads\DLD_Mids_Paper_DSF23.pdf
+2025-04-28 15:33:57,091 | INFO     | app.pdf_extractor | Total pages in PDF: 8
+2025-04-28 15:33:57,956 | INFO     | app.pdf_extractor | Successfully extracted 8 page images
+2025-04-28 15:34:06,609 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:34:06,624 | INFO     | app.pdf_extractor | Successfully extracted text from page 1
+2025-04-28 15:34:15,086 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:34:15,089 | INFO     | app.pdf_extractor | Successfully extracted text from page 2
+2025-04-28 15:34:23,508 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:34:23,517 | INFO     | app.pdf_extractor | Successfully extracted text from page 3
+2025-04-28 15:34:30,832 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:34:30,834 | INFO     | app.pdf_extractor | Successfully extracted text from page 4
+2025-04-28 15:34:39,252 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:34:39,254 | INFO     | app.pdf_extractor | Successfully extracted text from page 5
+2025-04-28 15:34:48,364 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:34:48,366 | INFO     | app.pdf_extractor | Successfully extracted text from page 6
+2025-04-28 15:34:56,150 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:34:56,152 | INFO     | app.pdf_extractor | Successfully extracted text from page 7
+2025-04-28 15:35:02,394 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:35:02,395 | INFO     | app.pdf_extractor | Successfully extracted text from page 8
+2025-04-28 15:35:02,396 | INFO     | app.pdf_extractor | Total extracted text length: 13414 characters
+2025-04-28 15:35:02,396 | WARNING  | app.pdf_extractor | Truncating extracted text from 13414 to 10000 characters
+2025-04-28 15:35:03,362 | INFO     | app.pdf_extractor | Invoking LLM chain to extract data...
+2025-04-28 15:35:07,118 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:35:07,120 | INFO     | app.pdf_extractor | Extracted 12 questions from PDF
+2025-04-28 15:35:07,121 | INFO     | app.views | Extracted 12 questions
+2025-04-28 15:35:07,122 | INFO     | app.views | Rendering OCR extracted view with 12 questions
+2025-04-28 15:52:50,667 | INFO     | app.views | grade_exam view called
+2025-04-28 15:52:50,670 | INFO     | app.views | Received 12 questions for grading
+2025-04-28 15:52:53,619 | INFO     | chromadb.telemetry.product.posthog | Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-04-28 15:52:54,263 | INFO     | app.utils.evaluator | Starting exam evaluation for 12 questions
+2025-04-28 15:52:56,959 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:52:59,747 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:53:02,063 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:53:05,681 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:53:07,877 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:53:11,541 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:53:13,384 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:53:21,098 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:53:36,745 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:53:37,085 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-04-28 15:53:37,086 | INFO     | groq._base_client | Retrying request to /openai/v1/chat/completions in 26.000000 seconds
+2025-04-28 15:54:07,341 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:54:07,644 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-04-28 15:54:07,644 | INFO     | groq._base_client | Retrying request to /openai/v1/chat/completions in 7.000000 seconds
+2025-04-28 15:54:22,306 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 15:54:22,308 | INFO     | app.utils.evaluator | Completed exam evaluation. Total Score: 61
+2025-04-28 15:54:24,647 | INFO     | app.views | [DEBUG] output view
+2025-04-28 15:54:24,647 | INFO     | app.views | Output view - evaluation_json from session: {"evaluations": [{"question_no": "1", "score": 20, "feedback": "The student incorrectly converted from base 4 instead of hexadecimal and made calculation errors."}, {"question_no": "1", "score": 90, "feedback": "Correct conversion of both integer and fractional parts."}, {"question_no": "1", "score": 75, "feedback": "The student demonstrated a good understanding but the explanation was unclear and lacked proper steps."}, {"question_no": "4", "score": 75, "feedback": "The student demonstrated a good understanding of converting to Product of Maxterm form but made errors in the process."}, {"question_no": "5", "score": 75, "feedback": "Correct final answer, but adding ABC was unnecessary and confusing."}, {"question_no": "6", "score": 75, "feedback": "The student correctly applied De Morgan's Law but made errors in further simplification, leading to a non-minimal form."}, {"question_no": "7", "score": 75, "feedback": "Correct expression and simplification to XOR, but could benefit from more detailed steps."}, {"question_no": "8", "score": 75, "feedback": "The student correctly derived the function as the XOR of the two switches, which meets the problem's requirements. However, a more detailed explanation of how the function satisfies each condition would have been beneficial."}, {"question_no": "9", "score": 0, "feedback": "No answer was provided for this question."}, {"question_no": "2", "score": 75, "feedback": "The answer is incorrect as it does not cover all minterms, indicating gaps in K-Map application."}, {"question_no": "2", "score": 75, "feedback": "The answer is correct as a POS form but not minimal."}, {"question_no": "3", "score": 30, "feedback": "The answer incorrectly assumes a direct mapping without logic conversion."}], "total_score": 61, "overall_feedback": "Satisfactory performance. Basic understanding achieved, but significant improvement needed."}
+2025-04-28 15:54:24,649 | INFO     | app.views | [DEBUG] Successfully parsed JSON string, data type: <class 'dict'>
+2025-04-28 15:54:24,649 | INFO     | app.views | [DEBUG] Found 12 evaluations
+2025-04-28 15:54:24,650 | INFO     | app.views | [DEBUG] Question 1 has score field: 20
+2025-04-28 15:54:24,650 | INFO     | app.views | [DEBUG] Question 2 has score field: 90
+2025-04-28 15:54:24,650 | INFO     | app.views | [DEBUG] Question 3 has score field: 75
+2025-04-28 15:54:24,651 | INFO     | app.views | [DEBUG] Question 4 has score field: 75
+2025-04-28 15:54:24,651 | INFO     | app.views | [DEBUG] Question 5 has score field: 75
+2025-04-28 15:54:24,651 | INFO     | app.views | [DEBUG] Question 6 has score field: 75
+2025-04-28 15:54:24,651 | INFO     | app.views | [DEBUG] Question 7 has score field: 75
+2025-04-28 15:54:24,652 | INFO     | app.views | [DEBUG] Question 8 has score field: 75
+2025-04-28 15:54:24,652 | INFO     | app.views | [DEBUG] Question 9 has score field: 0
+2025-04-28 15:54:24,652 | INFO     | app.views | [DEBUG] Question 10 has score field: 75
+2025-04-28 15:54:24,653 | INFO     | app.views | [DEBUG] Question 11 has score field: 75
+2025-04-28 15:54:24,653 | INFO     | app.views | [DEBUG] Question 12 has score field: 30
+2025-04-28 15:54:24,653 | INFO     | app.views | [DEBUG] Final evaluation_json for template (first 200 chars): {"evaluations": [{"question_no": "1", "score": 20, "feedback": "The student incorrectly converted from base 4 instead of hexadecimal and made calculation errors."}, {"question_no": "1", "score": 90, "...
+2025-04-28 15:54:24,654 | INFO     | app.views | [DEBUG] Rendering output template with context: {'evaluation_json': '{"evaluations": [{"question_no": "1", "score": 20, "feedback": "The student incorrectly converted from base 4 instead of hexadecimal and made calculation errors."}, {"question_no": "1", "score": 90, "feedback": "Correct conversion of both integer and fractional parts."}, {"question_no": "1", "score": 75, "feedback": "The student demonstrated a good understanding but the explanation was unclear and lacked proper steps."}, {"question_no": "4", "score": 75, "feedback": "The student demonstrated a good understanding of converting to Product of Maxterm form but made errors in the process."}, {"question_no": "5", "score": 75, "feedback": "Correct final answer, but adding ABC was unnecessary and confusing."}, {"question_no": "6", "score": 75, "feedback": "The student correctly applied De Morgan\'s Law but made errors in further simplification, leading to a non-minimal form."}, {"question_no": "7", "score": 75, "feedback": "Correct expression and simplification to XOR, but could benefit from more detailed steps."}, {"question_no": "8", "score": 75, "feedback": "The student correctly derived the function as the XOR of the two switches, which meets the problem\'s requirements. However, a more detailed explanation of how the function satisfies each condition would have been beneficial."}, {"question_no": "9", "score": 0, "feedback": "No answer was provided for this question."}, {"question_no": "2", "score": 75, "feedback": "The answer is incorrect as it does not cover all minterms, indicating gaps in K-Map application."}, {"question_no": "2", "score": 75, "feedback": "The answer is correct as a POS form but not minimal."}, {"question_no": "3", "score": 30, "feedback": "The answer incorrectly assumes a direct mapping without logic conversion."}], "total_score": 61, "overall_feedback": "Satisfactory performance. Basic understanding achieved, but significant improvement needed."}', 'debug_info': {'has_evaluation_data': True, 'data_type': 'dict', 'session_keys': ['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'extracted_data', 'evaluation_json'], 'evaluation_summary': '12 questions'}}
+2025-04-28 16:25:35,698 | INFO     | app.views | ocr_extracted view called
+2025-04-28 16:25:35,700 | INFO     | app.views | Processing latest upload: C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\Uni Working\grademate_folder\app\uploads\DLD_Mids_Paper_DSF23_zX4Dhm3.pdf
+2025-04-28 16:25:35,729 | INFO     | app.pdf_extractor | Total pages in PDF: 8
+2025-04-28 16:25:36,432 | INFO     | app.pdf_extractor | Successfully extracted 8 page images
+2025-04-28 16:25:42,243 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:25:42,264 | INFO     | app.pdf_extractor | Successfully extracted text from page 1
+2025-04-28 16:25:45,556 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:25:45,557 | INFO     | app.pdf_extractor | Successfully extracted text from page 2
+2025-04-28 16:25:52,918 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:25:52,930 | INFO     | app.pdf_extractor | Successfully extracted text from page 3
+2025-04-28 16:25:57,526 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:25:57,527 | INFO     | app.pdf_extractor | Successfully extracted text from page 4
+2025-04-28 16:26:01,658 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:26:01,659 | INFO     | app.pdf_extractor | Successfully extracted text from page 5
+2025-04-28 16:26:07,680 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:26:07,682 | INFO     | app.pdf_extractor | Successfully extracted text from page 6
+2025-04-28 16:26:13,026 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:26:13,027 | INFO     | app.pdf_extractor | Successfully extracted text from page 7
+2025-04-28 16:26:15,013 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:26:15,014 | INFO     | app.pdf_extractor | Successfully extracted text from page 8
+2025-04-28 16:26:15,014 | INFO     | app.pdf_extractor | Total extracted text length: 13414 characters
+2025-04-28 16:26:15,015 | WARNING  | app.pdf_extractor | Truncating extracted text from 13414 to 10000 characters
+2025-04-28 16:26:15,812 | INFO     | app.pdf_extractor | Invoking LLM chain to extract data...
+2025-04-28 16:26:19,519 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:26:19,524 | INFO     | app.pdf_extractor | Extracted 12 questions from PDF
+2025-04-28 16:26:19,524 | INFO     | app.views | Extracted 12 questions
+2025-04-28 16:26:19,525 | INFO     | app.views | Rendering OCR extracted view with 12 questions
+2025-04-28 16:29:23,655 | INFO     | app.views | ocr_extracted view called
+2025-04-28 16:29:23,656 | INFO     | app.views | Processing latest upload: C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\Uni Working\grademate_folder\app\uploads\DLD_Mids_Paper_DSF23_pA2Sptj.pdf
+2025-04-28 16:29:23,662 | INFO     | app.pdf_extractor | Total pages in PDF: 8
+2025-04-28 16:29:24,396 | INFO     | app.pdf_extractor | Successfully extracted 8 page images
+2025-04-28 16:29:29,654 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:29:29,655 | INFO     | app.pdf_extractor | Successfully extracted text from page 1
+2025-04-28 16:29:34,227 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:29:34,228 | INFO     | app.pdf_extractor | Successfully extracted text from page 2
+2025-04-28 16:29:40,328 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:29:40,334 | INFO     | app.pdf_extractor | Successfully extracted text from page 3
+2025-04-28 16:29:46,502 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:29:46,503 | INFO     | app.pdf_extractor | Successfully extracted text from page 4
+2025-04-28 16:29:51,131 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:29:51,132 | INFO     | app.pdf_extractor | Successfully extracted text from page 5
+2025-04-28 16:30:00,196 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:30:00,198 | INFO     | app.pdf_extractor | Successfully extracted text from page 6
+2025-04-28 16:30:04,515 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:30:04,516 | INFO     | app.pdf_extractor | Successfully extracted text from page 7
+2025-04-28 16:30:08,782 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:30:08,783 | INFO     | app.pdf_extractor | Successfully extracted text from page 8
+2025-04-28 16:30:08,784 | INFO     | app.pdf_extractor | Total extracted text length: 13414 characters
+2025-04-28 16:30:08,784 | WARNING  | app.pdf_extractor | Truncating extracted text from 13414 to 10000 characters
+2025-04-28 16:30:09,584 | INFO     | app.pdf_extractor | Invoking LLM chain to extract data...
+2025-04-28 16:30:13,054 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:30:13,055 | INFO     | app.pdf_extractor | Extracted 12 questions from PDF
+2025-04-28 16:30:13,055 | INFO     | app.views | Extracted 12 questions
+2025-04-28 16:30:13,056 | INFO     | app.views | Rendering OCR extracted view with 12 questions
+2025-04-28 16:30:19,277 | INFO     | app.views | grade_exam view called
+2025-04-28 16:30:19,277 | INFO     | app.views | Received 12 questions for grading
+2025-04-28 16:30:20,851 | INFO     | chromadb.telemetry.product.posthog | Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-04-28 16:30:21,279 | INFO     | app.utils.evaluator | Starting exam evaluation for 12 questions
+2025-04-28 16:30:23,913 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:30:29,436 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:30:33,799 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:30:36,225 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:30:38,445 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:30:41,956 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:30:44,487 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:30:50,871 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:30:51,163 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-04-28 16:30:51,164 | INFO     | groq._base_client | Retrying request to /openai/v1/chat/completions in 2.000000 seconds
+2025-04-28 16:31:05,248 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:31:05,537 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-04-28 16:31:05,537 | INFO     | groq._base_client | Retrying request to /openai/v1/chat/completions in 17.000000 seconds
+2025-04-28 16:31:26,111 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:31:26,424 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-04-28 16:31:26,425 | INFO     | groq._base_client | Retrying request to /openai/v1/chat/completions in 6.000000 seconds
+2025-04-28 16:31:41,445 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 16:31:41,447 | INFO     | app.utils.evaluator | Completed exam evaluation. Total Score: 58
+2025-04-28 16:31:43,470 | INFO     | app.views | [DEBUG] output view
+2025-04-28 16:31:43,471 | INFO     | app.views | Output view - evaluation_json from session: {"evaluations": [{"question_no": "1", "score": 30, "feedback": "The student incorrectly used base 4 instead of hexadecimal and included invalid digits."}, {"question_no": "1", "score": 100, "feedback": "Correct conversion of both integer and fractional parts."}, {"question_no": "1", "score": 75, "feedback": "Correct answer with some unclear steps in the process."}, {"question_no": "4", "score": 30, "feedback": "The student's answer shows minimal understanding, confusing POM with SOP and incorrect maxterms."}, {"question_no": "5", "score": 75, "feedback": "Correct simplification but unnecessary step added without justification."}, {"question_no": "6", "score": 40, "feedback": "The student demonstrated some understanding of De Morgan's Law but incorrectly applied it, leading to an incorrect expansion and a non-minimal form."}, {"question_no": "7", "score": 75, "feedback": "Correct expression and simplification to XOR, but could benefit from more detailed steps."}, {"question_no": "8", "score": 90, "feedback": "The student correctly derived the function using XOR, which meets all the specified conditions."}, {"question_no": "9", "score": 0, "feedback": "No answer was provided for this question."}, {"question_no": "2", "score": 75, "feedback": "The answer shows some understanding of K-Map simplification but misses key terms, leading to an incorrect SOP form."}, {"question_no": "2", "score": 75, "feedback": "The answer is in correct POS form but may not be fully simplified."}, {"question_no": "3", "score": 40, "feedback": "The answer incorrectly maps input bits directly to output bits without converting between Excess-3 and 8-4-2-1 codes, showing a lack of understanding of the encoding schemes."}], "total_score": 58, "overall_feedback": "Performance requires substantial improvement. Recommend comprehensive review of course materials and seeking additional support."}
+2025-04-28 16:31:43,472 | INFO     | app.views | [DEBUG] Successfully parsed JSON string, data type: <class 'dict'>
+2025-04-28 16:31:43,472 | INFO     | app.views | [DEBUG] Found 12 evaluations
+2025-04-28 16:31:43,473 | INFO     | app.views | [DEBUG] Question 1 has score field: 30
+2025-04-28 16:31:43,473 | INFO     | app.views | [DEBUG] Question 2 has score field: 100
+2025-04-28 16:31:43,473 | INFO     | app.views | [DEBUG] Question 3 has score field: 75
+2025-04-28 16:31:43,474 | INFO     | app.views | [DEBUG] Question 4 has score field: 30
+2025-04-28 16:31:43,474 | INFO     | app.views | [DEBUG] Question 5 has score field: 75
+2025-04-28 16:31:43,474 | INFO     | app.views | [DEBUG] Question 6 has score field: 40
+2025-04-28 16:31:43,474 | INFO     | app.views | [DEBUG] Question 7 has score field: 75
+2025-04-28 16:31:43,474 | INFO     | app.views | [DEBUG] Question 8 has score field: 90
+2025-04-28 16:31:43,475 | INFO     | app.views | [DEBUG] Question 9 has score field: 0
+2025-04-28 16:31:43,475 | INFO     | app.views | [DEBUG] Question 10 has score field: 75
+2025-04-28 16:31:43,475 | INFO     | app.views | [DEBUG] Question 11 has score field: 75
+2025-04-28 16:31:43,475 | INFO     | app.views | [DEBUG] Question 12 has score field: 40
+2025-04-28 16:31:43,476 | INFO     | app.views | [DEBUG] Final evaluation_json for template (first 200 chars): {"evaluations": [{"question_no": "1", "score": 30, "feedback": "The student incorrectly used base 4 instead of hexadecimal and included invalid digits."}, {"question_no": "1", "score": 100, "feedback"...
+2025-04-28 16:31:43,477 | INFO     | app.views | [DEBUG] Rendering output template with context: {'evaluation_json': '{"evaluations": [{"question_no": "1", "score": 30, "feedback": "The student incorrectly used base 4 instead of hexadecimal and included invalid digits."}, {"question_no": "1", "score": 100, "feedback": "Correct conversion of both integer and fractional parts."}, {"question_no": "1", "score": 75, "feedback": "Correct answer with some unclear steps in the process."}, {"question_no": "4", "score": 30, "feedback": "The student\'s answer shows minimal understanding, confusing POM with SOP and incorrect maxterms."}, {"question_no": "5", "score": 75, "feedback": "Correct simplification but unnecessary step added without justification."}, {"question_no": "6", "score": 40, "feedback": "The student demonstrated some understanding of De Morgan\'s Law but incorrectly applied it, leading to an incorrect expansion and a non-minimal form."}, {"question_no": "7", "score": 75, "feedback": "Correct expression and simplification to XOR, but could benefit from more detailed steps."}, {"question_no": "8", "score": 90, "feedback": "The student correctly derived the function using XOR, which meets all the specified conditions."}, {"question_no": "9", "score": 0, "feedback": "No answer was provided for this question."}, {"question_no": "2", "score": 75, "feedback": "The answer shows some understanding of K-Map simplification but misses key terms, leading to an incorrect SOP form."}, {"question_no": "2", "score": 75, "feedback": "The answer is in correct POS form but may not be fully simplified."}, {"question_no": "3", "score": 40, "feedback": "The answer incorrectly maps input bits directly to output bits without converting between Excess-3 and 8-4-2-1 codes, showing a lack of understanding of the encoding schemes."}], "total_score": 58, "overall_feedback": "Performance requires substantial improvement. Recommend comprehensive review of course materials and seeking additional support."}', 'debug_info': {'has_evaluation_data': True, 'data_type': 'dict', 'session_keys': ['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'evaluation_json', 'extracted_data'], 'evaluation_summary': '12 questions'}}
+2025-04-28 16:31:43,554 | ERROR    | django.request | Internal Server Error: /output/
+Traceback (most recent call last):
+  File "C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\FYP\FYP Working\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\FYP\FYP Working\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\FYP\FYP Working\env\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\Uni Working\grademate_folder\app\app\views.py", line 501, in output
+    return render(request, 'output.html', context)
+  File "C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\FYP\FYP Working\env\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\FYP\FYP Working\env\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\FYP\FYP Working\env\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\FYP\FYP Working\env\Lib\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\FYP\FYP Working\env\Lib\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\FYP\FYP Working\env\Lib\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\FYP\FYP Working\env\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\FYP\FYP Working\env\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\FYP\FYP Working\env\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\FYP\FYP Working\env\Lib\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\FYP\FYP Working\env\Lib\site-packages\django\template\base.py", line 489, in parse
+    raise self.error(token, e)
+  File "C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\FYP\FYP Working\env\Lib\site-packages\django\template\base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\FYP\FYP Working\env\Lib\site-packages\django\template\base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+  File "C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\FYP\FYP Working\env\Lib\site-packages\django\template\base.py", line 710, in __init__
+    raise TemplateSyntaxError(
+    ...<2 lines>...
+    )
+django.template.exceptions.TemplateSyntaxError: Could not parse the remainder: ': 'red', padding: '20px', textAlign: 'center'' from 'color: 'red', padding: '20px', textAlign: 'center''
+2025-04-28 17:00:22,735 | INFO     | app.views | ocr_extracted view called
+2025-04-28 17:00:22,737 | INFO     | app.views | Processing latest upload: C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\Uni Working\grademate_folder\app\uploads\DLD_Mids_Paper_DSF23_VYOdu56.pdf
+2025-04-28 17:00:22,750 | INFO     | app.pdf_extractor | Total pages in PDF: 8
+2025-04-28 17:00:23,546 | INFO     | app.pdf_extractor | Successfully extracted 8 page images
+2025-04-28 17:00:28,412 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:00:28,423 | INFO     | app.pdf_extractor | Successfully extracted text from page 1
+2025-04-28 17:00:31,661 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:00:31,663 | INFO     | app.pdf_extractor | Successfully extracted text from page 2
+2025-04-28 17:00:36,729 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:00:36,730 | INFO     | app.pdf_extractor | Successfully extracted text from page 3
+2025-04-28 17:00:39,094 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:00:39,096 | INFO     | app.pdf_extractor | Successfully extracted text from page 4
+2025-04-28 17:00:42,454 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:00:42,456 | INFO     | app.pdf_extractor | Successfully extracted text from page 5
+2025-04-28 17:00:44,557 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:00:44,558 | INFO     | app.pdf_extractor | Successfully extracted text from page 6
+2025-04-28 17:00:48,168 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:00:48,169 | INFO     | app.pdf_extractor | Successfully extracted text from page 7
+2025-04-28 17:00:50,231 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:00:50,233 | INFO     | app.pdf_extractor | Successfully extracted text from page 8
+2025-04-28 17:00:50,233 | INFO     | app.pdf_extractor | Total extracted text length: 10052 characters
+2025-04-28 17:00:50,233 | WARNING  | app.pdf_extractor | Truncating extracted text from 10052 to 10000 characters
+2025-04-28 17:00:51,167 | INFO     | app.pdf_extractor | Invoking LLM chain to extract data...
+2025-04-28 17:01:00,563 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:01:00,567 | INFO     | app.pdf_extractor | Extracted 2 questions from PDF
+2025-04-28 17:01:00,568 | INFO     | app.views | Extracted 2 questions
+2025-04-28 17:01:00,571 | INFO     | app.views | Rendering OCR extracted view with 2 questions
+2025-04-28 17:01:40,219 | INFO     | app.views | grade_exam view called
+2025-04-28 17:01:40,219 | INFO     | app.views | Received 2 questions for grading
+2025-04-28 17:01:42,460 | INFO     | chromadb.telemetry.product.posthog | Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-04-28 17:01:42,931 | INFO     | app.utils.evaluator | Starting exam evaluation for 2 questions
+2025-04-28 17:01:47,471 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:01:52,318 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:01:52,320 | INFO     | app.utils.evaluator | Completed exam evaluation. Total Score: 47
+2025-04-28 17:01:55,057 | INFO     | app.views | [DEBUG] output view
+2025-04-28 17:01:55,058 | INFO     | app.views | Output view - evaluation_json from session: {"evaluations": [{"question_no": "1", "score": 75, "feedback": "The student correctly converted each digit except for the digit 8, which was incorrectly treated as 11 instead of 8. This error affected the final result. The method was correct, but the mistake in digit conversion needs attention."}, {"question_no": "1.2", "score": 20, "feedback": "The answer is incorrect and does not demonstrate understanding of binary conversion."}], "total_score": 47, "overall_feedback": "Performance requires substantial improvement. Recommend comprehensive review of course materials and seeking additional support."}
+2025-04-28 17:01:55,059 | INFO     | app.views | [DEBUG] Successfully parsed JSON string, data type: <class 'dict'>
+2025-04-28 17:01:55,059 | INFO     | app.views | [DEBUG] Found 2 evaluations
+2025-04-28 17:01:55,059 | INFO     | app.views | [DEBUG] Question 1 has score field: 75
+2025-04-28 17:01:55,059 | INFO     | app.views | [DEBUG] Question 2 has score field: 20
+2025-04-28 17:01:55,060 | INFO     | app.views | [DEBUG] Final evaluation_json for template (first 200 chars): {"evaluations": [{"question_no": "1", "score": 75, "feedback": "The student correctly converted each digit except for the digit 8, which was incorrectly treated as 11 instead of 8. This error affected...
+2025-04-28 17:01:55,060 | INFO     | app.views | [DEBUG] Rendering output template with context: {'evaluation_json': '{"evaluations": [{"question_no": "1", "score": 75, "feedback": "The student correctly converted each digit except for the digit 8, which was incorrectly treated as 11 instead of 8. This error affected the final result. The method was correct, but the mistake in digit conversion needs attention."}, {"question_no": "1.2", "score": 20, "feedback": "The answer is incorrect and does not demonstrate understanding of binary conversion."}], "total_score": 47, "overall_feedback": "Performance requires substantial improvement. Recommend comprehensive review of course materials and seeking additional support."}', 'debug_info': {'has_evaluation_data': True, 'data_type': 'dict', 'session_keys': ['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'evaluation_json', 'extracted_data'], 'evaluation_summary': '2 questions'}}
+2025-04-28 17:02:34,191 | INFO     | app.views | [DEBUG] output view
+2025-04-28 17:02:34,192 | INFO     | app.views | Output view - evaluation_json from session: {"evaluations": [{"question_no": "1", "score": 75, "feedback": "The student correctly converted each digit except for the digit 8, which was incorrectly treated as 11 instead of 8. This error affected the final result. The method was correct, but the mistake in digit conversion needs attention."}, {"question_no": "1.2", "score": 20, "feedback": "The answer is incorrect and does not demonstrate understanding of binary conversion."}], "total_score": 47, "overall_feedback": "Performance requires substantial improvement. Recommend comprehensive review of course materials and seeking additional support."}
+2025-04-28 17:02:34,193 | INFO     | app.views | [DEBUG] Successfully parsed JSON string, data type: <class 'dict'>
+2025-04-28 17:02:34,193 | INFO     | app.views | [DEBUG] Found 2 evaluations
+2025-04-28 17:02:34,193 | INFO     | app.views | [DEBUG] Question 1 has score field: 75
+2025-04-28 17:02:34,193 | INFO     | app.views | [DEBUG] Question 2 has score field: 20
+2025-04-28 17:02:34,194 | INFO     | app.views | [DEBUG] Final evaluation_json for template (first 200 chars): {"evaluations": [{"question_no": "1", "score": 75, "feedback": "The student correctly converted each digit except for the digit 8, which was incorrectly treated as 11 instead of 8. This error affected...
+2025-04-28 17:02:34,194 | INFO     | app.views | [DEBUG] Rendering output template with context: {'evaluation_json': '{"evaluations": [{"question_no": "1", "score": 75, "feedback": "The student correctly converted each digit except for the digit 8, which was incorrectly treated as 11 instead of 8. This error affected the final result. The method was correct, but the mistake in digit conversion needs attention."}, {"question_no": "1.2", "score": 20, "feedback": "The answer is incorrect and does not demonstrate understanding of binary conversion."}], "total_score": 47, "overall_feedback": "Performance requires substantial improvement. Recommend comprehensive review of course materials and seeking additional support."}', 'debug_info': {'has_evaluation_data': True, 'data_type': 'dict', 'session_keys': ['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'evaluation_json', 'extracted_data'], 'evaluation_summary': '2 questions'}}
+2025-04-28 17:20:06,520 | INFO     | app.views | ocr_extracted view called
+2025-04-28 17:20:06,523 | INFO     | app.views | Processing latest upload: C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\Uni Working\grademate_folder\app\uploads\DLD_Mids_Paper_DSF23_ehHJWxR.pdf
+2025-04-28 17:20:06,532 | INFO     | app.pdf_extractor | Total pages in PDF: 8
+2025-04-28 17:20:07,380 | INFO     | app.pdf_extractor | Successfully extracted 8 page images
+2025-04-28 17:20:11,370 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:20:11,371 | INFO     | app.pdf_extractor | Successfully extracted text from page 1
+2025-04-28 17:20:15,108 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:20:15,110 | INFO     | app.pdf_extractor | Successfully extracted text from page 2
+2025-04-28 17:20:20,252 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:20:20,253 | INFO     | app.pdf_extractor | Successfully extracted text from page 3
+2025-04-28 17:20:25,369 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:20:25,370 | INFO     | app.pdf_extractor | Successfully extracted text from page 4
+2025-04-28 17:20:29,592 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:20:29,594 | INFO     | app.pdf_extractor | Successfully extracted text from page 5
+2025-04-28 17:20:36,861 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:20:36,862 | INFO     | app.pdf_extractor | Successfully extracted text from page 6
+2025-04-28 17:20:40,687 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:20:40,689 | INFO     | app.pdf_extractor | Successfully extracted text from page 7
+2025-04-28 17:20:46,246 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:20:46,248 | INFO     | app.pdf_extractor | Successfully extracted text from page 8
+2025-04-28 17:20:46,248 | INFO     | app.pdf_extractor | Total extracted text length: 11655 characters
+2025-04-28 17:20:46,249 | WARNING  | app.pdf_extractor | Truncating extracted text from 11655 to 10000 characters
+2025-04-28 17:20:47,167 | INFO     | app.pdf_extractor | Invoking LLM chain to extract data...
+2025-04-28 17:20:50,591 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:20:50,593 | INFO     | app.pdf_extractor | Extracted 10 questions from PDF
+2025-04-28 17:20:50,593 | INFO     | app.views | Extracted 10 questions
+2025-04-28 17:20:50,594 | INFO     | app.views | Rendering OCR extracted view with 10 questions
+2025-04-28 17:21:59,581 | INFO     | app.views | grade_exam view called
+2025-04-28 17:21:59,582 | INFO     | app.views | Received 10 questions for grading
+2025-04-28 17:22:03,581 | INFO     | app.utils.evaluator | Starting exam evaluation for 10 questions
+2025-04-28 17:22:06,469 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:22:17,853 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:22:17,855 | ERROR    | app.utils.evaluator | Error parsing LLM response: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2025-04-28 17:22:17,855 | ERROR    | app.utils.evaluator | Raw response: <think>
+Okay, so I need to evaluate the student's answer for simplifying the given function using a K-Map in SOP form. The question provided is F = B'D + B'C + ABCD and d = A'BD + AB'C'D'. The student's answer is F = \bar{C}D + \bar{B}D + \bar{B}C.
+
+First, I should understand what the question is asking. It's about simplifying a function using a Karnaugh map (K-Map) and expressing it in the Sum of Products (SOP) form. The student's answer is in SOP form, so that's correct in terms of the require...
+2025-04-28 17:22:19,540 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:22:19,542 | ERROR    | app.utils.evaluator | Error parsing LLM response: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2025-04-28 17:22:19,543 | ERROR    | app.utils.evaluator | Raw response: <think>
+Okay, I need to evaluate the student's answer for question 2b, which asks to simplify the same function given in part (a) using a K-Map in POS form. 
+
+Looking at the student's answer, they provided \bar{F} = \bar{C} \bar{D} + B \bar{D} + \bar{B} C. Then they wrote F' as the same expression, which might be a typo. Finally, they factored it into (C+D)(B+D)(\bar{B} + \bar{C}).
+
+I should check if this simplification is correct. The original function in POS form is correct, but when convertin...
+2025-04-28 17:22:22,623 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:22:25,291 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:22:27,359 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:22:30,484 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:22:30,811 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-04-28 17:22:30,812 | INFO     | groq._base_client | Retrying request to /openai/v1/chat/completions in 1.000000 seconds
+2025-04-28 17:22:34,721 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:22:35,044 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-04-28 17:22:35,044 | INFO     | groq._base_client | Retrying request to /openai/v1/chat/completions in 6.000000 seconds
+2025-04-28 17:22:46,640 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 17:22:46,642 | ERROR    | app.utils.evaluator | Error parsing LLM response: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2025-04-28 17:22:46,642 | ERROR    | app.utils.evaluator | Raw response: <think>
+Okay, so I need to evaluate the student's answer to the question about creating a function for a battery-powered lamp controlled by two switches. Let me break this down step by step.
+
+First, the question states that the lamp should be on under two conditions: either the front switch (let's say x) is on and the back switch (y) is off, or if the back switch is on regardless of the front switch. Wait, no, actually, reading it again, the lamp is on if the front switch is on and the back is o...
+2025-04-28 17:22:46,670 | INFO     | app.utils.evaluator | Completed exam evaluation. Total Score: 58
+2025-04-28 17:22:49,077 | INFO     | app.views | [DEBUG] output view
+2025-04-28 17:22:49,078 | INFO     | app.views | Output view - evaluation_json from session: {"evaluations": [{"question_no": "1", "score": 50, "feedback": "Part 1 was incorrect due to using base 4 instead of 16. Part 2 was correct. Part 3 had errors but the result was right."}, {"question_no": "2", "score": 40, "feedback": "The question provided is F = B'D + B'C + ABCD and d = A'BD + AB'C'D'. The student's answer is F = \\bar{C}D + \\bar{B}D + \\bar{B}C."}, {"question_no": "2b", "score": 75, "feedback": "Looking at the student's answer, they provided \\bar{F} = \\bar{C} \\bar{D} + B \\bar{D} + \\bar{B} C. Then they wrote F' as the same expression, which might be a typo."}, {"question_no": "3", "score": 30, "feedback": "The answer is incorrect because it directly maps inputs to outputs without converting Excess-3 to 8-4-2-1 code."}, {"question_no": "4", "score": 75, "feedback": "The student attempted to convert the function into Product of Maxterm form but made significant errors in the process, leading to an incorrect result."}, {"question_no": "5", "score": 75, "feedback": "The student correctly simplified the expression but could improve by explaining each step and citing the theorems used."}, {"question_no": "6", "score": 75, "feedback": "Good application of De Morgan's laws and distributive properties, but errors in expansion and simplification."}, {"question_no": "7", "score": 75, "feedback": "Correct expression and simplification to XOR, good understanding."}, {"question_no": "8", "score": 90, "feedback": "Let me break this down step by step. First, the question states that the lamp should be on under two conditions: either the front switch (let's say x) is on and the back switch (y) is off, or if the b"}, {"question_no": "9", "score": 0, "feedback": "No answer was provided for this question."}], "total_score": 58, "overall_feedback": "Performance requires substantial improvement. Recommend comprehensive review of course materials and seeking additional support."}
+2025-04-28 17:22:49,080 | INFO     | app.views | [DEBUG] Successfully parsed JSON string, data type: <class 'dict'>
+2025-04-28 17:22:49,080 | INFO     | app.views | [DEBUG] Found 10 evaluations
+2025-04-28 17:22:49,080 | INFO     | app.views | [DEBUG] Question 1 has score field: 50
+2025-04-28 17:22:49,080 | INFO     | app.views | [DEBUG] Question 2 has score field: 40
+2025-04-28 17:22:49,081 | INFO     | app.views | [DEBUG] Question 3 has score field: 75
+2025-04-28 17:22:49,081 | INFO     | app.views | [DEBUG] Question 4 has score field: 30
+2025-04-28 17:22:49,081 | INFO     | app.views | [DEBUG] Question 5 has score field: 75
+2025-04-28 17:22:49,081 | INFO     | app.views | [DEBUG] Question 6 has score field: 75
+2025-04-28 17:22:49,081 | INFO     | app.views | [DEBUG] Question 7 has score field: 75
+2025-04-28 17:22:49,082 | INFO     | app.views | [DEBUG] Question 8 has score field: 75
+2025-04-28 17:22:49,082 | INFO     | app.views | [DEBUG] Question 9 has score field: 90
+2025-04-28 17:22:49,082 | INFO     | app.views | [DEBUG] Question 10 has score field: 0
+2025-04-28 17:22:49,082 | INFO     | app.views | [DEBUG] Final evaluation_json for template (first 200 chars): {"evaluations": [{"question_no": "1", "score": 50, "feedback": "Part 1 was incorrect due to using base 4 instead of 16. Part 2 was correct. Part 3 had errors but the result was right."}, {"question_no...
+2025-04-28 17:22:49,083 | INFO     | app.views | [DEBUG] Rendering output template with context: {'evaluation_json': '{"evaluations": [{"question_no": "1", "score": 50, "feedback": "Part 1 was incorrect due to using base 4 instead of 16. Part 2 was correct. Part 3 had errors but the result was right."}, {"question_no": "2", "score": 40, "feedback": "The question provided is F = B\'D + B\'C + ABCD and d = A\'BD + AB\'C\'D\'. The student\'s answer is F = \\\\bar{C}D + \\\\bar{B}D + \\\\bar{B}C."}, {"question_no": "2b", "score": 75, "feedback": "Looking at the student\'s answer, they provided \\\\bar{F} = \\\\bar{C} \\\\bar{D} + B \\\\bar{D} + \\\\bar{B} C. Then they wrote F\' as the same expression, which might be a typo."}, {"question_no": "3", "score": 30, "feedback": "The answer is incorrect because it directly maps inputs to outputs without converting Excess-3 to 8-4-2-1 code."}, {"question_no": "4", "score": 75, "feedback": "The student attempted to convert the function into Product of Maxterm form but made significant errors in the process, leading to an incorrect result."}, {"question_no": "5", "score": 75, "feedback": "The student correctly simplified the expression but could improve by explaining each step and citing the theorems used."}, {"question_no": "6", "score": 75, "feedback": "Good application of De Morgan\'s laws and distributive properties, but errors in expansion and simplification."}, {"question_no": "7", "score": 75, "feedback": "Correct expression and simplification to XOR, good understanding."}, {"question_no": "8", "score": 90, "feedback": "Let me break this down step by step. First, the question states that the lamp should be on under two conditions: either the front switch (let\'s say x) is on and the back switch (y) is off, or if the b"}, {"question_no": "9", "score": 0, "feedback": "No answer was provided for this question."}], "total_score": 58, "overall_feedback": "Performance requires substantial improvement. Recommend comprehensive review of course materials and seeking additional support."}', 'debug_info': {'has_evaluation_data': True, 'data_type': 'dict', 'session_keys': ['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'evaluation_json', 'extracted_data'], 'evaluation_summary': '10 questions'}}
+2025-04-28 17:23:52,217 | INFO     | app.views | [DEBUG] output view
+2025-04-28 17:23:52,217 | INFO     | app.views | Output view - evaluation_json from session: {"evaluations": [{"question_no": "1", "score": 0, "feedback": "The answer is incorrect or irrelevant."}, {"question_no": "2", "score": 50, "feedback": "The answer is too generic and lacks specific details or concepts."}, {"question_no": "3", "score": 40, "feedback": "The answer is too generic and lacks specific details about the key concept. It does not demonstrate a clear understanding or provide a structured response."}, {"question_no": "4", "score": 40, "feedback": "The answer did not provide a detailed explanation of a key concept."}, {"question_no": "5", "score": 25, "feedback": "The answer is irrelevant and does not address the question. Please provide a detailed explanation of a key concept in future responses."}], "total_score": 31, "overall_feedback": "Performance requires substantial improvement. Recommend comprehensive review of course materials and seeking additional support."}
+2025-04-28 17:23:52,233 | INFO     | app.views | [DEBUG] Successfully parsed JSON string, data type: <class 'dict'>
+2025-04-28 17:23:52,234 | INFO     | app.views | [DEBUG] Found 5 evaluations
+2025-04-28 17:23:52,234 | INFO     | app.views | [DEBUG] Question 1 has score field: 0
+2025-04-28 17:23:52,234 | INFO     | app.views | [DEBUG] Question 2 has score field: 50
+2025-04-28 17:23:52,235 | INFO     | app.views | [DEBUG] Question 3 has score field: 40
+2025-04-28 17:23:52,235 | INFO     | app.views | [DEBUG] Question 4 has score field: 40
+2025-04-28 17:23:52,235 | INFO     | app.views | [DEBUG] Question 5 has score field: 25
+2025-04-28 17:23:52,235 | INFO     | app.views | [DEBUG] Final evaluation_json for template (first 200 chars): {"evaluations": [{"question_no": "1", "score": 0, "feedback": "The answer is incorrect or irrelevant."}, {"question_no": "2", "score": 50, "feedback": "The answer is too generic and lacks specific det...
+2025-04-28 17:23:52,236 | INFO     | app.views | [DEBUG] Rendering output template with context: {'evaluation_json': '{"evaluations": [{"question_no": "1", "score": 0, "feedback": "The answer is incorrect or irrelevant."}, {"question_no": "2", "score": 50, "feedback": "The answer is too generic and lacks specific details or concepts."}, {"question_no": "3", "score": 40, "feedback": "The answer is too generic and lacks specific details about the key concept. It does not demonstrate a clear understanding or provide a structured response."}, {"question_no": "4", "score": 40, "feedback": "The answer did not provide a detailed explanation of a key concept."}, {"question_no": "5", "score": 25, "feedback": "The answer is irrelevant and does not address the question. Please provide a detailed explanation of a key concept in future responses."}], "total_score": 31, "overall_feedback": "Performance requires substantial improvement. Recommend comprehensive review of course materials and seeking additional support."}', 'debug_info': {'has_evaluation_data': True, 'data_type': 'dict', 'session_keys': ['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'extracted_data', 'evaluation_json'], 'evaluation_summary': '5 questions'}}
+2025-04-28 18:35:25,023 | WARNING  | django.request | Not Found: /favicon.ico
+2025-04-28 18:35:32,962 | INFO     | app.views | ocr_extracted view called
+2025-04-28 18:35:32,964 | INFO     | app.views | Processing latest upload: C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\Uni Working\grademate_folder\app\uploads\DLD_Mids_Paper_DSF23_Qks2o8l.pdf
+2025-04-28 18:35:32,972 | INFO     | app.pdf_extractor | Total pages in PDF: 8
+2025-04-28 18:35:33,722 | INFO     | app.pdf_extractor | Successfully extracted 8 page images
+2025-04-28 18:35:38,269 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:35:38,279 | INFO     | app.pdf_extractor | Successfully extracted text from page 1
+2025-04-28 18:35:41,901 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:35:41,903 | INFO     | app.pdf_extractor | Successfully extracted text from page 2
+2025-04-28 18:35:47,591 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:35:47,593 | INFO     | app.pdf_extractor | Successfully extracted text from page 3
+2025-04-28 18:35:52,217 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:35:52,219 | INFO     | app.pdf_extractor | Successfully extracted text from page 4
+2025-04-28 18:35:55,941 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:35:55,942 | INFO     | app.pdf_extractor | Successfully extracted text from page 5
+2025-04-28 18:36:01,450 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:36:01,452 | INFO     | app.pdf_extractor | Successfully extracted text from page 6
+2025-04-28 18:36:06,241 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:36:06,243 | INFO     | app.pdf_extractor | Successfully extracted text from page 7
+2025-04-28 18:36:08,823 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:36:08,825 | INFO     | app.pdf_extractor | Successfully extracted text from page 8
+2025-04-28 18:36:08,825 | INFO     | app.pdf_extractor | Total extracted text length: 14501 characters
+2025-04-28 18:36:08,825 | WARNING  | app.pdf_extractor | Truncating extracted text from 14501 to 10000 characters
+2025-04-28 18:36:09,881 | INFO     | app.pdf_extractor | Invoking LLM chain to extract data...
+2025-04-28 18:36:19,261 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:36:19,264 | INFO     | app.pdf_extractor | Extracted 4 questions from PDF
+2025-04-28 18:36:19,264 | INFO     | app.views | Extracted 4 questions
+2025-04-28 18:36:19,265 | INFO     | app.views | Rendering OCR extracted view with 4 questions
+2025-04-28 18:40:36,203 | INFO     | app.views | ocr_extracted view called
+2025-04-28 18:40:36,204 | INFO     | app.views | Processing latest upload: C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\Uni Working\grademate_folder\app\uploads\DLD_Mids_Paper_DSF23_7ZxZobo.pdf
+2025-04-28 18:40:36,210 | INFO     | app.pdf_extractor | Total pages in PDF: 8
+2025-04-28 18:40:37,005 | INFO     | app.pdf_extractor | Successfully extracted 8 page images
+2025-04-28 18:40:42,617 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:40:42,618 | INFO     | app.pdf_extractor | Successfully extracted text from page 1
+2025-04-28 18:40:47,874 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:40:47,882 | INFO     | app.pdf_extractor | Successfully extracted text from page 2
+2025-04-28 18:40:53,967 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:40:53,971 | INFO     | app.pdf_extractor | Successfully extracted text from page 3
+2025-04-28 18:40:59,127 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:40:59,129 | INFO     | app.pdf_extractor | Successfully extracted text from page 4
+2025-04-28 18:41:01,896 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:41:01,898 | INFO     | app.pdf_extractor | Successfully extracted text from page 5
+2025-04-28 18:41:08,974 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:41:09,008 | INFO     | app.pdf_extractor | Successfully extracted text from page 6
+2025-04-28 18:41:13,326 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:41:13,327 | INFO     | app.pdf_extractor | Successfully extracted text from page 7
+2025-04-28 18:41:17,740 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:41:17,742 | INFO     | app.pdf_extractor | Successfully extracted text from page 8
+2025-04-28 18:41:17,742 | INFO     | app.pdf_extractor | Total extracted text length: 14885 characters
+2025-04-28 18:41:17,743 | WARNING  | app.pdf_extractor | Truncating extracted text from 14885 to 10000 characters
+2025-04-28 18:41:18,752 | INFO     | app.pdf_extractor | Invoking LLM chain to extract data...
+2025-04-28 18:41:20,800 | INFO     | app.views | ocr_extracted view called
+2025-04-28 18:41:20,802 | INFO     | app.views | Processing latest upload: C:\Users\M.Hussain\OneDrive - Cedar Financial\Documents\Uni Working\grademate_folder\app\uploads\DLD_Mids_Paper_DSF23_UCX5A3N.pdf
+2025-04-28 18:41:20,808 | INFO     | app.pdf_extractor | Total pages in PDF: 8
+2025-04-28 18:41:21,542 | INFO     | app.pdf_extractor | Successfully extracted 8 page images
+2025-04-28 18:41:22,387 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:41:22,390 | INFO     | app.pdf_extractor | Extracted 10 questions from PDF
+2025-04-28 18:41:22,390 | INFO     | app.views | Extracted 10 questions
+2025-04-28 18:41:22,390 | INFO     | app.views | Rendering OCR extracted view with 10 questions
+2025-04-28 18:41:25,378 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:41:25,379 | INFO     | app.pdf_extractor | Successfully extracted text from page 1
+2025-04-28 18:41:30,103 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:41:30,105 | INFO     | app.pdf_extractor | Successfully extracted text from page 2
+2025-04-28 18:41:35,162 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:41:35,197 | INFO     | app.pdf_extractor | Successfully extracted text from page 3
+2025-04-28 18:41:39,423 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:41:39,424 | INFO     | app.pdf_extractor | Successfully extracted text from page 4
+2025-04-28 18:41:46,295 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:41:46,297 | INFO     | app.pdf_extractor | Successfully extracted text from page 5
+2025-04-28 18:41:52,312 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:41:52,313 | INFO     | app.pdf_extractor | Successfully extracted text from page 6
+2025-04-28 18:41:58,368 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:41:58,369 | INFO     | app.pdf_extractor | Successfully extracted text from page 7
+2025-04-28 18:42:02,832 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:42:02,833 | INFO     | app.pdf_extractor | Successfully extracted text from page 8
+2025-04-28 18:42:02,834 | INFO     | app.pdf_extractor | Total extracted text length: 13847 characters
+2025-04-28 18:42:02,834 | WARNING  | app.pdf_extractor | Truncating extracted text from 13847 to 10000 characters
+2025-04-28 18:42:03,719 | INFO     | app.pdf_extractor | Invoking LLM chain to extract data...
+2025-04-28 18:42:13,046 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:42:13,613 | ERROR    | app.pdf_extractor | Error in LLM chain: Failed to parse ExamExtraction from completion {"extracted_questions": [{"question_no": 1, "question_statement": "Convert 2408.4 from hexadecimal to decimal number system. (2408.4) \u2192 ( )  (2408.4) = (2\u00d7 ) + (4\u00d7 ) + (0\u00d7 ) + (11\u00d7 ) + (4\u00d7 )  = (2\u00d74096) + (4\u00d7256) + (0) + (11) + (  =8192 +1024 +  + -2.5  = (9227.25)", "complete_answer": "Convert 2408.4 from hexadecimal to decimal number system. (2408.4) \u2192 ( )  (2408.4) = (2\u00d7 ) + (4\u00d7 ) + (0\u00d7 ) + (11\u00d7 ) + (4\u00d7 )  = (2\u00d74096) + (4\u00d7256) + (0) + (11) + (  =8192 +1024 +  + -2.5  = (9227.25)"}, {"question_no": 2, "question_statement": "Convert 1024.25 from decimal to binary number system. (1024.25) \u2192 ( )  (1024.25)  =1024 0.25\u00d72 =0.5 512 0.5\u00d72 =1.0 256 0.0\u00d72 =0.0 128  64  32  16  8  4  2  1  ", "complete_answer": "Convert 1024.25 from decimal to binary number system. (1024.25) \u2192 ( )  (1024.25)  =1024 0.25\u00d72 =0.5 512 0.5\u00d72 =1.0 256 0.0\u00d72 =0.0 128  64  32  16  8  4  2  1  "}, {"question_no": 3, "question_statement": "Perform M-N using r-1's complement where M=3250 and N=2740 are in decimal number system. M =3250 N =2740 9's complement of N :3250  +7259 0509 \u2192+1  -2740 7259 510  Thus M-N =510", "complete_answer": "Perform M-N using r-1's complement where M=3250 and N=2740 are in decimal number system. M =3250 N =2740 9's complement of N :3250  +7259 0509 \u2192+1  -2740 7259 510  Thus M-N =510"}, {"question_no": 4, "question_statement": "Write down the function in Product of Maxterm form and express it in \u03a0 notation. $f(x,y,z)=x'y'z'+xyz+x'yz+x'y'$  $x y z F \\bar{F}$ 0 0 0 1 0  0 0 1 1 0  0 1 0 0 1  0 1 1 1 0  1 0 0 0 1  1 0 1 0 1  1 1 0 0 1  1 1 1 0  $\bar{F} = \\bar{x}'y\\bar{z} + \\bar{x}yz + x'y\\bar{z} + x\\bar{y}z + xy\\bar{z}$  $\\Rightarrow \\bar{F} = \\bar{x}'y\\bar{z} + \\bar{x}yz + x'y\\bar{z} + x\\bar{y}z + xy\\bar{z}$  $(\\bar{F})' = f = (x+y+z) \\cdot (x+\\bar{y}+z) \\cdot (x+y+\\bar{z}) \\cdot (\\bar{x}+y+z) \\cdot (\\bar{x}+y+\\bar{z})$  $\\Rightarrow F = \\bigwedge(2,3,4,5,6)$  $\\rightarrow$ In POS Form", "complete_answer": "Write down the function in Product of Maxterm form and express it in \u03a0 notation. $f(x,y,z)=x'y'z'+xyz+x'yz+x'y'$  $x y z F \\bar{F}$ 0 0 0 1 0  0 0 1 1 0  0 1 0 0 1  0 1 1 1 0  1 0 0 0 1  1 0 1 0 1  1 1 0 0 1  1 1 1 0  $\bar{F} = \\bar{x}'y\\bar{z} + \\bar{x}yz + x'y\\bar{z} + x\\bar{y}z + xy\\bar{z}$  $\\Rightarrow \\bar{F} = \\bar{x}'y\\bar{z} + \\bar{x}yz + x'y\\bar{z} + x\\bar{y}z + xy\\bar{z}$  $(\\bar{F})' = f = (x+y+z) \\cdot (x+\\bar{y}+z) \\cdot (x+y+\\bar{z}) \\cdot (\\bar{x}+y+z) \\cdot (\\bar{x}+y+\\bar{z})$  $\\Rightarrow F = \\bigwedge(2,3,4,5,6)$  $\\rightarrow$ In POS Form"}, {"question_no": 5, "question_statement": "Prove that after minimizing the expression $F=A'B'C'+AB'C'+AB'C$ using theorems of Boolean algebra, you get $F=AB'+B'C'$  $F = A'B'C' + AB'C' + AB'C$  $= A'B'C' + AB'(C'+C) F = A'B'C' + AB'C + AB'C$  $= A'B'C' + AB' ( \\because C'+C=1) = A'B'C' + AB'C + A'B'C$  $= B'(A'+A) = B'C'(A+A) + AB'(C+C) = A'B'C' + AB'$  $= B' ( \\because A'+A =1) = B'C' + AB' \\because (C+C =1)$  $\\therefore F= B'C' + AB'$", "complete_answer": "Prove that after minimizing the expression $F=A'B'C'+AB'C'+AB'C$ using theorems of Boolean algebra, you get $F=AB'+B'C'$  $F = A'B'C' + AB'C' + AB'C$  $= A'B'C' + AB'(C'+C) F = A'B'C' + AB'C + AB'C$  $= A'B'C' + AB' ( \\because C'+C=1) = A'B'C' + AB'C + A'B'C$  $= B'(A'+A) = B'C'(A+A) + AB'(C+C) = A'B'C' + AB'$  $= B' ( \\because A'+A =1) = B'C' + AB' \\because (C+C =1)$  $\\therefore F= B'C' + AB'$"}, {"question_no": 6, "question_statement": "Find the complement of the function and then reduce it to minimum using Boolean Algebra. $F = (BC+A'D)(AB'+CD')$  $\\bar{F} = [(B\\bar{C} + \\bar{A}D)(A\\bar{B} + C\\bar{D})]'$  $= (B\\bar{C} + \\bar{A}D)' + (A\\bar{B} + C\\bar{D})'$  $= (B\\bar{C})' \\cdot (\\bar{A}D)' + (A\\bar{B})' \\cdot (C\\bar{D})'$  $\\bar{F}=(B+C)(A+\\bar{B}) + (\\bar{A}+B)(\\bar{C}+D)$  $= AB + B\\bar{D} + AC + C\\bar{D} + \\bar{A}C + \\bar{A}D + BC + B\\bar{D}$", "complete_answer": "Find the complement of the function and then reduce it to minimum using Boolean Algebra. $F = (BC+A'D)(AB'+CD')$  $\\bar{F} = [(B\\bar{C} + \\bar{A}D)(A\\bar{B} + C\\bar{D})]'$  $= (B\\bar{C} + \\bar{A}D)' + (A\\bar{B} + C\\bar{D})'$  $= (B\\bar{C})' \\cdot (\\bar{A}D)' + (A\\bar{B})' \\cdot (C\\bar{D})'$  $\\bar{F}=(B+C)(A+\\bar{B}) + (\\bar{A}+B)(\\bar{C}+D)$  $= AB + B\\bar{D} + AC + C\\bar{D} + \\bar{A}C + \\bar{A}D + BC + B\\bar{D}$"}, {"question_no": 7, "question_statement": "Write down the expression of F for the given circuit and give the simplified answer. $F=(\\overline{AB})\\cdot(\\overline{A B})$  $F=[(\\overline{AB})\\cdot(\\overline{A B})]'$  $\\begin{aligned} F & =(A \\cdot B)+\\left(A \\cdot B^{\\prime}\\right) \\\\ & =A \\cdot B\\end{aligned}$  $F = A \\cdot B$", "complete_answer": "Write down the expression of F for the given circuit and give the simplified answer. $F=(\\overline{AB})\\cdot(\\overline{A B})$  $F=[(\\overline{AB})\\cdot(\\overline{A B})]'$  $\\begin{aligned} F & =(A \\cdot B)+\\left(A \\cdot B^{\\prime}\\right) \\\\ & =A \\cdot B\\end{aligned}$  $F = A \\cdot B$"}, {"question_no": 8}]}. Got: 2 validation errors for ExamExtraction
+extracted_questions.7.question_statement
+  Field required [type=missing, input_value={'question_no': 8}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+extracted_questions.7.complete_answer
+  Field required [type=missing, input_value={'question_no': 8}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+For troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/OUTPUT_PARSING_FAILURE 
+2025-04-28 18:42:17,084 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:42:17,086 | INFO     | app.pdf_extractor | Extracted 12 questions using fallback method
+2025-04-28 18:42:17,086 | INFO     | app.views | Extracted 12 questions
+2025-04-28 18:42:17,086 | INFO     | app.views | Rendering OCR extracted view with 12 questions
+2025-04-28 18:42:48,978 | INFO     | app.views | grade_exam view called
+2025-04-28 18:42:48,978 | INFO     | app.views | Received 12 questions for grading
+2025-04-28 18:42:50,817 | INFO     | chromadb.telemetry.product.posthog | Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-04-28 18:42:51,239 | INFO     | app.utils.evaluator | Starting exam evaluation for 12 questions
+2025-04-28 18:42:55,063 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:42:57,087 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:43:00,150 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:43:02,185 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:43:04,761 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:43:07,173 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:43:09,243 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:43:12,816 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:43:26,953 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:43:29,645 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:43:33,996 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 18:43:33,997 | INFO     | app.utils.evaluator | Completed exam evaluation. Total Score: 65
+2025-04-28 18:43:36,019 | INFO     | app.views | [DEBUG] output view
+2025-04-28 18:43:36,020 | INFO     | app.views | Output view - evaluation_json from session: {"evaluations": [{"question_no": "1", "score": 75, "feedback": "Good understanding of place values, but errors in fractional digit substitution and addition."}, {"question_no": "2", "score": 0, "feedback": "No answer was provided for this question."}, {"question_no": "3", "score": 75, "feedback": "Correct result but did not use r-1's complement method."}, {"question_no": "4", "score": 75, "feedback": "The answer has some correct elements but includes extra maxterms and incorrect indices in \u03a0 notation."}, {"question_no": "5", "score": 75, "feedback": "Correct answer but lacks step-by-step proof using Boolean theorems."}, {"question_no": "6", "score": 40, "feedback": "The student incorrectly applied De Morgan's laws and improperly expanded the terms, showing minimal understanding."}, {"question_no": "7", "score": 75, "feedback": "Correct for an AND operation, but verify circuit requirements."}, {"question_no": "8", "score": 75, "feedback": "The function is correct as XOR, but the notation could be clearer."}, {"question_no": "9", "score": 75, "feedback": "The truth table was provided but contained some inaccuracies."}, {"question_no": "2a", "score": 75, "feedback": "Correct simplification using K-Map, good understanding."}, {"question_no": "2b", "score": 75, "feedback": "The answer is correct in POS form but may not be the simplest possible."}, {"question_no": "3", "score": 75, "feedback": "The answer is too simplistic and does not provide the necessary logic for converting Excess-3 to 8-4-2-1 code."}], "total_score": 65, "overall_feedback": "Satisfactory performance. Basic understanding achieved, but significant improvement needed."}
+2025-04-28 18:43:36,021 | INFO     | app.views | [DEBUG] Successfully parsed JSON string, data type: <class 'dict'>
+2025-04-28 18:43:36,022 | INFO     | app.views | [DEBUG] Found 12 evaluations
+2025-04-28 18:43:36,023 | INFO     | app.views | [DEBUG] Question 1 has score field: 75
+2025-04-28 18:43:36,024 | INFO     | app.views | [DEBUG] Question 2 has score field: 0
+2025-04-28 18:43:36,024 | INFO     | app.views | [DEBUG] Question 3 has score field: 75
+2025-04-28 18:43:36,024 | INFO     | app.views | [DEBUG] Question 4 has score field: 75
+2025-04-28 18:43:36,025 | INFO     | app.views | [DEBUG] Question 5 has score field: 75
+2025-04-28 18:43:36,025 | INFO     | app.views | [DEBUG] Question 6 has score field: 40
+2025-04-28 18:43:36,026 | INFO     | app.views | [DEBUG] Question 7 has score field: 75
+2025-04-28 18:43:36,026 | INFO     | app.views | [DEBUG] Question 8 has score field: 75
+2025-04-28 18:43:36,027 | INFO     | app.views | [DEBUG] Question 9 has score field: 75
+2025-04-28 18:43:36,027 | INFO     | app.views | [DEBUG] Question 10 has score field: 75
+2025-04-28 18:43:36,027 | INFO     | app.views | [DEBUG] Question 11 has score field: 75
+2025-04-28 18:43:36,028 | INFO     | app.views | [DEBUG] Question 12 has score field: 75
+2025-04-28 18:43:36,028 | INFO     | app.views | [DEBUG] Final evaluation_json for template (first 200 chars): {"evaluations": [{"question_no": "1", "score": 75, "feedback": "Good understanding of place values, but errors in fractional digit substitution and addition."}, {"question_no": "2", "score": 0, "feedb...
+2025-04-28 18:43:36,028 | INFO     | app.views | [DEBUG] Rendering output template with context: {'evaluation_json': '{"evaluations": [{"question_no": "1", "score": 75, "feedback": "Good understanding of place values, but errors in fractional digit substitution and addition."}, {"question_no": "2", "score": 0, "feedback": "No answer was provided for this question."}, {"question_no": "3", "score": 75, "feedback": "Correct result but did not use r-1\'s complement method."}, {"question_no": "4", "score": 75, "feedback": "The answer has some correct elements but includes extra maxterms and incorrect indices in \\u03a0 notation."}, {"question_no": "5", "score": 75, "feedback": "Correct answer but lacks step-by-step proof using Boolean theorems."}, {"question_no": "6", "score": 40, "feedback": "The student incorrectly applied De Morgan\'s laws and improperly expanded the terms, showing minimal understanding."}, {"question_no": "7", "score": 75, "feedback": "Correct for an AND operation, but verify circuit requirements."}, {"question_no": "8", "score": 75, "feedback": "The function is correct as XOR, but the notation could be clearer."}, {"question_no": "9", "score": 75, "feedback": "The truth table was provided but contained some inaccuracies."}, {"question_no": "2a", "score": 75, "feedback": "Correct simplification using K-Map, good understanding."}, {"question_no": "2b", "score": 75, "feedback": "The answer is correct in POS form but may not be the simplest possible."}, {"question_no": "3", "score": 75, "feedback": "The answer is too simplistic and does not provide the necessary logic for converting Excess-3 to 8-4-2-1 code."}], "total_score": 65, "overall_feedback": "Satisfactory performance. Basic understanding achieved, but significant improvement needed."}', 'debug_info': {'has_evaluation_data': True, 'data_type': 'dict', 'session_keys': ['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'evaluation_json', 'extracted_data'], 'evaluation_summary': '12 questions'}}
+2025-04-28 19:32:59,604 | INFO     | app.views | grade_exam view called
+2025-04-28 19:32:59,606 | INFO     | app.views | Received 12 questions for grading
+2025-04-28 19:33:00,558 | INFO     | app.utils.evaluator | Starting exam evaluation for 12 questions
+2025-04-28 19:33:05,131 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:33:12,773 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:33:18,473 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:33:20,759 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:33:24,150 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:33:26,334 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:33:29,021 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:33:31,118 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:33:31,447 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-04-28 19:33:31,448 | INFO     | groq._base_client | Retrying request to /openai/v1/chat/completions in 4.000000 seconds
+2025-04-28 19:33:54,150 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:33:57,250 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:33:57,428 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-04-28 19:33:57,429 | INFO     | groq._base_client | Retrying request to /openai/v1/chat/completions in 1.000000 seconds
+2025-04-28 19:34:02,039 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:34:02,040 | INFO     | app.utils.evaluator | Completed exam evaluation. Total Score: 45
+2025-04-28 19:34:04,400 | INFO     | app.views | [DEBUG] output view
+2025-04-28 19:34:04,400 | INFO     | app.views | Output view - evaluation_json from session: {"evaluations": [{"question_no": "1", "score": 40, "feedback": "The student showed some understanding but made significant errors in conversion and calculation."}, {"question_no": "2", "score": 0, "feedback": "No answer was provided for this question."}, {"question_no": "3", "score": 75, "feedback": "Correct result, but did not demonstrate use of r-1's complement method."}, {"question_no": "4", "score": 30, "feedback": "The student's answer incorrectly identifies the maxterms, leading to an incorrect Product of Maxterm form."}, {"question_no": "5", "score": 75, "feedback": "Correct expression but lacks intermediate steps and reasoning."}, {"question_no": "6", "score": 40, "feedback": "The student attempted to apply De Morgan's laws but made errors in complementing terms and expanding the expression."}, {"question_no": "7", "score": 75, "feedback": "F = A \u00b7 B is correct for a simple AND gate, but the actual circuit might require a more detailed expression."}, {"question_no": "8", "score": 75, "feedback": "Correct function using XOR, good understanding with minor notation clarity."}, {"question_no": "9", "score": 20, "feedback": "The student did not provide the truth table and misunderstood the question."}, {"question_no": "2a", "score": 20, "feedback": "The answer is incorrect because it includes the term CD, which adds extra minterms not present in the original function."}, {"question_no": "2b", "score": 75, "feedback": "The answer is in correct POS form, but further simplification might be possible."}, {"question_no": "3", "score": 20, "feedback": "The answer does not provide correct conversion logic from Excess-3 to 8-4-2-1 code."}], "total_score": 45, "overall_feedback": "Performance requires substantial improvement. Recommend comprehensive review of course materials and seeking additional support."}
+2025-04-28 19:34:04,402 | INFO     | app.views | [DEBUG] Successfully parsed JSON string, data type: <class 'dict'>
+2025-04-28 19:34:04,402 | INFO     | app.views | [DEBUG] Found 12 evaluations
+2025-04-28 19:34:04,402 | INFO     | app.views | [DEBUG] Question 1 has score field: 40
+2025-04-28 19:34:04,403 | INFO     | app.views | [DEBUG] Question 2 has score field: 0
+2025-04-28 19:34:04,403 | INFO     | app.views | [DEBUG] Question 3 has score field: 75
+2025-04-28 19:34:04,403 | INFO     | app.views | [DEBUG] Question 4 has score field: 30
+2025-04-28 19:34:04,403 | INFO     | app.views | [DEBUG] Question 5 has score field: 75
+2025-04-28 19:34:04,404 | INFO     | app.views | [DEBUG] Question 6 has score field: 40
+2025-04-28 19:34:04,404 | INFO     | app.views | [DEBUG] Question 7 has score field: 75
+2025-04-28 19:34:04,404 | INFO     | app.views | [DEBUG] Question 8 has score field: 75
+2025-04-28 19:34:04,405 | INFO     | app.views | [DEBUG] Question 9 has score field: 20
+2025-04-28 19:34:04,405 | INFO     | app.views | [DEBUG] Question 10 has score field: 20
+2025-04-28 19:34:04,405 | INFO     | app.views | [DEBUG] Question 11 has score field: 75
+2025-04-28 19:34:04,406 | INFO     | app.views | [DEBUG] Question 12 has score field: 20
+2025-04-28 19:34:04,406 | INFO     | app.views | [DEBUG] Final evaluation_json for template (first 200 chars): {"evaluations": [{"question_no": "1", "score": 40, "feedback": "The student showed some understanding but made significant errors in conversion and calculation."}, {"question_no": "2", "score": 0, "fe...
+2025-04-28 19:34:04,406 | INFO     | app.views | [DEBUG] Rendering output template with context: {'evaluation_json': '{"evaluations": [{"question_no": "1", "score": 40, "feedback": "The student showed some understanding but made significant errors in conversion and calculation."}, {"question_no": "2", "score": 0, "feedback": "No answer was provided for this question."}, {"question_no": "3", "score": 75, "feedback": "Correct result, but did not demonstrate use of r-1\'s complement method."}, {"question_no": "4", "score": 30, "feedback": "The student\'s answer incorrectly identifies the maxterms, leading to an incorrect Product of Maxterm form."}, {"question_no": "5", "score": 75, "feedback": "Correct expression but lacks intermediate steps and reasoning."}, {"question_no": "6", "score": 40, "feedback": "The student attempted to apply De Morgan\'s laws but made errors in complementing terms and expanding the expression."}, {"question_no": "7", "score": 75, "feedback": "F = A \\u00b7 B is correct for a simple AND gate, but the actual circuit might require a more detailed expression."}, {"question_no": "8", "score": 75, "feedback": "Correct function using XOR, good understanding with minor notation clarity."}, {"question_no": "9", "score": 20, "feedback": "The student did not provide the truth table and misunderstood the question."}, {"question_no": "2a", "score": 20, "feedback": "The answer is incorrect because it includes the term CD, which adds extra minterms not present in the original function."}, {"question_no": "2b", "score": 75, "feedback": "The answer is in correct POS form, but further simplification might be possible."}, {"question_no": "3", "score": 20, "feedback": "The answer does not provide correct conversion logic from Excess-3 to 8-4-2-1 code."}], "total_score": 45, "overall_feedback": "Performance requires substantial improvement. Recommend comprehensive review of course materials and seeking additional support."}', 'debug_info': {'has_evaluation_data': True, 'data_type': 'dict', 'session_keys': ['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'evaluation_json', 'extracted_data'], 'evaluation_summary': '12 questions'}}
+2025-04-28 19:41:40,413 | INFO     | app.views | grade_exam view called
+2025-04-28 19:41:40,414 | INFO     | app.views | Received 12 questions for grading
+2025-04-28 19:41:41,362 | INFO     | app.utils.evaluator | Starting exam evaluation for 12 questions
+2025-04-28 19:41:44,389 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:41:46,507 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:41:53,565 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:41:56,905 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:41:59,961 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:42:02,529 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:42:06,277 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:42:08,656 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:42:27,760 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:42:28,004 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-04-28 19:42:28,005 | INFO     | groq._base_client | Retrying request to /openai/v1/chat/completions in 34.000000 seconds
+2025-04-28 19:43:05,817 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:43:06,165 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2025-04-28 19:43:06,166 | INFO     | groq._base_client | Retrying request to /openai/v1/chat/completions in 7.000000 seconds
+2025-04-28 19:43:17,020 | INFO     | httpx | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:43:17,022 | INFO     | app.utils.evaluator | Completed exam evaluation. Total Score: 60
+2025-04-28 19:43:19,379 | INFO     | app.views | [DEBUG] output view
+2025-04-28 19:43:19,379 | INFO     | app.views | Output view - evaluation_json from session: {"evaluations": [{"question_no": "1", "score": 75, "feedback": "Good approach but incorrect digit conversion and fractional handling."}, {"question_no": "2", "score": 0, "feedback": "No answer was provided for this question."}, {"question_no": "3", "score": 75, "feedback": "Correct answer, but didn't use r-1's complement method."}, {"question_no": "4", "score": 75, "feedback": "The student correctly identified some maxterms but included an extra term, indicating a partial understanding."}, {"question_no": "5", "score": 75, "feedback": "Correct minimization, terms are in different order but equivalent."}, {"question_no": "6", "score": 40, "feedback": "The student incorrectly applied De Morgan's laws and made errors in variable handling, leading to an incorrect expansion and simplification."}, {"question_no": "7", "score": 75, "feedback": "The answer is correct but lacks explanation or derivation."}, {"question_no": "8", "score": 95, "feedback": "Correct and demonstrates a solid understanding of Boolean logic with both expanded and simplified forms."}, {"question_no": "9", "score": 75, "feedback": "The student did not provide the truth table and showed minimal understanding."}, {"question_no": "2a", "score": 30, "feedback": "The answer is incorrect because it includes an extra term not present in the original function."}, {"question_no": "2b", "score": 75, "feedback": "The answer is in POS form but may not be fully simplified."}, {"question_no": "3", "score": 40, "feedback": "The answer does not correctly address the conversion logic required."}], "total_score": 60, "overall_feedback": "Satisfactory performance. Basic understanding achieved, but significant improvement needed."}
+2025-04-28 19:43:19,380 | INFO     | app.views | [DEBUG] Successfully parsed JSON string, data type: <class 'dict'>
+2025-04-28 19:43:19,381 | INFO     | app.views | [DEBUG] Found 12 evaluations
+2025-04-28 19:43:19,381 | INFO     | app.views | [DEBUG] Question 1 has score field: 75
+2025-04-28 19:43:19,381 | INFO     | app.views | [DEBUG] Question 2 has score field: 0
+2025-04-28 19:43:19,382 | INFO     | app.views | [DEBUG] Question 3 has score field: 75
+2025-04-28 19:43:19,382 | INFO     | app.views | [DEBUG] Question 4 has score field: 75
+2025-04-28 19:43:19,382 | INFO     | app.views | [DEBUG] Question 5 has score field: 75
+2025-04-28 19:43:19,383 | INFO     | app.views | [DEBUG] Question 6 has score field: 40
+2025-04-28 19:43:19,383 | INFO     | app.views | [DEBUG] Question 7 has score field: 75
+2025-04-28 19:43:19,383 | INFO     | app.views | [DEBUG] Question 8 has score field: 95
+2025-04-28 19:43:19,383 | INFO     | app.views | [DEBUG] Question 9 has score field: 75
+2025-04-28 19:43:19,383 | INFO     | app.views | [DEBUG] Question 10 has score field: 30
+2025-04-28 19:43:19,384 | INFO     | app.views | [DEBUG] Question 11 has score field: 75
+2025-04-28 19:43:19,384 | INFO     | app.views | [DEBUG] Question 12 has score field: 40
+2025-04-28 19:43:19,384 | INFO     | app.views | [DEBUG] Final evaluation_json for template (first 200 chars): {"evaluations": [{"question_no": "1", "score": 75, "feedback": "Good approach but incorrect digit conversion and fractional handling."}, {"question_no": "2", "score": 0, "feedback": "No answer was pro...
+2025-04-28 19:43:19,385 | INFO     | app.views | [DEBUG] Rendering output template with context: {'evaluation_json': '{"evaluations": [{"question_no": "1", "score": 75, "feedback": "Good approach but incorrect digit conversion and fractional handling."}, {"question_no": "2", "score": 0, "feedback": "No answer was provided for this question."}, {"question_no": "3", "score": 75, "feedback": "Correct answer, but didn\'t use r-1\'s complement method."}, {"question_no": "4", "score": 75, "feedback": "The student correctly identified some maxterms but included an extra term, indicating a partial understanding."}, {"question_no": "5", "score": 75, "feedback": "Correct minimization, terms are in different order but equivalent."}, {"question_no": "6", "score": 40, "feedback": "The student incorrectly applied De Morgan\'s laws and made errors in variable handling, leading to an incorrect expansion and simplification."}, {"question_no": "7", "score": 75, "feedback": "The answer is correct but lacks explanation or derivation."}, {"question_no": "8", "score": 95, "feedback": "Correct and demonstrates a solid understanding of Boolean logic with both expanded and simplified forms."}, {"question_no": "9", "score": 75, "feedback": "The student did not provide the truth table and showed minimal understanding."}, {"question_no": "2a", "score": 30, "feedback": "The answer is incorrect because it includes an extra term not present in the original function."}, {"question_no": "2b", "score": 75, "feedback": "The answer is in POS form but may not be fully simplified."}, {"question_no": "3", "score": 40, "feedback": "The answer does not correctly address the conversion logic required."}], "total_score": 60, "overall_feedback": "Satisfactory performance. Basic understanding achieved, but significant improvement needed."}', 'debug_info': {'has_evaluation_data': True, 'data_type': 'dict', 'session_keys': ['_auth_user_id', '_auth_user_backend', '_auth_user_hash', 'evaluation_json', 'extracted_data'], 'evaluation_summary': '12 questions'}}

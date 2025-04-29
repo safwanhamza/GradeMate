@@ -295,20 +295,17 @@ def grad_settings(request):
 # Add this to your views.py file or update the existing ocr_extracted function
 
 
+
 @login_required
 def ocr_extracted(request):
     """
-    Improved OCR extraction view with proper JSON handling
+    Simplified OCR extraction view with improved error handling
     """
-    import json
-    import traceback
-    
     logger = logging.getLogger(__name__)
     logger.info("ocr_extracted view called")
     
     try:
         # Check if we already have extracted data in session
-        logger.info(f"Session extracted_data exists: {bool('extracted_data' in request.session)}")
         extracted_data = request.session.get("extracted_data")
         
         if not extracted_data:
@@ -330,30 +327,13 @@ def ocr_extracted(request):
                 logger.warning("No uploaded PDF found")
                 extracted_data = []
         
-        # Check if extracted data is valid
-        if not extracted_data or not isinstance(extracted_data, list):
-            logger.error("Invalid extracted data format")
-            extracted_data = generate_sample_data()  # Fall back to sample data
-            
-        # Create a dictionary for easier JSON serialization
-        exam_dict = {"extracted_questions": extracted_data}
-        
-        # Serialize to JSON string (use Python's built-in json module)
-        try:
-            json_string = json.dumps(exam_dict)
-            logger.info(f"Successfully serialized exam_dict to JSON: {len(json_string)} characters")
-        except Exception as json_error:
-            logger.error(f"JSON serialization error: {json_error}")
-            json_string = json.dumps({"error": "JSON serialization failed"})
-        
-        # Render the template with both the Python object and JSON string
+        # Prepare context for template
         context = {
             "extracted_data": extracted_data,
-            "extracted_data_json": json_string,
-            "questions_count": len(extracted_data)
+            "questions_count": len(extracted_data) if extracted_data else 0
         }
         
-        logger.info(f"Rendering OCR extracted view with {len(extracted_data)} questions")
+        logger.info(f"Rendering OCR extracted view with {len(extracted_data) if extracted_data else 0} questions")
         return render(request, "ocr_extracted.html", context)
         
     except Exception as e:
@@ -363,14 +343,49 @@ def ocr_extracted(request):
         # Provide empty data in case of error
         context = {
             "extracted_data": [],
-            "extracted_data_json": json.dumps({
-                "extracted_questions": [],
-                "error": str(e)
-            }),
             "error_message": f"Error: {str(e)}"
         }
         
         return render(request, "ocr_extracted.html", context)
+
+
+
+# Make a Test Endpoint for Debugging
+
+@login_required
+def test_pdf_extraction(request):
+    """Test endpoint for PDF extraction debugging."""
+    if request.method == 'POST' and 'pdf_file' in request.FILES:
+        try:
+            pdf_file = request.FILES['pdf_file']
+            extractor = PDFExtractor()
+            
+            # First extract text
+            text = extractor.extract_text_from_pdf(pdf_file)
+            
+            # Reset file pointer
+            pdf_file.seek(0)
+            
+            # Then extract Q&A
+            questions = extractor.extract_questions_and_answers(pdf_file)
+            
+            return JsonResponse({
+                'status': 'success',
+                'text_length': len(text),
+                'text_sample': text[:500] + '...',
+                'questions_count': len(questions),
+                'questions': questions
+            })
+        except Exception as e:
+            import traceback
+            return JsonResponse({
+                'status': 'error',
+                'error': str(e),
+                'traceback': traceback.format_exc()
+            })
+    
+    return render(request, 'test_extraction.html')
+
 
 
 def generate_sample_data():
