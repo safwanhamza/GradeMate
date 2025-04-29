@@ -1,25 +1,36 @@
 {% extends 'base.html' %}
+
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+</head>
 {% block content %}
+
+<style>
+    * {
+        font-family: 'Poppins', sans-serif;
+    }
+</style>
+
 <div class="container mt-4">
     <h1 class="text-center">Direct PDF Processor</h1>
-    
+
     <div class="card mb-4">
         <div class="card-header">
             <h5>Upload PDF for Processing</h5>
         </div>
         <div class="card-body">
             {% if error_message %}
-                <div class="alert alert-danger" role="alert">
-                    {{ error_message }}
-                </div>
+            <div class="alert alert-danger" role="alert">
+                {{ error_message }}
+            </div>
             {% endif %}
-            
+
             {% if success_message %}
-                <div class="alert alert-success" role="alert">
-                    {{ success_message }}
-                </div>
+            <div class="alert alert-success" role="alert">
+                {{ success_message }}
+            </div>
             {% endif %}
-            
+
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="form-group">
@@ -30,23 +41,23 @@
             </form>
         </div>
     </div>
-    
+
     {% if extracted_data %}
-        <div class="card">
-            <div class="card-header">
-                <h5>Extracted Results</h5>
-            </div>
-            <div class="card-body">
-                {% for item in extracted_data %}
-                    <div class="mb-2">
-                        <strong>Answer {{ item.question_no }}:</strong> {{ item.complete_answer }}
-                    </div>
-                {% endfor %}
-            </div>
-            <div class="card-footer">
-                <a href="{% url 'ocr_extracted' %}" class="btn btn-success">View Formatted Results</a>
-            </div>
+    <div class="card">
+        <div class="card-header">
+            <h5>Extracted Results</h5>
         </div>
+        <div class="card-body">
+            {% for item in extracted_data %}
+            <div class="mb-2">
+                <strong>Answer {{ item.question_no }}:</strong> {{ item.complete_answer }}
+            </div>
+            {% endfor %}
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'ocr_extracted' %}" class="btn btn-success">View Formatted Results</a>
+        </div>
+    </div>
     {% endif %}
 </div>
 {% endblock %}

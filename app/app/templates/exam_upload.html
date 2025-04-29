@@ -1,16 +1,24 @@
 <!-- templates/exam_upload.html -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Exam Paper</title>
+    <title>GradeMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/exam_upload.css' %}">
 </head>
+<style>
+    * {
+        font-family: 'Poppins', sans-serif;
+    }
+</style>
+
 <body>
     <div class="container">
         <h2>📚 Upload Exam Paper</h2>
-        
+
         <div class="input-group">
             <h3>Upload and Extract Questions</h3>
             <form id="exam-upload-form" method="post" enctype="multipart/form-data">
@@ -23,7 +31,7 @@
                 <p>Processing... This may take a few minutes.</p>
             </div>
         </div>
-        
+
         <div id="extracted-questions" style="display: none;">
             <h3>Extracted Questions and Answers</h3>
             <div id="questions-container">
@@ -34,4 +42,5 @@
 
     <script src="{% static 'js/exam_upload.js' %}"></script>
 </body>
+
 </html>

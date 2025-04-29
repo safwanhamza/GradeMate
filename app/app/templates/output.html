@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Final Grade Output</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>GradeMate</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
@@ -21,6 +24,79 @@
             min-height: 100vh;
             padding: 20px;
             width: 100vw;
+        }
+
+        .navbar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .nav-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4A90E2;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            margin-left: 52%;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #4A90E2;
+        }
+
+        .user-menu {
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: none;
+            width: 180px;
+        }
+
+        .user-dropdown p,
+        .user-dropdown a {
+            padding: 10px;
+            text-decoration: none;
+            color: black;
+            display: block;
+            text-align: center;
+        }
+
+        .user-dropdown a:hover {
+            background: #f0f0f0;
         }
 
         .container {
@@ -219,7 +295,7 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(0, 0, 0, 0.4);
         }
 
         .modal-content {
@@ -271,11 +347,31 @@
 </head>
 
 <body>
+    <div class="navbar">
+        <div class="nav-left">
+            <div class="nav-title">GradeMate</div>
+        </div>
+        <div class="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'dashboard' %}">DashBoard</a>
+            <a href="{% url 'grading' %}">Exam Upload</a>
+            <a href="{% url 'ocr_extracted' %}">Text Extraction</a>
+        </div>
+        <div class="user-menu" onclick="toggleDropdown()">
+            <i class="material-icons" style="font-size: 36px; color: #333; cursor: pointer;">account_circle</i>
+            <div class="user-dropdown" id="userDropdown">
+                <p>Welcome, User</p>
+                <a href="{% url 'acc_settings' %}">Account Settings</a>
+                <a href="{% url 'login_signup' %}">Logout</a>
+            </div>
+        </div>
+    </div>
+    <br><br>
     <div class="container">
         <div class="page-title">
             <h2>📊 Final Grade Report</h2>
         </div>
-        
+
         <div class="grade-summary">
             <div class="summary-card">
                 <div>Total Questions:</div>
@@ -286,17 +382,17 @@
                 <div id="total-score">Loading...</div>
             </div>
         </div>
-        
+
         <div class="questions-grid" id="questions-container">
             <!-- Question Cards Will Be Generated Here -->
             <div id="loading-message" class="summary-card" style="width: 100%;">Loading question scores...</div>
         </div>
-        
+
         <div class="summary-container" id="summary-container">
             <h3>Summary and Recommendations:</h3>
             <div id="summary-content">Analysis of your performance is loading...</div>
         </div>
-        
+
         <div class="buttons">
             <button class="btn btn-download" id="download-btn">Download Report</button>
             <a href="{% url 'dashboard' %}"><button class="btn btn-startover">Start Over</button></a>
@@ -336,25 +432,29 @@
     {% if evaluation_json %}
     <script id="evaluation-data" type="application/json">{{ evaluation_json|safe }}</script>
     {% endif %}
-    
+
     <!-- Load the extracted questions data -->
     {% if extracted_data_json %}
     <script id="extracted-data" type="application/json">{{ extracted_data_json|safe }}</script>
     {% endif %}
 
     <script>
+        function toggleDropdown() {
+            let dropdown = document.getElementById("userDropdown");
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        }
         // Get the score class based on the score value
         function getScoreClass(score) {
             if (score >= 80) return 'success-score';
             if (score >= 60) return 'warning-score';
             return 'danger-score';
         }
-        
+
         // Format score as percentage
         function formatScore(score) {
             return `${score}% (${score}/100)`;
         }
-        
+
         // Truncate text to a specific length
         function truncateText(text, maxLength = 100) {
             if (!text) return "No content available";
@@ -366,7 +466,7 @@
         function loadData() {
             let evaluationData = null;
             let extractedData = null;
-            
+
             // Try to load evaluation data
             const evaluationElement = document.getElementById('evaluation-data');
             if (evaluationElement) {
@@ -377,7 +477,7 @@
                     console.error('Error parsing evaluation data:', e.message);
                 }
             }
-            
+
             // Try to load extracted questions data
             const extractedElement = document.getElementById('extracted-data');
             if (extractedElement) {
@@ -388,7 +488,7 @@
                     console.error('Error parsing extracted data:', e.message);
                 }
             }
-            
+
             return { evaluationData, extractedData };
         }
 
@@ -400,7 +500,7 @@
                 document.getElementById('loading-message').textContent = 'No evaluation data available';
                 return;
             }
-            
+
             // Map extracted data by question number for easy lookup
             const extractedMap = {};
             if (extractedData && Array.isArray(extractedData)) {
@@ -408,33 +508,33 @@
                     extractedMap[item.question_no] = item;
                 });
             }
-            
+
             // Update summary information
             const evaluations = evaluationData.evaluations || [];
             document.getElementById('total-questions').textContent = evaluations.length;
-            
+
             // Calculate or use provided total score
-            const totalScore = evaluationData.total_score || (evaluations.length > 0 ? 
+            const totalScore = evaluationData.total_score || (evaluations.length > 0 ?
                 Math.round(evaluations.reduce((sum, q) => sum + (q.score || q.similarity_percentage || 0), 0) / evaluations.length) : 0);
-            
+
             document.getElementById('total-score').textContent = `${totalScore}% (${totalScore}/100)`;
             document.getElementById('total-score').className = getScoreClass(totalScore);
-            
+
             // Clear loading message
             const container = document.getElementById('questions-container');
             container.innerHTML = '';
-            
+
             // Generate question cards
             evaluations.forEach(evaluation => {
                 const questionNo = evaluation.question_no;
                 const score = evaluation.score || evaluation.similarity_percentage || 0;
                 const feedback = evaluation.feedback || 'No feedback provided';
-                
+
                 // Get extracted data for this question if available
                 const extracted = extractedMap[questionNo] || {};
                 const statement = extracted.question_statement || evaluation.question_statement || 'No question statement available';
                 const answer = extracted.complete_answer || evaluation.complete_answer || 'No answer provided';
-                
+
                 // Create question card
                 const card = document.createElement('div');
                 card.className = 'question-card';
@@ -449,77 +549,78 @@
                         <div class="fade-overlay"></div>
                     </div>
                 `;
-                
+
                 // Store data for modal
                 card.dataset.questionNo = questionNo;
                 card.dataset.score = score;
                 card.dataset.statement = statement;
                 card.dataset.answer = answer;
                 card.dataset.feedback = feedback;
-                
+
                 // Add click handler to show modal
-                card.addEventListener('click', function() {
+                card.addEventListener('click', function () {
                     showQuestionModal(this.dataset);
                 });
-                
+
                 container.appendChild(card);
             });
-            
+
             // Display overall feedback if available
             if (evaluationData.overall_feedback) {
                 document.getElementById('summary-content').textContent = evaluationData.overall_feedback;
                 document.getElementById('summary-container').style.display = 'block';
             }
         }
-        
+
         // Show question details in modal
         function showQuestionModal(data) {
             const modal = document.getElementById('questionModal');
-            
+
             // Set modal content
             document.getElementById('modal-title').textContent = `Question ${data.questionNo}`;
             document.getElementById('modal-statement').textContent = data.statement || 'No question statement available';
             document.getElementById('modal-answer').textContent = data.answer || 'No answer provided';
-            
+
             const scoreElement = document.getElementById('modal-score');
             scoreElement.textContent = `${data.score}% (${data.score}/100)`;
             scoreElement.className = getScoreClass(data.score);
-            
+
             document.getElementById('modal-feedback').textContent = data.feedback || 'No feedback available';
-            
+
             // Show modal
             modal.style.display = 'block';
         }
 
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const { evaluationData, extractedData } = loadData();
             displayResults(evaluationData, extractedData);
-            
+
             // Set up modal close handlers
             const modal = document.getElementById('questionModal');
             const span = document.getElementsByClassName('close')[0];
             const closeBtn = document.getElementById('modal-close-btn');
-            
-            span.onclick = function() {
+
+            span.onclick = function () {
                 modal.style.display = 'none';
             }
-            
-            closeBtn.onclick = function() {
+
+            closeBtn.onclick = function () {
                 modal.style.display = 'none';
             }
-            
-            window.onclick = function(event) {
+
+            window.onclick = function (event) {
                 if (event.target == modal) {
                     modal.style.display = 'none';
                 }
             }
-            
+
             // Set up download button handler
-            document.getElementById('download-btn').addEventListener('click', function() {
+            document.getElementById('download-btn').addEventListener('click', function () {
                 window.location.href = "{% url 'download_report_pdf' %}";
             });
         });
     </script>
 </body>
+
 </html>
