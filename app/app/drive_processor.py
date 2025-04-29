@@ -225,6 +225,7 @@ def process_document_simple(path: str, output_figures_path: Optional[str] = None
 def create_chroma_db(chunks, embedding_model, persist_directory=None, progress_callback=None):
     """
     Create or load a Chroma vector store from chunks.
+    create or load a Chroma vector store from chunks.
     """
     try:
         from langchain_community.vectorstores import Chroma
