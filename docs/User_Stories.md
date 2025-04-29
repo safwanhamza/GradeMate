@@ -2,7 +2,7 @@
 
 This document outlines the user stories for the GradeMate application, a system designed to streamline and automate the grading of exams.
 
-##   User Stories
+##  User Stories
 
 <details>
 <summary>Login to the system</summary>
