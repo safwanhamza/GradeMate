@@ -27,6 +27,7 @@ support for subjective creativity assessment and multilingual grading.
 GradeMate/
 ├── ai/                     # AI models and related scripts
 ├── app/                    # Django application files
+├── assets/                 # README.md assets
 ├── docs/                   # Documentation and resources
 ├── downloaded_models/      # Pre-trained models
 ├── extraction/             # Data extraction utilities
