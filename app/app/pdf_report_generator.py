@@ -7,7 +7,8 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.units import inch
 import json
-
+import os
+import numpy
 def generate_exam_report_pdf(evaluation_data: Dict[str, Any]) -> HttpResponse:
     """
     Generate a PDF report with enhanced formatting including question statements
@@ -18,6 +19,7 @@ def generate_exam_report_pdf(evaluation_data: Dict[str, Any]) -> HttpResponse:
         
     Returns:
         HttpResponse with PDF attachment
+    
     """
     # Create a file-like buffer to receive PDF data
     buffer = io.BytesIO()

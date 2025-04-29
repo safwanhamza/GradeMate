@@ -36,6 +36,7 @@ def get_supported_extension(filename):
 
 def handle_csv_file(path):
     """Handle CSV files"""
+    "other will be implemented lately"
     try:
         import pandas as pd
         df = pd.read_csv(path)
