@@ -23,3 +23,16 @@ credentials/
 app/app/service_account.json
 app/client_secret_203302872030-p9gkft6otmaaubsroa4ob1k3310lfen9.apps.googleusercontent.com.json
 app/service_account.json
+
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore migration cache
+app/app/migrations/__pycache__/
+
+# Optionally ignore SQLite DB if you don't want it tracked
+db.sqlite3

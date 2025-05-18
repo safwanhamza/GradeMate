@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GradeMate</title>
+    <title>Login / Signup - GradeMate</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -15,49 +14,14 @@
         }
 
         body {
-            background: linear-gradient(135deg, #4A90E2, #0056b3);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        nav {
-            background: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        nav a:first-child {
-            font-weight: bold;
-            font-size: 24px;
-            color: #333;
-            text-decoration: none;
-        }
-
-        nav a:last-child {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .container {
-            flex-grow: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            height: 100vh;
+            background: linear-gradient(135deg, #4A90E2, #0056b3);
         }
 
-        .form-box {
+        .container {
             width: 350px;
             background: white;
             padding: 30px;
@@ -72,7 +36,6 @@
                 opacity: 0;
                 transform: translateY(-20px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -120,7 +83,6 @@
             color: #4A90E2;
             cursor: pointer;
             transition: color 0.3s;
-            font-size: 14px;
         }
 
         .toggle-btn:hover {
@@ -134,34 +96,23 @@
         }
     </style>
 </head>
-
 <body>
-
-    <nav>
-        <a href="{% url 'home' %}">GradeMate</a>
-        <a href="{% url 'home' %}">Home</a>
-    </nav>
-
-    <div class="container">
-        <div class="form-box" id="container">
-            <h2 id="form-title">Login</h2>
-            <form method="POST">
-                {% csrf_token %}
-                <div class="input-box">
-                    <input type="email" name="email" placeholder="Email" required>
-                </div>
-                <div class="input-box">
-                    <input type="password" name="password" placeholder="Password" required>
-                </div>
-                <button type="submit" name="login" class="btn" id="auth-btn">Login</button>
-            </form>
-
-            {% if error %}
+    <div class="container" id="container">
+        <h2 id="form-title">Login</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="input-box">
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+            <div class="input-box">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+            <button type="submit" name="login" class="btn" id="auth-btn">Login</button>
+        </form>
+        {% if error %}
             <p class="error">{{ error }}</p>
-            {% endif %}
-
-            <p class="toggle-btn" id="toggle-form">Don't have an account? <br> Sign up</p>
-        </div>
+        {% endif %}
+        <p class="toggle-btn" id="toggle-form">Don't have an account? Sign up</p>
     </div>
 
     <script>
@@ -174,16 +125,14 @@
                 formTitle.textContent = "Sign Up";
                 authBtn.textContent = "Sign Up";
                 authBtn.name = "signup";
-                toggleForm.textContent = "Login Existing Account";
+                toggleForm.textContent = "Already have an account? Login";
             } else {
                 formTitle.textContent = "Login";
                 authBtn.textContent = "Login";
                 authBtn.name = "login";
-                toggleForm.textContent = "Create New Account";
+                toggleForm.textContent = "Don't have an account? Sign up";
             }
         });
     </script>
-
 </body>
-
 </html>
