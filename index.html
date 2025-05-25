@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GradeMate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+        }
+
+        .feature-icon {
+            width: 48px;
+            /* 3rem */
+            height: 48px;
+            /* 3rem */
+            margin-bottom: 1rem;
+            /* 16px */
+        }
+
+        .cta-button {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            font-size: 2.25rem;
+            /* 36px */
+            line-height: 2.5rem;
+            /* 40px */
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            /* 24px */
+        }
+
+        .section-subtitle {
+            font-size: 1.125rem;
+            /* 18px */
+            line-height: 1.75rem;
+            /* 28px */
+            color: #4A5568;
+            /* gray-700 */
+            margin-bottom: 3rem;
+            /* 48px */
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            /* 12px */
+            padding: 2rem;
+            /* 32px */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .nav-link {
+            transition: color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+            color: white;
+            /* Changed for transparent navbar */
+            opacity: 0.8;
+        }
+
+        .nav-link:hover {
+            opacity: 1;
+            color: white;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #f4f4f7 0%, #490092 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            size: 35px;
+        }
+
+        /* Enhanced Animation Placeholder Styles */
+        .animation-showcase {
+            margin-top: 3rem;
+            /* 48px */
+            padding: 1.5rem;
+            /* 24px */
+            background-color: rgba(255, 255, 255, 0.05);
+            /* Even lighter for subtlety */
+            backdrop-filter: blur(8px);
+            border-radius: 1rem;
+            /* 16px */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 64rem;
+            /* Increased max-width */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .feature-animation-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            /* 12px */
+            padding: 1.5rem;
+            /* 24px */
+            text-align: center;
+            color: white;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            min-height: 180px;
+            /* Ensure items have some height */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feature-animation-item:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .feature-animation-item svg {
+            width: 48px;
+            /* 3rem */
+            height: 48px;
+            /* 3rem */
+            margin-bottom: 1rem;
+            /* 16px */
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-animation-item:hover svg {
+            opacity: 1;
+        }
+
+        .feature-animation-item h4 {
+            font-size: 1.125rem;
+            /* 18px */
+            font-weight: 600;
+            /* semibold */
+            margin-bottom: 0.5rem;
+            /* 8px */
+        }
+
+        .feature-animation-item p {
+            font-size: 0.875rem;
+            /* 14px */
+            opacity: 0.8;
+        }
+
+        /* Individual feature animations */
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes spin-subtle {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(5deg);
+            }
+        }
+
+        @keyframes pulse-grow {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes slide-up-fade {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Apply animations to specific icons */
+        .animate-float svg {
+            animation: float 3s infinite ease-in-out;
+        }
+
+        .animate-spin-subtle svg {
+            animation: spin-subtle 4s infinite alternate ease-in-out;
+        }
+
+        .animate-pulse-grow svg {
+            animation: pulse-grow 2.5s infinite ease-in-out;
+        }
+
+        .animate-slide-up-fade {
+            animation: slide-up-fade 1s ease-out forwards;
+        }
+
+
+        /* Navbar specific styles for transparency */
+        nav.fixed {
+            background-color: transparent;
+            /* Make navbar transparent */
+            box-shadow: none;
+            /* Remove shadow when transparent */
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        nav.scrolled {
+            /* Style for when page is scrolled */
+            background-color: rgba(42, 50, 94, 0.9);
+            /* Darker semi-transparent on scroll */
+            backdrop-filter: blur(5px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        nav.scrolled .nav-link {
+            color: white;
+            /* Ensure links remain white on scrolled navbar */
+        }
+
+        nav.scrolled .gradient-text {
+            /* Ensure logo remains visible */
+            background: white;
+            /* Fallback for gradient text or make it solid white */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        /* Mobile menu styling */
+        #mobile-menu {
+            background-color: rgba(30, 36, 63, 0.95);
+            /* Darker, more opaque for mobile menu */
+            backdrop-filter: blur(8px);
+        }
+
+        #mobile-menu a {
+            color: white;
+            opacity: 0.9;
+        }
+
+        #mobile-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            opacity: 1;
+        }
+
+        #mobile-menu .cta-button-mobile {
+            /* Specific styling for login button in mobile menu */
+            background-color: #4F46E5;
+            /* Indigo-600 */
+            color: white;
+            opacity: 1;
+        }
+
+        #mobile-menu .cta-button-mobile:hover {
+            background-color: #4338CA;
+            /* Indigo-700 */
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+
+    <nav id="main-nav" class="fixed w-full z-50 top-0">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold gradient-text">
+                GradeMate
+            </a>
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="#cta" class="nav-link">Get Started</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#how-it-works" class="nav-link">How It Works</a>
+                <a href="#faq" class="nav-link">FAQ</a>
+                <!-- <a href="#"
+                    class="bg-indigo-100 text-indigo-700 py-2 px-5 rounded-lg hover:bg-indigo-200 cta-button font-semibold">Login</a> -->
+            </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-white focus:outline-none">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16m-7 6h7"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <a href="#features" class="block py-3 px-6 hover:bg-gray-700/50">Features</a>
+            <a href="#how-it-works" class="block py-3 px-6 hover:bg-gray-700/50">How It Works</a>
+            <a href="#cta" class="block py-3 px-6 hover:bg-gray-700/50">Get Started</a>
+            <a href="#faq" class="block py-3 px-6 hover:bg-gray-700/50">FAQ</a>
+            <a href="#" class="block py-3 px-6 cta-button-mobile text-center mt-2 mb-3 mx-4 rounded-lg">Login</a>
+        </div>
+    </nav>
+
+    <header class="hero-gradient text-white pt-32 pb-20 md:pt-40 md:pb-28">
+        <div class="container mx-auto px-6 text-center">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight animate-slide-up-fade"
+                style="animation-delay: 0.1s;">
+                GradeMate: The Future of <span class="block md:inline">Grading</span>
+            </h1>
+            <p class="text-lg md:text-xl mb-10 max-w-3xl mx-auto font-light animate-slide-up-fade"
+                style="animation-delay: 0.3s;">
+                Revolutionize your grading workflow with smart AI. GradeMate offers precise, context-aware, and
+                automated grading for all question types, saving you time and providing deeper insights into student
+                performance.
+            </p>
+
+            <div class="animation-showcase animate-slide-up-fade" style="animation-delay: 0.5s;">
+                <h3 class="text-2xl font-semibold mb-6 text-white">Show the world how it’s done.</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="feature-animation-item animate-float">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                        </svg>
+                        <h4>Essay Scoring</h4>
+                        <p>AI-powered evaluation of written answers.</p>
+                    </div>
+                    <div class="feature-animation-item animate-pulse-grow">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M10.5 6h9.75M10.5 12h9.75m-9.75 6h9.75M3.75 6h.008v.008H3.75V6zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.008v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 18h.008v.008H3.75V18zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                        </svg>
+                        <h4>Feedback Reports</h4>
+                        <p>Detailed, instant insights for students.</p>
+                    </div>
+                    <div class="feature-animation-item animate-spin-subtle">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12h19.5" />
+                        </svg>
+                        <h4>Contextual Grading</h4>
+                        <p>Understands course-specific material.</p>
+                    </div>
+                    <div class="feature-animation-item animate-float" style="animation-delay: 0.2s;">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 13.125C3 12.504 3.504 12 4.125 12h3.75c.621 0 1.125.504 1.125 1.125v6.75c0 .621-.504 1.125-1.125 1.125h-3.75A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-3.75a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-3.75a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                        </svg>
+                        <h4>Smart Analytics</h4>
+                        <p>Track performance and gain insights.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="features" class="py-16 md:py-24 bg-gray-100">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="section-title text-gray-800">Everything You Need for <span class="gradient-text">Effortless
+                    Grading</span></h2>
+            <p class="section-subtitle">Discover powerful features designed to streamline your assessment process.</p>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
+                <div class="card">
+                    <svg class="feature-icon text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800">All Question Types</h3>
+                    <p class="text-gray-600">Effortlessly grade objective, subjective, and essay-style questions. Our AI
+                        understands various answer formats for fair evaluation.</p>
+                </div>
+                <div class="card">
+                    <svg class="feature-icon text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                        </path>
+                    </svg>
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800">Context-Aware Understanding</h3>
+                    <p class="text-gray-600">Our system intelligently uses your course materials (drive, files, YouTube)
+                        for context-specific grading.</p>
+                </div>
+                <div class="card">
+                    <svg class="feature-icon text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                        </path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800">Flexible Grading Models</h3>
+                    <p class="text-gray-600">Grade based solely on course context or combine with broader AI knowledge
+                        for comprehensive analysis.</p>
+                </div>
+                <div class="card">
+                    <svg class="feature-icon text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                        </path>
+                    </svg>
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800">Detailed Report Generation</h3>
+                    <p class="text-gray-600">Automatically generates in-depth reports for each paper, highlighting
+                        strengths and areas for improvement.</p>
+                </div>
+                <div class="card">
+                    <svg class="feature-icon text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path>
+                    </svg>
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800">Intelligent Analytics Dashboard</h3>
+                    <p class="text-gray-600">Visualize results with a comprehensive dashboard for deeper analysis and
+                        trend identification.</p>
+                </div>
+                <div class="card">
+                    <svg class="feature-icon text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7">
+                        </path>
+                    </svg>
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800">Seamless User Experience</h3>
+                    <p class="text-gray-600">A robust and responsive system for a smooth, intuitive AI-driven grading
+                        workflow.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="py-16 md:py-24 bg-white">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-center text-gray-800">How It Works: <span class="gradient-text">Simple Steps
+                    to Smart Grading</span></h2>
+            <p class="section-subtitle text-center">GradeMate uses smart AI to deliver unparalleled grading accuracy and
+                efficiency.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-start">
+                <div class="text-center p-6 rounded-lg">
+                    <div
+                        class="bg-indigo-100 text-indigo-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 text-2xl font-bold shadow-md">
+                        1</div>
+                    <h3 class="text-xl font-semibold mb-3 text-gray-700">Upload Course Material</h3>
+                    <p class="text-gray-600">Provide access to your course content via cloud storage, local files, or
+                        media playlists.</p>
+                </div>
+                <div class="text-center p-6 rounded-lg">
+                    <div
+                        class="bg-indigo-100 text-indigo-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 text-2xl font-bold shadow-md">
+                        2</div>
+                    <h3 class="text-xl font-semibold mb-3 text-gray-700">AI Learns Your Context</h3>
+                    <p class="text-gray-600">Our system analyzes your materials to understand the specific knowledge for
+                        your course.</p>
+                </div>
+                <div class="text-center p-6 rounded-lg">
+                    <div
+                        class="bg-indigo-100 text-indigo-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 text-2xl font-bold shadow-md">
+                        3</div>
+                    <h3 class="text-xl font-semibold mb-3 text-gray-700">Upload Exam Scripts</h3>
+                    <p class="text-gray-600">Submit the student exams or papers that need to be graded by the system.
+                    </p>
+                </div>
+                <div class="text-center p-6 rounded-lg">
+                    <div
+                        class="bg-indigo-100 text-indigo-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 text-2xl font-bold shadow-md">
+                        4</div>
+                    <h3 class="text-xl font-semibold mb-3 text-gray-700">Instant, Accurate Results</h3>
+                    <p class="text-gray-600">Receive detailed graded papers and comprehensive analytical reports
+                        quickly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 md:py-24 bg-indigo-50">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="section-title text-gray-800">Unlock Deeper Insights with <span
+                    class="gradient-text">GradeMate</span></h2>
+            <p class="section-subtitle">GradeMate is more than just a grading tool; it's a comprehensive assessment
+                solution that empowers educators.</p>
+            <div class="grid md:grid-cols-3 gap-8 text-left">
+                <div class="p-6">
+                    <div class="flex items-center mb-3">
+                        <svg class="w-8 h-8 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-gray-700">Save Countless Hours</h3>
+                    </div>
+                    <p class="text-gray-600">Automate the entire grading process and free up your valuable time for
+                        teaching and research.</p>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center mb-3">
+                        <svg class="w-8 h-8 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z">
+                            </path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-gray-700">Ensure Fairness & Consistency</h3>
+                    </div>
+                    <p class="text-gray-600">Eliminate human bias with our objective AI-powered evaluations for
+                        equitable assessment.</p>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center mb-3">
+                        <svg class="w-8 h-8 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-gray-700">Gain Valuable Insights</h3>
+                    </div>
+                    <p class="text-gray-600">Use our analytics to understand student learning patterns and improve
+                        teaching strategies.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="cta" class="py-20 md:py-32 hero-gradient text-white">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Grading?</h2>
+            <p class="text-lg md:text-xl mb-10 max-w-2xl mx-auto">
+                Join the growing number of educators leveraging AI to create more efficient and insightful assessment
+                practices.
+            </p>
+            <a href="#"
+                class="bg-white text-indigo-600 font-semibold py-4 px-10 rounded-lg text-lg hover:bg-gray-100 cta-button shadow-xl">
+                Try GradeMate Now
+            </a>
+            <p class="mt-6 text-sm text-indigo-200">Free to get started. No credit card required.</p>
+        </div>
+    </section>
+
+    <section id="faq" class="py-16 md:py-24 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-center text-gray-800">Frequently Asked <span
+                    class="gradient-text">Questions</span></h2>
+            <div class="max-w-3xl mx-auto">
+                <div class="mb-6 card p-0 overflow-hidden">
+                    <button
+                        class="faq-question w-full text-left p-6 flex justify-between items-center focus:outline-none">
+                        <span class="text-lg font-medium text-gray-800">What types of questions can GradeMate
+                            handle?</span>
+                        <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-300" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </button>
+                    <div class="faq-answer hidden p-6 pt-0 text-gray-600">
+                        GradeMate is designed to grade a wide variety of question types, including multiple-choice,
+                        true/false, fill-in-the-blanks, short answer, subjective responses, and even long-form essays.
+                        Its AI capabilities allow it to understand context and nuance.
+                    </div>
+                </div>
+                <div class="mb-6 card p-0 overflow-hidden">
+                    <button
+                        class="faq-question w-full text-left p-6 flex justify-between items-center focus:outline-none">
+                        <span class="text-lg font-medium text-gray-800">How does GradeMate ensure grading accuracy based
+                            on my course material?</span>
+                        <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-300" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </button>
+                    <div class="faq-answer hidden p-6 pt-0 text-gray-600">
+                        GradeMate intelligently uses the course materials you provide (lecture notes, textbooks, slides,
+                        videos). This means the AI primarily references your specific content when evaluating answers,
+                        ensuring relevance and accuracy within the context of your course.
+                    </div>
+                </div>
+                <div class="mb-6 card p-0 overflow-hidden">
+                    <button
+                        class="faq-question w-full text-left p-6 flex justify-between items-center focus:outline-none">
+                        <span class="text-lg font-medium text-gray-800">Is GradeMate suitable for all educational
+                            levels?</span>
+                        <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-300" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </button>
+                    <div class="faq-answer hidden p-6 pt-0 text-gray-600">
+                        Yes, GradeMate can be adapted for various educational levels, from K-12 to higher education and
+                        professional training. The key is providing relevant course material for the AI to learn from.
+                    </div>
+                </div>
+                <div class="card p-0 overflow-hidden">
+                    <button
+                        class="faq-question w-full text-left p-6 flex justify-between items-center focus:outline-none">
+                        <span class="text-lg font-medium text-gray-800">What are the technical requirements to use
+                            GradeMate?</span>
+                        <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-300" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </button>
+                    <div class="faq-answer hidden p-6 pt-0 text-gray-600">
+                        GradeMate is a web application, so you'll primarily need a modern web browser and an internet
+                        connection. The core processing happens on our servers, making it easily accessible for all
+                        users.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-800 text-gray-300 py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-semibold text-white mb-4">GradeMate</h3>
+                    <p class="text-sm">Automated exam grading powered by Smart AI. Simplify your assessments and gain
+                        deeper insights.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Quick Links</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#features" class="hover:text-indigo-400">Features</a></li>
+                        <li><a href="#how-it-works" class="hover:text-indigo-400">How It Works</a></li>
+                        <li><a href="#faq" class="hover:text-indigo-400">FAQ</a></li>
+                        <li><a href="#" class="hover:text-indigo-400">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Legal</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-indigo-400">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-indigo-400">Terms of Service</a></li>
+                    </ul>
+                    <div class="mt-6 flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="currentColor"
+                                viewBox="0 0 24 24" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
+                                    clip-rule="evenodd" />
+                            </svg></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="currentColor"
+                                viewBox="0 0 24 24" aria-hidden="true">
+                                <path
+                                    d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                            </svg></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="currentColor"
+                                viewBox="0 0 24 24" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M12 2C6.477 2 2 6.477 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.001 10.001 0 0022 12.017C22 6.477 17.523 2 12 2z"
+                                    clip-rule="evenodd" />
+                            </svg></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-700 text-center text-sm">
+                <p>&copy; 2025 GradeMate. All rights reserved. Built with AI for Education.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mainNav = document.getElementById('main-nav');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when a link is clicked
+        const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // FAQ Accordion
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                const icon = question.querySelector('svg');
+
+                answer.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+
+                faqQuestions.forEach(otherQuestion => {
+                    if (otherQuestion !== question) {
+                        otherQuestion.nextElementSibling.classList.add('hidden');
+                        otherQuestion.querySelector('svg').classList.remove('rotate-180');
+                    }
+                });
+            });
+        });
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') { // Handle home link if needed
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const navbarHeight = mainNav.offsetHeight;
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
+
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                mainNav.classList.add('scrolled');
+            } else {
+                mainNav.classList.remove('scrolled');
+            }
+        });
+    </script>
+
+</body>
+
+</html>
